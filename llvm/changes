@@ -1,0 +1,37 @@
+remember to add cases for new instructions in C code
+
+
+InstrFormats.td:
+added a LoadStore64ROAlias class that copies LoadStore64RO but changes hardcoded opcode bits
+added Load64RONA/PNA/PA multiclasses
+added BaseLoadStorePreIdxAlias and BaseLoadStorePostIdxAlias classes, and corrosponding LoadPre/PostIdxAlias classes
+
+InstrInfo.td:
+added LDRXNA/PNA/PApre and post instructions
+added LDRXNA/PNA/PA multiclass defs
+
+InstrInfo.cpp:
+added all alias instructions under regular verions's places in switch statements
+
+FalkorHWPFFix.cpp:
+added all alias instructions under regular verions's places in switch statements
+
+disassembler.cpp:
+added pre and post alias instructions to switches. regular isn't there for some reason
+
+LoadStoreOptimizer.cpp:
+added pre and post alias instructions to switches
+TODO: probably want to preserve alias state in this transformation
+
+FrameLowering.cpp:
+added post alias instructions to switches
+
+AsmParserLoadStoreOptimizer.cpp:
+added pre and post alias instructions to switches
+
+added LDRXPA in sacktagging
+
+
+including new address spaces in checks in LegalizerInfo.cpp
+including new address spaces in checks in InstructionSelector.cpp
+added magic number defs to aarch64.h
