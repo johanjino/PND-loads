@@ -37,6 +37,7 @@ if __name__ == "__main__":
                                 "system.switch_cpus.StoreSet__0.LFSTInvalidations",
                                 "system.switch_cpus.iew.memOrderViolationEvents",
                                 "system.switch_cpus.iew.notExactPhysicalAddrViolation",
+                                "system.switch_cpus.iew.bypassStoreSetViolationAddition",
                                 "system.switch_cpus.numInsts",
                                 "system.switch_cpus.numCycles"]
 
@@ -47,6 +48,7 @@ if __name__ == "__main__":
     aggregated_values = aggregate_values(field_names_to_aggregate)
 
     aggregated_values["adjustedMemOrderViolationEvents"] = aggregated_values.get("memOrderViolationEvents") - aggregated_values.get("notExactPhysicalAddrViolation")
+    aggregated_values["nonPNDViolations"] = aggregated_values.get("adjustedMemOrderViolationEvents") - aggregated_values.get("bypassStoreSetViolationAddition")
     aggregated_values["cpi"] = aggregated_values.get("numCycles") / aggregated_values.get("numInsts")
 
     # Write the results to the output file
