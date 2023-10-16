@@ -3,14 +3,16 @@ import os
 def get_cpi_value(results):
     results = open(results, "r").readlines()
     for line in results:
-        name, value = line.split(":")
-        if name == "cpi":
+        fields = line.split()
+        name = ''.join(fields[:-1])
+        value = fields[-1]
+        if name == "CPI":
             return float(value)
 
 cpi_differences = open("cpi_differences", "w")
 processed_benchmarks = set()
 for f in os.listdir(os.getcwd()):
-    if not os.path.isdir(f) and not f.endswith(".txt"): continue
+    if os.path.isdir(f) or not f.endswith(".txt") or f == "cpi_differences": continue
     benchmark = f.split('_')[0]
     number = ""
     if f.count('.') == 2: #has multiple workloads
