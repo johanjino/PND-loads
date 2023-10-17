@@ -61,6 +61,8 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
         }
     }
 
+    errs() << "LAI PND loads: " << LAIPNDLoads.size() << "\n";
+
     std::set<LoadInst *> AllPNDLoads = PNDLoads;
     AllPNDLoads.insert(LAIPNDLoads.begin(), LAIPNDLoads.end());
     for (auto Load: AllPNDLoads){

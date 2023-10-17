@@ -2024,9 +2024,15 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
             Dependence::DepType Type =
                 isDependent(*A.first, A.second, *B.first, B.second, Strides);
 
-            if (isa<LoadInst>(Source) && QueryResults[Source] < Type)
+            if (isa<LoadInst>(Source) &&
+                (QueryResults[Source] != Dependence::NoDep ||
+                 QueryResults[Source] != Dependence::Forward ||
+                 QueryResults[Source] != Dependence::ForwardButPreventsForwarding))
               QueryResults[Source] = Type;
-            if (isa<LoadInst>(Destination) && QueryResults[Destination] < Type)
+            if (isa<LoadInst>(Destination) &&
+                (QueryResults[Destination] != Dependence::NoDep ||
+                 QueryResults[Destination] != Dependence::Forward ||
+                 QueryResults[Destination] != Dependence::ForwardButPreventsForwarding))
               QueryResults[Destination] = Type;
 
             mergeInStatus(Dependence::isSafeForVectorization(Type));
@@ -2039,7 +2045,7 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
               if (Type != Dependence::NoDep)
                 Dependences.push_back(Dependence(A.second, B.second, Type));
 
-              //   E: disabling the dependence limit for PND purposes
+              //   NOTE: disabling the dependence limit for PND purposes
               //   (Dependences.size() >= MaxDependences) {
               //   RecordDependences = false;
               //   Dependences.clear();
