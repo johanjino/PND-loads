@@ -5,19 +5,17 @@
 #include <cstdint>
 #include <vector>
 
-std::set<LoadInst *> OurNoDepLoads = std::set<LoadInst*>();
-
 PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
                                       LoopStandardAnalysisResults &AR, LPMUpdater &U){
     Function &F = *LN.getParent();
     DependenceInfo DI = DependenceInfo(&F, &AR.AA, &AR.SE, &AR.LI);
 
-    markLoads(LN, DI, AR.LI, AR.SE, AR.DT, AR.AA);
+    markLoads(LN, DI, AR);
 
     return PreservedAnalyses::all();
 }
 
-void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopInfo &LI, ScalarEvolution &SE, DominatorTree &DT, AAResults &AA){
+void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR){
     SmallVector<LoadInst *> all_loads;
     SmallVector<StoreInst *> all_stores;
     SmallVector<CallInst *> all_calls;
@@ -32,14 +30,46 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopInfo &LI, S
     }
 
     //LI.GeneratedChecks obtained through horribly hacky means
-    SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs = findVersionedLoops(LN, LI.GeneratedChecks, LI, DT);
+    SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs = findVersionedLoops(LN, AR.LI.GeneratedChecks, AR.LI, AR.DT);
 
+    /* Iterate over all loads using our own method for finding labels */
     AliasHint Hint;
+    std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
-        Hint = determineHint(Load, all_stores, all_calls, VersionPairs, DI, SE, AA, LI);
+        Hint = determineHint(Load, all_stores, all_calls, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
-            changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
+            PNDLoads.insert(Load);
     }
+
+    /* Then for each innermost loop use the vectorisation loop access analysis
+     * for catching more no dependency cases and forward dependencies */
+    std::set<LoadInst *> LAIPNDLoads;
+    for (auto Loop: LN.getLoops()){
+        //may be multiple innermost loops
+        if (Loop->isInnermost()){
+            LoopAccessInfo LAI = LoopAccessInfo(Loop, &(AR.SE), &(AR.TLI), &(AR.AA), &(AR.DT), &(AR.LI));
+            MemoryDepChecker MDC = LAI.getDepChecker();
+            for (auto Query: MDC.QueryResults){
+                LoadInst *Load = reinterpret_cast<LoadInst *>(Query.first);
+                MemoryDepChecker::Dependence::DepType Type = Query.second;
+                if (Type == MemoryDepChecker::Dependence::NoDep ||
+                    Type == MemoryDepChecker::Dependence::Forward){
+                    LAIPNDLoads.insert(Load);
+                }
+        }
+    }
+
+    errs() << "Test\n";
+    if (!std::includes(PNDLoads.begin(), PNDLoads.begin(), LAIPNDLoads.begin(), LAIPNDLoads.end())){
+        errs() << "Own pass catches no deps that LAI doesn't\n";
+    }
+
+    std::set<LoadInst *> AllPNDLoads = PNDLoads;
+    AllPNDLoads.insert(LAIPNDLoads.begin(), LAIPNDLoads.end());
+    for (auto Load: AllPNDLoads){
+        changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
+    }
+
 }
 
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
@@ -144,7 +174,6 @@ SmallVector<std::pair<Loop *, Loop *>, 2> AliasHintsPass::findVersionedLoops(Loo
 
     return Result;
 }
-
 
 //For a pair of loops separated by a vectorising runtime check, are a given load and given store/call dominated by the same one? if not, they exist on opposite sides of the runtime check and shouldn't be compared
 bool AliasHintsPass::withinSameVersion(LoadInst *Load, Instruction *DepInst, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, LoopInfo &LI){

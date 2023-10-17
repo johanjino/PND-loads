@@ -119,7 +119,7 @@ public:
     bool Debug = false;
     PreservedAnalyses run(LoopNest &LN, LoopAnalysisManager &AM,
                           LoopStandardAnalysisResults &AR, LPMUpdater &U);
-    void markLoads(LoopNest &LN, DependenceInfo &DI, LoopInfo &LI, ScalarEvolution &SE, DominatorTree &DT, AAResults &AA);
+    void markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR);
     AliasHint isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA);
     AliasHint determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                             SmallVector<CallInst *> all_calls, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
