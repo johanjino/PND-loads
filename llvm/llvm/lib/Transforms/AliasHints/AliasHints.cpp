@@ -61,11 +61,10 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
         }
     }
 
-    errs() << "LAI PND loads: " << LAIPNDLoads.size() << "\n";
-
-    std::set<LoadInst *> AllPNDLoads = PNDLoads;
-    AllPNDLoads.insert(LAIPNDLoads.begin(), LAIPNDLoads.end());
-    for (auto Load: AllPNDLoads){
+    for (auto Load: PNDLoads){
+        changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
+    }
+    for (auto Load: LAIPNDLoads){
         changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
     }
 
