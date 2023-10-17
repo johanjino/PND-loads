@@ -111,8 +111,6 @@ public:
     enum DepType {
       // No dependence.
       NoDep,
-      // We couldn't determine the direction or the distance.
-      Unknown,
       // Lexically forward.
       //
       // FIXME: If we only have loop-independent forward dependences (e.g. a
@@ -132,7 +130,9 @@ public:
       // MaxSafeDepDistBytes.
       BackwardVectorizable,
       // Same, but may prevent store-to-load forwarding.
-      BackwardVectorizableButPreventsForwarding
+      BackwardVectorizableButPreventsForwarding,
+      // We couldn't determine the direction or the distance.
+      Unknown
     };
 
     /// String version of the types.

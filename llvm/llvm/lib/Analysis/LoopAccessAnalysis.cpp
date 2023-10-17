@@ -2016,25 +2016,19 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
 
             Instruction *Source = getMemoryInstructions()[A.second];
             Instruction *Destination = getMemoryInstructions()[B.second];
-            bool sourceIsLoad = false;
-            bool destIsLoad = false;
-            if (isa<LoadInst>(Source)){
-              sourceIsLoad = true;
-              QueryResults[Source] = Dependence::Backward;
-            }
-            if (isa<LoadInst>(Destination)){
-              destIsLoad = true;
-              QueryResults[Destination] = Dependence::Backward;
-            }
+            if (isa<LoadInst>(Source) && QueryResults.find(Source) != QueryResults.end())
+              QueryResults[Source] = Dependence::NoDep;
+            if (isa<LoadInst>(Destination) && QueryResults.find(Destination) != QueryResults.end())
+              QueryResults[Destination] = Dependence::NoDep;
 
             Dependence::DepType Type =
                 isDependent(*A.first, A.second, *B.first, B.second, Strides);
-            if (Type == Dependence::NoDep || Type == Dependence::Forward){
-              if (sourceIsLoad)
-                QueryResults[Source] = Type;
-              if (destIsLoad)
-                QueryResults[Destination] = Type;
-            }
+
+            if (isa<LoadInst>(Source) && QueryResults[Source] < Type)
+              QueryResults[Source] = Type;
+            if (isa<LoadInst>(Destination) && QueryResults[Destination] < Type)
+              QueryResults[Destination] = Type;
+
             mergeInStatus(Dependence::isSafeForVectorization(Type));
 
             // Gather dependences unless we accumulated MaxDependences
