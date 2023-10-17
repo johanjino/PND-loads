@@ -69,6 +69,8 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     return AliasHint::PredictNone;
 }
 
+/* loop access analysis - run loop_analysis and create a list of loads with nodep or forward dep in the class, then read from them and mark */
+
 AliasHint AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA){
     Instruction *Source = Dep->getSrc();
     if (Dep->isConfused()) return AliasHint::Unchanged;
