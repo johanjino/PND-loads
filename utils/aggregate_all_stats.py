@@ -18,6 +18,7 @@ for bench in benches:
     except FileNotFoundError:
         os.chdir(spec_dir+bench+"/run/only_pna/run_peak_refspeed_mytest-64.0001")
 
+    breakpoint()
     for f in os.listdir(os.getcwd()):
         if os.path.isdir(f) and f.split(".")[0] == name and f.split(".")[1].isdigit():
             os.chdir(f)

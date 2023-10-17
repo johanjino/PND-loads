@@ -14,6 +14,7 @@ def aggregate_values(field_names):
                     # Process each line in the file
                     lines = stats.readlines()
                     for line in lines:
+                        if len(line.strip().split()) == 0: continue
                         field_name = line.strip().split()[0]
                         if field_name in field_names and field_name in seen_fields:
                             value = float(line.strip().split()[1])
@@ -47,9 +48,10 @@ if __name__ == "__main__":
     # Aggregate the values for the specified field names
     aggregated_values = aggregate_values(field_names_to_aggregate)
 
-    aggregated_values["adjustedMemOrderViolationEvents"] = aggregated_values.get("memOrderViolationEvents") - aggregated_values.get("notExactPhysicalAddrViolation")
-    aggregated_values["nonPNDViolations"] = aggregated_values.get("adjustedMemOrderViolationEvents") - aggregated_values.get("bypassStoreSetViolationAddition")
-    aggregated_values["cpi"] = aggregated_values.get("numCycles") / aggregated_values.get("numInsts")
+    aggregated_values["Adjusted Mem Order Violation Events"] = aggregated_values.get("system.switch_cpus.iew.memOrderViolationEvents") - aggregated_values.get("system.switch_cpus.iew.notExactPhysicalAddrViolation")
+    aggregated_values["Non-PND Violations"] = aggregated_values.get("Adjusted Mem Order Violation Events") - aggregated_values.get("bypassStoreSetViolationAddition")
+    aggregated_values["CPI"] = aggregated_values.get("system.switch_cpus.numCycles") / aggregated_values.get("system.switch_cpus.numInsts")
+    aggregated_values["Lookup reduction"] = aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck") / (aggregated_values.get("system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck") + aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck"))
 
     # Write the results to the output file
     write_results(output_file, aggregated_values)
