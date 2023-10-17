@@ -49,7 +49,7 @@ if __name__ == "__main__":
     aggregated_values = aggregate_values(field_names_to_aggregate)
 
     aggregated_values["Adjusted Mem Order Violation Events"] = aggregated_values.get("system.switch_cpus.iew.memOrderViolationEvents") - aggregated_values.get("system.switch_cpus.iew.notExactPhysicalAddrViolation")
-    aggregated_values["Non-PND Violations"] = aggregated_values.get("Adjusted Mem Order Violation Events") - aggregated_values.get("bypassStoreSetViolationAddition")
+    aggregated_values["Non-PND Violations"] = aggregated_values.get("Adjusted Mem Order Violation Events") - aggregated_values.get("system.switch_cpus.iew.bypassStoreSetViolationAddition")
     aggregated_values["CPI"] = aggregated_values.get("system.switch_cpus.numCycles") / aggregated_values.get("system.switch_cpus.numInsts")
     aggregated_values["Lookup reduction"] = aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck") / (aggregated_values.get("system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck") + aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck"))
 
