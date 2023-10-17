@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <vector>
 
+std::set<LoadInst *> OurNoDepLoads = std::set<LoadInst*>();
+
 PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
                                       LoopStandardAnalysisResults &AR, LPMUpdater &U){
     Function &F = *LN.getParent();
@@ -37,8 +39,6 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopInfo &LI, S
         Hint = determineHint(Load, all_stores, all_calls, VersionPairs, DI, SE, AA, LI);
         if(Hint == AliasHint::PredictNone)
             changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
-        else if(Hint == AliasHint::Predict)
-            changeAddrSpace(Load, PREDICT_ALIAS_ADDRESS_SPACE);
     }
 }
 

@@ -65,6 +65,7 @@
 #include <iterator>
 #include <utility>
 #include <vector>
+#include <map>
 
 using namespace llvm;
 using namespace llvm::PatternMatch;
@@ -2013,8 +2014,27 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
             if (*I1 > *I2)
               std::swap(A, B);
 
+            Instruction *Source = getMemoryInstructions()[A.second];
+            Instruction *Destination = getMemoryInstructions()[B.second];
+            bool sourceIsLoad = false;
+            bool destIsLoad = false;
+            if (isa<LoadInst>(Source)){
+              sourceIsLoad = true;
+              QueryResults[Source] = Dependence::Backward;
+            }
+            if (isa<LoadInst>(Destination)){
+              destIsLoad = true;
+              QueryResults[Destination] = Dependence::Backward;
+            }
+
             Dependence::DepType Type =
                 isDependent(*A.first, A.second, *B.first, B.second, Strides);
+            if (Type == Dependence::NoDep || Type == Dependence::Forward){
+              if (sourceIsLoad)
+                QueryResults[Source] = Type;
+              if (destIsLoad)
+                QueryResults[Destination] = Type;
+            }
             mergeInStatus(Dependence::isSafeForVectorization(Type));
 
             // Gather dependences unless we accumulated MaxDependences
@@ -2022,15 +2042,24 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
             // unsafe dependence.  This puts a limit on this quadratic
             // algorithm.
             if (RecordDependences) {
-              if (Type != Dependence::NoDep)
-                Dependences.push_back(Dependence(A.second, B.second, Type));
-
-              if (Dependences.size() >= MaxDependences) {
-                RecordDependences = false;
-                Dependences.clear();
-                LLVM_DEBUG(dbgs()
-                           << "Too many dependences, stopped recording\n");
+              if (Type != Dependence::NoDep){
+                Dependence Dep = Dependence(A.second, B.second, Type);
+                Dependences.push_back(Dep);
+                if (Type == Dependence::ForwardButPreventsForwarding){
+                  errs() << "Found forward dep that prevents forwarding:\n";
+                  Dep.print(llvm::outs(), 0, getMemoryInstructions());
+                }
               }
+
+            
+
+              //NOTE: disabling the dependence limit for PND purposes
+              //   (Dependences.size() >= MaxDependences) {
+              //   RecordDependences = false;
+              //   Dependences.clear();
+              //   LLVM_DEBUG(dbgs()
+              //              << "Too many dependences, stopped recording\n");
+              // }
             }
             if (!RecordDependences && !isSafeForVectorization())
               return false;

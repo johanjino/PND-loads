@@ -20,6 +20,7 @@
 #include "llvm/IR/DiagnosticInfo.h"
 #include "llvm/Pass.h"
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
+#include <map>
 
 namespace llvm {
 
@@ -253,6 +254,8 @@ public:
       return I->second;
     return {};
   }
+
+  std::map<Instruction*, Dependence::DepType> QueryResults;
 
 private:
   /// A wrapper around ScalarEvolution, used to add runtime SCEV checks, and
