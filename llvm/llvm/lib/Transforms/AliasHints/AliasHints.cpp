@@ -56,6 +56,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
                     Type == MemoryDepChecker::Dependence::Forward){
                     LAIPNDLoads.insert(Load);
                 }
+            }
         }
     }
 
@@ -63,6 +64,8 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     if (!std::includes(PNDLoads.begin(), PNDLoads.begin(), LAIPNDLoads.begin(), LAIPNDLoads.end())){
         errs() << "Own pass catches no deps that LAI doesn't\n";
     }
+    unsigned additional_loads = std::abs((long)PNDLoads.size() - (long)LAIPNDLoads.size());
+    errs() << "This many addtional loads from LAI: " << additional_loads << "\n";
 
     std::set<LoadInst *> AllPNDLoads = PNDLoads;
     AllPNDLoads.insert(LAIPNDLoads.begin(), LAIPNDLoads.end());
