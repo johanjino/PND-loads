@@ -53,19 +53,13 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
                 LoadInst *Load = reinterpret_cast<LoadInst *>(Query.first);
                 MemoryDepChecker::Dependence::DepType Type = Query.second;
                 if (Type == MemoryDepChecker::Dependence::NoDep ||
-                    Type == MemoryDepChecker::Dependence::Forward){
+                    Type == MemoryDepChecker::Dependence::Forward ||
+                    Type == MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
                     LAIPNDLoads.insert(Load);
                 }
             }
         }
     }
-
-    errs() << "Test\n";
-    if (!std::includes(PNDLoads.begin(), PNDLoads.begin(), LAIPNDLoads.begin(), LAIPNDLoads.end())){
-        errs() << "Own pass catches no deps that LAI doesn't\n";
-    }
-    unsigned additional_loads = std::abs((long)PNDLoads.size() - (long)LAIPNDLoads.size());
-    errs() << "This many addtional loads from LAI: " << additional_loads << "\n";
 
     std::set<LoadInst *> AllPNDLoads = PNDLoads;
     AllPNDLoads.insert(LAIPNDLoads.begin(), LAIPNDLoads.end());

@@ -2036,18 +2036,10 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
             // unsafe dependence.  This puts a limit on this quadratic
             // algorithm.
             if (RecordDependences) {
-              if (Type != Dependence::NoDep){
-                Dependence Dep = Dependence(A.second, B.second, Type);
-                Dependences.push_back(Dep);
-                if (Type == Dependence::ForwardButPreventsForwarding){
-                  errs() << "Found forward dep that prevents forwarding:\n";
-                  Dep.print(llvm::outs(), 0, getMemoryInstructions());
-                }
-              }
+              if (Type != Dependence::NoDep)
+                Dependences.push_back(Dependence(A.second, B.second, Type));
 
-            
-
-              //NOTE: disabling the dependence limit for PND purposes
+              //   E: disabling the dependence limit for PND purposes
               //   (Dependences.size() >= MaxDependences) {
               //   RecordDependences = false;
               //   Dependences.clear();
