@@ -68,8 +68,16 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     //For inner loops we can use the stronger loop access analysis
     if (current_loop->isInnermost()){
         LoopAccessInfo *LAI = LAIInstances[current_loop];
+        if (!LAI){
+            errs() << "LAI not found \n";
+            exit(1);
+        }
         MemoryDepChecker MDC = LAI->getDepChecker();
         MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load];
+        if (!Type){
+            errs() << "Type not found \n";
+            exit(1);
+        }
         if (Type != MemoryDepChecker::Dependence::NoDep &&
             Type != MemoryDepChecker::Dependence::Forward &&
             Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
