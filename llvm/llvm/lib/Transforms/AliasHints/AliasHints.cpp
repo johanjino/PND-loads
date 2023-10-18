@@ -20,12 +20,22 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     SmallVector<StoreInst *> all_stores;
     SmallVector<CallInst *> all_calls;
 
+    std::map<Loop *, LoopAccessInfo *> LAIInstances;
+
     for (auto B: LN.getOutermostLoop().getBlocks()){
         for (Instruction *I = B->getFirstNonPHI(), *Term = B->getTerminator();
                 I != Term; I = I->getNextNonDebugInstruction()){
             if (isa<LoadInst>(I)) all_loads.push_back(reinterpret_cast<LoadInst *>(I));
             else if (isa<StoreInst>(I)) all_stores.push_back(reinterpret_cast<StoreInst *>(I));
             else if (isa<CallInst>(I)) all_calls.push_back(reinterpret_cast<CallInst *>(I));
+        }
+    }
+
+    for (auto Loop: LN.getLoops()){
+        //may be multiple innermost loops
+        if (Loop->isInnermost()){
+            LoopAccessInfo LAI = LoopAccessInfo(Loop, &(AR.SE), &(AR.TLI), &(AR.AA), &(AR.DT), &(AR.LI));
+            LAIInstances[Loop] = &LAI;
         }
     }
 
@@ -36,57 +46,45 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     AliasHint Hint;
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
-        Hint = determineHint(Load, all_stores, all_calls, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
+        Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
             PNDLoads.insert(Load);
     }
 
-    /* Then for each innermost loop use the vectorisation loop access analysis
-     * for catching more no dependency cases and forward dependencies */
-    std::set<LoadInst *> LAIPNDLoads;
-    for (auto Loop: LN.getLoops()){
-        //may be multiple innermost loops
-        if (Loop->isInnermost()){
-            LoopAccessInfo LAI = LoopAccessInfo(Loop, &(AR.SE), &(AR.TLI), &(AR.AA), &(AR.DT), &(AR.LI));
-            MemoryDepChecker MDC = LAI.getDepChecker();
-            for (auto Query: MDC.QueryResults){
-                LoadInst *Load = reinterpret_cast<LoadInst *>(Query.first);
-                MemoryDepChecker::Dependence::DepType Type = Query.second;
-                if (Type == MemoryDepChecker::Dependence::NoDep ||
-                    Type == MemoryDepChecker::Dependence::Forward ||
-                    Type == MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
-                    LAIPNDLoads.insert(Load);
-                }
-            }
-        }
-    }
-
     for (auto Load: PNDLoads){
-        changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
-    }
-    for (auto Load: LAIPNDLoads){
         changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
     }
 
 }
 
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
-                                        SmallVector<CallInst *> all_calls, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
+                                        SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
                                         AAResults &AA, LoopInfo &LI){
     std::string operand;
     llvm::raw_string_ostream operand_buffer(operand);
     std::unique_ptr<Dependence> Dep;
+    Loop *current_loop = LI.getLoopFor(Load->getParent());
     AliasHint Hint;
-    bool foundUnpredictableDep = false;
+    //For inner loops we can use the stronger loop access analysis
+    if (current_loop->isInnermost()){
+        LoopAccessInfo *LAI = LAIInstances[current_loop];
+        MemoryDepChecker MDC = LAI->getDepChecker();
+        MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load];
+        if (Type != MemoryDepChecker::Dependence::NoDep &&
+            Type != MemoryDepChecker::Dependence::Forward &&
+            Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
+            return AliasHint::Unchanged;
+        }
+    }
     for (auto Store: all_stores){
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
+        //For inner loops we can skip analysing stores also in the inner loop
+        if (current_loop->isInnermost() && LI.getLoopFor(Store->getParent()) == current_loop) continue;
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         Hint = isProblematicDep(Load, Dep.get(), LI, SE, AA);
-        if (Hint == AliasHint::Predict) return Hint;
-        if (Hint == AliasHint::Unchanged) foundUnpredictableDep = true;
+        if (Hint != AliasHint::PredictNone) return AliasHint::Unchanged;
     }
-    if (foundUnpredictableDep) return AliasHint::Unchanged;
     for (auto Call: all_calls){
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
         Dep = DI.depends(Call, Load, true);
@@ -96,8 +94,6 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     }
     return AliasHint::PredictNone;
 }
-
-/* loop access analysis - run loop_analysis and create a list of loads with nodep or forward dep in the class, then read from them and mark */
 
 AliasHint AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA){
     Instruction *Source = Dep->getSrc();

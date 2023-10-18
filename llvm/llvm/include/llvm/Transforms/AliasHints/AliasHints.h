@@ -122,7 +122,7 @@ public:
     void markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR);
     AliasHint isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA);
     AliasHint determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
-                            SmallVector<CallInst *> all_calls, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
+                            SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
                             AAResults &AA, LoopInfo &LI);
     void changeAddrSpace(LoadInst *Load, unsigned int Addrspace);
     SmallVector<std::pair<Loop *, Loop *>, 2> findVersionedLoops(LoopNest &LN, SmallVector<BasicBlock *, 1> GeneratedChecks, LoopInfo &LI, DominatorTree &DT);
