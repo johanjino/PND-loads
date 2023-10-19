@@ -45,9 +45,11 @@ def plot_diff(field):
 
     plt.show()
 
-benchmark_names = ["leela", "mcf", "perlbench.0", "perlbench.1", "perlbench.2", "x264.0", "x264.1", "x264.2", "xalancbmk"]
+benchmark_names = ["leela", "mcf", "perlbench.0", "perlbench.1", "perlbench.2", "x264.0", "x264.1", "x264.2", "xalancbmk", "nab", "xz.0", "xz.1", "deeps"]
 benches = {}
 for results_file in os.listdir("."):
+    if results_file == "cpi_differences": continue
+    if os.path.isdir(results_file): continue
     with open(results_file, "r") as stats:
         results = {}
         for line in stats:
@@ -68,12 +70,11 @@ for results_file in os.listdir("."):
         bench_name += "_base"
     else:
         bench_name += "_modified"
-    print(bench_name)
     benches[bench_name] = results
 
 
 fig, ax = plt.subplots()
-ax.bar(benchmark_names, [benches[name]["Lookup Reduction"] for name in benchmark_names])
+ax.bar(benchmark_names, [benches[name+"_modified"]["Lookup Reduction"] for name in benchmark_names])
 ax.set_xlabel('Benchmark')
 ax.set_ylabel('Percent Reduction')
 ax.set_title('Store Set Lookup Reduction')

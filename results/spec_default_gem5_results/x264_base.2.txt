@@ -1,0 +1,12 @@
+numCycles 2176032108.0
+numInsts 2798602493.0
+baseUsingStoreSetCheck 772623410.0
+BypassStoreSetCheck 0.0
+SSITCollisions 189917736.0
+SSITOverwrites 146904.0
+LFSTInvalidations 37662749.0
+memOrderViolationEvents 318096.0
+notExactPhysicalAddrViolation 212898.0
+Adjusted Mem Order Violation Events 105198.0
+CPI 0.7775424031968802
+Lookup reduction 0.0
