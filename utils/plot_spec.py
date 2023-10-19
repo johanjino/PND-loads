@@ -2,30 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-benchmark_names = ["leela", "mcf", "perlbench.0", "perlbench.1", "perlbench.2", "x264.0", "x264.1", "x264.2", "xalancbmk"]
-benches = {}
-for results_file in os.listdir("."):
-    with open(results_file, "r") as stats:
-        results = {}
-        for line in stats:
-            if "Adjusted Mem Order Violation Events" in line:
-                name = "Adjusted Mem Order Violation Events"
-                value = float(line.strip().split(" ")[-1])
-            elif "Lookup reduction" in line: continue
-            else:
-                name, value = line.strip().split(' ')
-                results[name] = float(value)
-    bench_name = results_file.split("_")[0]
-    if results_file.split(".")[1].isdigit():
-        bench_name += "."+results_file.split(".")[1]
-    if "base" in results_file.split("_")[1]:
-        bench_name += "_base"
-    else:
-        bench_name += "_modified"
-    print(bench_name)
-    benches[bench_name] = results
-
-for field in ["CPI"]:
+def plot_diff(field):
     values = []
     percent_diff = []
     names = []
@@ -67,3 +44,37 @@ for field in ["CPI"]:
             ax.text(i, values[i], f"{next(percent_diff):.1f}%", ha='center', va='bottom')
 
     plt.show()
+
+benchmark_names = ["leela", "mcf", "perlbench.0", "perlbench.1", "perlbench.2", "x264.0", "x264.1", "x264.2", "xalancbmk"]
+benches = {}
+for results_file in os.listdir("."):
+    with open(results_file, "r") as stats:
+        results = {}
+        for line in stats:
+            if "Adjusted Mem Order Violation Events" in line:
+                name = "Adjusted Mem Order Violation Events"
+                value = float(line.strip().split(" ")[-1])
+            elif "Lookup reduction" in line:
+                name = "Lookup Reduction"
+                value = float(line.strip().split(' ')[-1])*100
+                results[name] = value
+            else:
+                name, value = line.strip().split(' ')
+                results[name] = float(value)
+    bench_name = results_file.split("_")[0]
+    if results_file.split(".")[1].isdigit():
+        bench_name += "."+results_file.split(".")[1]
+    if "base" in results_file.split("_")[1]:
+        bench_name += "_base"
+    else:
+        bench_name += "_modified"
+    print(bench_name)
+    benches[bench_name] = results
+
+
+fig, ax = plt.subplots()
+ax.bar(benchmark_names, [benches[name]["Lookup Reduction"] for name in benchmark_names])
+ax.set_xlabel('Benchmark')
+ax.set_ylabel('Percent Reduction')
+ax.set_title('Store Set Lookup Reduction')
+plt.show()
