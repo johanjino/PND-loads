@@ -78,8 +78,10 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     }
     for (auto Store: all_stores){
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
-        //For inner loops we can skip analysing stores also in the inner loop
-        if (current_loop->isInnermost() && LI.getLoopFor(Store->getParent()) == current_loop) continue;
+        //For inner loops we can skip analysing simple stores also in the inner loop
+        if (current_loop->isInnermost()
+            && LI.getLoopFor(Store->getParent()) == current_loop
+            && Store->isSimple()) continue;
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         Hint = isProblematicDep(Load, Dep.get(), LI, SE, AA);
