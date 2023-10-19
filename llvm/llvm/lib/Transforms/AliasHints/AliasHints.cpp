@@ -55,6 +55,10 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
         changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
     }
 
+    for (auto LAI: LAIInstances){
+        delete LAI.second;
+    }
+
 }
 
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
@@ -65,21 +69,25 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     std::unique_ptr<Dependence> Dep;
     Loop *current_loop = LI.getLoopFor(Load->getParent());
     AliasHint Hint;
+    bool was_LAI_analysed = false;
     //For inner loops we can use the stronger loop access analysis
     if (current_loop->isInnermost()){
         LoopAccessInfo *LAI = LAIInstances[current_loop];
         MemoryDepChecker MDC = LAI->getDepChecker();
-        MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load];
-        if (Type != MemoryDepChecker::Dependence::NoDep &&
-            Type != MemoryDepChecker::Dependence::Forward &&
-            Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
-            return AliasHint::Unchanged;
+        if (MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
+            was_LAI_analysed = true;
+            MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load];
+            if (Type != MemoryDepChecker::Dependence::NoDep &&
+                Type != MemoryDepChecker::Dependence::Forward &&
+                Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
+                return AliasHint::Unchanged;
+            }
         }
     }
     for (auto Store: all_stores){
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
         //For inner loops we can skip analysing simple stores also in the inner loop
-        if (current_loop->isInnermost()
+        if (was_LAI_analysed && current_loop->isInnermost()
             && LI.getLoopFor(Store->getParent()) == current_loop
             && Store->isSimple()) continue;
         Dep = DI.depends(Store, Load, true);

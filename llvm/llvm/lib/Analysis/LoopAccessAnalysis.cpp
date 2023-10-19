@@ -2025,15 +2025,13 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
                 isDependent(*A.first, A.second, *B.first, B.second, Strides);
 
             if (isa<LoadInst>(Source) &&
-                (Type != Dependence::NoDep &&
-                 Type != Dependence::Forward &&
-                 Type != Dependence::ForwardButPreventsForwarding))
-              QueryResults[Source] = Type;
+                Type > QueryResults[Source]){
+                QueryResults[Source] = Type;
+            }
             if (isa<LoadInst>(Destination) &&
-                (Type != Dependence::NoDep &&
-                 Type != Dependence::Forward &&
-                 Type != Dependence::ForwardButPreventsForwarding))
-              QueryResults[Destination] = Type;
+                Type > QueryResults[Destination]){
+                QueryResults[Destination] = Type;
+            }
 
             mergeInStatus(Dependence::isSafeForVectorization(Type));
 
