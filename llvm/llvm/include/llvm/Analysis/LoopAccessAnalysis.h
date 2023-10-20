@@ -111,6 +111,10 @@ public:
     enum DepType {
       // No dependence.
       NoDep,
+      //NoDep based on safe dependence distance
+      SafeDistance,
+      //NoDep based on independent strides
+      IndependentStride,
       // Lexically forward.
       //
       // FIXME: If we only have loop-independent forward dependences (e.g. a

@@ -1840,7 +1840,7 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
         isSafeDependenceDistance(DL, *(PSE.getSE()),
                                  *(PSE.getBackedgeTakenCount()), *Dist, Stride,
                                  TypeByteSize))
-      return Dependence::NoDep;
+      return Dependence::SafeDistance;
 
     LLVM_DEBUG(dbgs() << "LAA: Dependence because of non-constant distance\n");
     FoundNonConstantDistanceDependence = true;
@@ -1854,7 +1854,7 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   if (std::abs(Distance) > 0 && Stride > 1 && HasSameSize &&
       areStridedAccessesIndependent(std::abs(Distance), Stride, TypeByteSize)) {
     LLVM_DEBUG(dbgs() << "LAA: Strided accesses are independent\n");
-    return Dependence::NoDep;
+    return Dependence::IndependentStride;
   }
 
   // Negative distances are not plausible dependencies.
@@ -2032,6 +2032,11 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
                 Type > QueryResults[Destination]){
                 QueryResults[Destination] = Type;
             }
+
+            if (Type == Dependence::SafeDistance ||
+                Type == Dependence::IndependentStride)
+              Type = Dependence::NoDep;
+
 
             mergeInStatus(Dependence::isSafeForVectorization(Type));
 

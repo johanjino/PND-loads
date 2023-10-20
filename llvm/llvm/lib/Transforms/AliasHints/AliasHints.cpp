@@ -77,19 +77,19 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         if (MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
             was_LAI_analysed = true;
             MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load];
-            if (Type != MemoryDepChecker::Dependence::NoDep &&
-                Type != MemoryDepChecker::Dependence::Forward &&
-                Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
+            if (Type != MemoryDepChecker::Dependence::NoDep){
+                // Type != MemoryDepChecker::Dependence::Forward &&
+                // Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
                 return AliasHint::Unchanged;
             }
         }
     }
     for (auto Store: all_stores){
-        if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
         //For inner loops we can skip analysing simple stores also in the inner loop
         if (was_LAI_analysed && current_loop->isInnermost()
             && LI.getLoopFor(Store->getParent()) == current_loop
             && Store->isSimple()) continue;
+        if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         Hint = isProblematicDep(Load, Dep.get(), LI, SE, AA);
