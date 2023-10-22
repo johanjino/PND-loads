@@ -46,6 +46,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     AliasHint Hint;
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
+        if (!Load->isSimple()) continue;
         Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
             PNDLoads.insert(Load);
@@ -61,6 +62,14 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
 
 }
 
+bool isNestInvariant(Value *Ptr, Loop *ParentLoop, LoopInfo &LI){
+    for (auto L: LI)
+        if (L->contains(ParentLoop) && L->isLoopInvariant(Ptr))
+            return true;
+    return false;
+}
+
+//FIXME: handle calls with modref and add TBAA
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                                         SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
                                         AAResults &AA, LoopInfo &LI){
@@ -77,9 +86,14 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         if (MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
             was_LAI_analysed = true;
             MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load];
-            if (Type != MemoryDepChecker::Dependence::NoDep){
-                // Type != MemoryDepChecker::Dependence::Forward &&
-                // Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
+            if (Type != MemoryDepChecker::Dependence::NoDep &&
+                Type != MemoryDepChecker::Dependence::Forward &&
+                Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
+                return AliasHint::Unchanged;
+            }
+            if ((Type == MemoryDepChecker::Dependence::Forward ||
+                Type == MemoryDepChecker::Dependence::ForwardButPreventsForwarding) &&
+                isNestInvariant(Load->getPointerOperand(), LI.getLoopFor(Load->getParent()), LI)){
                 return AliasHint::Unchanged;
             }
         }
@@ -95,6 +109,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         Hint = isProblematicDep(Load, Dep.get(), LI, SE, AA);
         if (Hint != AliasHint::PredictNone) return AliasHint::Unchanged;
     }
+    //FIXME: dep analysis doesn't handle calls!! need to use modref manually
     for (auto Call: all_calls){
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
         Dep = DI.depends(Call, Load, true);
