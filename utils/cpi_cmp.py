@@ -1,18 +1,25 @@
 import os
 
-def get_cpi_value(results):
+fields = {"CPI", "system.switch_cpus.lsq0.numStoresSearched",
+          "system.switch_cpus.StoreSet__0.SSITCollisions",
+          "system.switch_cpus.iew.memOrderViolationEvents",
+          "system.switch_cpus.StoreSet__0.LFSTInvalidations"}
+
+def get_values(results):
+    values = {}
     results = open(results, "r").readlines()
     for line in results:
         fields = line.split()
         name = ''.join(fields[:-1])
         value = fields[-1]
-        if name == "CPI":
-            return float(value)
+        if name in fields:
+            values[name] = float(value)
+    return values
 
-cpi_differences = open("cpi_differences", "w")
+differences = open("differences", "w")
 processed_benchmarks = set()
 for f in os.listdir(os.getcwd()):
-    if os.path.isdir(f) or not f.endswith(".txt") or f == "cpi_differences": continue
+    if os.path.isdir(f) or not f.endswith(".txt") or f == "differences" or f == "cpi_differences": continue
     benchmark = f.split('_')[0]
     number = ""
     if f.count('.') == 2: #has multiple workloads
@@ -23,10 +30,14 @@ for f in os.listdir(os.getcwd()):
 
     base_results = benchmark+"_base"+number+".txt"
     pna_results = benchmark+"_pna"+number+".txt"
-    base_cpi = get_cpi_value(base_results)
-    pna_cpi = get_cpi_value(pna_results)
-    difference = ((pna_cpi - base_cpi) / base_cpi) * 100
+    base = get_values(base_results)
+    pna = get_values(pna_results)
 
-    cpi_differences.write(benchmark+number+": "+str(difference)+"\n")
+    differences.write(benchmark+number+":\n")
+    for field in base:
+        base_value = base[field]
+        pna_value = pna[field]
+        difference = ((pna_value - base_value) / base_value) * 100
+        differences.write("\t"+field+": "+str(difference)+"\n")
 
-cpi_differences.close()
+differences.close()

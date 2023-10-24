@@ -36,6 +36,7 @@ if __name__ == "__main__":
                                 "system.switch_cpus.StoreSet__0.SSITOverwrites",
                                 "system.switch_cpus.StoreSet__0.SSITCollisions",
                                 "system.switch_cpus.StoreSet__0.LFSTInvalidations",
+                                "system.switch_cpus.lsq0.numStoresSearched",
                                 "system.switch_cpus.iew.memOrderViolationEvents",
                                 "system.switch_cpus.iew.notExactPhysicalAddrViolation",
                                 "system.switch_cpus.iew.bypassStoreSetViolationAddition",
