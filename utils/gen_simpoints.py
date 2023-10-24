@@ -17,7 +17,7 @@ spec = ["600.perlbench_s", "602.gcc_s", "605.mcf_s",
 spec_path = "/home/l50031074/spec2017/"
 valgrind = "/home/l50031074/valgrind-new/bin/valgrind"
 simpoint = "/home/l50031074/SimPoint/bin/simpoint"
-gem5 = "/home/l50031074/gem5-aliasing/gem5/"
+gem5 = "/home/l50031074/PND-Loads/gem5/"
 
 if clean:
     runcpu = subprocess.run([spec_path+"bin/runcpu", "--action", "clobber", "--config",

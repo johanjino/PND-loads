@@ -6,11 +6,11 @@ from subprocess import Popen
 #run from base spec dir
 base_dir = os.getcwd()
 spec_path = "/home/l50031074/spec2017/"
-gem5 = "/home/l50031074/gem5-aliasing/gem5/"
+gem5 = "/home/l50031074/PND-Loads/gem5/"
 benchmark = base_dir.split("/")[6]
 specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
-scaled_up = False
+scaled_up = True
 
 # iterate over all items in the current directory
 for out_dir in os.listdir(base_dir):
