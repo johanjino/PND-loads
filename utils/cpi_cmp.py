@@ -1,9 +1,9 @@
 import os
 
-fields = {"CPI", "system.switch_cpus.lsq0.numStoresSearched",
-          "system.switch_cpus.StoreSet__0.SSITCollisions",
-          "system.switch_cpus.iew.memOrderViolationEvents",
-          "system.switch_cpus.StoreSet__0.LFSTInvalidations"}
+stats = {"CPI", "numStoresSearched",
+          "SSITCollisions",
+          "memOrderViolationEvents",
+          "LFSTInvalidations"}
 
 def get_values(results):
     values = {}
@@ -12,7 +12,7 @@ def get_values(results):
         fields = line.split()
         name = ''.join(fields[:-1])
         value = fields[-1]
-        if name in fields:
+        if name in stats:
             values[name] = float(value)
     return values
 

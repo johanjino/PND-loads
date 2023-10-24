@@ -1,3 +1,4 @@
+#include "llvm/Analysis/ValueTracking.h"
 #include "llvm/Transforms/AliasHints/AliasHints.h"
 #include "llvm/Analysis/AliasAnalysis.h"
 #include "llvm/Analysis/LoopInfo.h"
@@ -62,11 +63,37 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
 
 }
 
-bool isNestInvariant(Value *Ptr, Loop *ParentLoop, LoopInfo &LI){
-    for (auto L: LI)
-        if (L->contains(ParentLoop) && L->isLoopInvariant(Ptr))
-            return true;
-    return false;
+bool isVariantAtAllLevels(Value *Ptr, Loop *ParentLoop, LoopInfo &LI, ScalarEvolution &SE){
+    Loop *L = ParentLoop;
+    Value *NextValue = Ptr;
+    Value *PreviousValue = nullptr;
+    while ((L = L->getParentLoop())) {
+        bool nest_level_is_variant = false;
+        for (; !nest_level_is_variant ; NextValue = getUnderlyingObject(NextValue, 1)){
+            //getUnderlyingObject is giving up on something that isn't a load so we're giving up too
+            if (NextValue == PreviousValue) return false;
+            PreviousValue = NextValue;
+
+            //we haven't worked through the whole nest yet but the underlying
+            //value is already a function argument or global variable, must be invariant
+            if (!isa<Instruction>(NextValue)) return false;
+
+            Instruction *NextInstruction = reinterpret_cast<Instruction *>(NextValue);
+
+            //found instruction on the ptr at this specific loop, check if its invariant
+            //if it is, keep stripping back instructions
+            if (L->contains(NextInstruction) && L == LI.getLoopFor(NextInstruction->getParent())){
+                const SCEV *Scev = SE.getSCEV(NextInstruction);
+                if (!SE.isLoopInvariant(Scev, L)) nest_level_is_variant = true;
+            }
+            //found instruction outside this level before we found any instructions within it,
+            //pointer is invariant w.r.t this level
+            else if (!L->contains(NextInstruction)) return false;
+
+            if (auto *Load = dyn_cast<LoadInst>(NextValue)) NextValue = Load->getPointerOperand();
+        }
+    }
+    return true;
 }
 
 //FIXME: handle calls with modref and add TBAA
@@ -93,7 +120,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
             }
             if ((Type == MemoryDepChecker::Dependence::Forward ||
                 Type == MemoryDepChecker::Dependence::ForwardButPreventsForwarding) &&
-                isNestInvariant(Load->getPointerOperand(), LI.getLoopFor(Load->getParent()), LI)){
+                !isVariantAtAllLevels(Load->getPointerOperand(), LI.getLoopFor(Load->getParent()), LI, SE)){
                 return AliasHint::Unchanged;
             }
         }
