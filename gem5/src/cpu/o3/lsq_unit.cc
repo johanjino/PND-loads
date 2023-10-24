@@ -280,7 +280,8 @@ LSQUnit::LSQUnitStats::LSQUnitStats(statistics::Group *parent)
       ADD_STAT(loadToUse, "Distribution of cycle latency between the "
                 "first time a load is issued and its completion"),
       ADD_STAT(numStoresSearched, statistics::units::Count::get(), "Number of store entries searched by a "
-               "load looking for a forward in the SQ")
+               "load looking for a forward in the SQ"),
+      ADD_STAT(mistakenReschedules, statistics::units::Count::get(), "Number of mistaken reschedules during forwarding")
 {
     loadToUse
         .init(0, 299, 10)
@@ -1580,6 +1581,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                 return NoFault;
             } else if (
                     coverage == AddrRangeCoverage::PartialAddrRangeCoverage) {
+                HadPartialCoverage.insert(&load_inst);
                 // If it's already been written back, then don't worry about
                 // stalling on it.
                 if (store_it->completed()) {
@@ -1619,6 +1621,8 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
     }
 
     cache:
+
+    if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end()) ++stats.mistakenReschedules;
 
     // If there's no forwarding case, then go access memory
     DPRINTF(LSQUnit, "Doing memory access for inst [sn:%lli] PC %s\n",
