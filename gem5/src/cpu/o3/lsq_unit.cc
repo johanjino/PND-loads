@@ -1581,13 +1581,17 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                 return NoFault;
             } else if (
                     coverage == AddrRangeCoverage::PartialAddrRangeCoverage) {
-                HadPartialCoverage.insert(&load_inst);
                 // If it's already been written back, then don't worry about
                 // stalling on it.
                 if (store_it->completed()) {
                     panic("Should not check one of these");
                     continue;
                 }
+
+                if (HadPartialCoverage.find(&load_inst) == HadPartialCoverage.end())
+                    HadPartialCoverage[&load_inst] = std::list<InstSeqNum>();
+                HadPartialCoverage[&load_inst].insert(load_inst->seqNum);
+
                 // Here is where stalling of the load happens...
                 // Must stall load and force it to retry, so long as it's the
                 // oldest load that needs to do so.
@@ -1622,7 +1626,12 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 
     cache:
 
-    if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end()) ++stats.mistakenReschedules;
+    if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end() &&
+    HadPartialCoverage[&load_inst].find(load_inst->seqNum) != HadPartialCoverage[&load_inst].end()){
+        auto seqNum = HadPartialCoverage[&load_inst].find(load_inst->seqNum);
+        HadPartialCoverage.erase(seqNum);
+        ++stats.mistakenReschedules;
+    }
 
     // If there's no forwarding case, then go access memory
     DPRINTF(LSQUnit, "Doing memory access for inst [sn:%lli] PC %s\n",

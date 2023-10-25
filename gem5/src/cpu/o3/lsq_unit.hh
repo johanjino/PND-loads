@@ -506,7 +506,7 @@ class LSQUnit
     /** Flag for memory model. */
     bool needsTSO;
 
-    std::set<const DynInstPtr *> HadPartialCoverage;
+    std::map<const DynInstPtr *, std::list<InstSeqNum>> HadPartialCoverage;
 
   protected:
     // Will also need how many read/write ports the Dcache has.  Or keep track
