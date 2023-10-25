@@ -1626,10 +1626,12 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 
     cache:
 
-    if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end() &&
-        (auto seqNum = std::find(HadPartialCoverage[&load_inst].begin(), HadPartialCoverage[&load_inst].end(), load_inst->seqNum)) != HadPartialCoverage[&load_inst].end()){
-        HadPartialCoverage.erase(seqNum);
-        ++stats.mistakenReschedules;
+    if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end()){
+        auto seqNum = std::find(HadPartialCoverage[&load_inst].begin(), HadPartialCoverage[&load_inst].end(), load_inst->seqNum);
+        if (seqNum != HadPartialCoverage[&load_inst].end()){
+            HadPartialCoverage.erase(seqNum);
+            ++stats.mistakenReschedules;
+        }
     }
 
     // If there's no forwarding case, then go access memory
