@@ -475,6 +475,8 @@ class IEW
         statistics::Scalar predictedTakenIncorrect;
         /** Stat for total number of incorrect predicted not taken branches. */
         statistics::Scalar predictedNotTakenIncorrect;
+        /** Number of cycles the store queue is accessed. */
+        statistics::Scalar cyclesStoreQueueAccessed;
         /** Stat for total number of mispredicted branches detected at
          *  execute. */
         statistics::Formula branchMispredicts;

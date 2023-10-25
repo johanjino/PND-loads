@@ -2,6 +2,8 @@ import os
 import collections
 
 def aggregate_values(field_names):
+    field_names_to_average = {"system.switch_cpus.lsq0.loadToUse::mean": [],
+                              "system.switch_cpus.lsq0.loadToUse::stddev": []}
     aggregated_values = collections.defaultdict(float)
 
     # Iterate through each .out directory
@@ -18,8 +20,15 @@ def aggregate_values(field_names):
                         field_name = line.strip().split()[0]
                         if field_name in field_names and field_name in seen_fields:
                             value = float(line.strip().split()[1])
-                            aggregated_values[field_name] += value
+                            if field_name in field_names_to_average:
+                                field_names_to_average[field_name].append(value)
+                            else:
+                                aggregated_values[field_name] += value
                         seen_fields.add(field_name)
+
+    for field_name in field_names_to_average:
+        values = field_names_to_average[field_name]
+        aggregated_values[field_name] = sum(values) / len(values)
 
     return aggregated_values
 
@@ -29,31 +38,33 @@ def write_results(results_file, aggregated_values):
             name = field_name.split(".")[-1]
             file.write(f"{name} {value}\n")
 
-if __name__ == "__main__":
-    # List of field names to aggregate
-    field_names_to_aggregate = ["system.switch_cpus.StoreSet__0.BypassStoreSetCheck",
-                                "system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck",
-                                "system.switch_cpus.StoreSet__0.SSITOverwrites",
-                                "system.switch_cpus.StoreSet__0.SSITCollisions",
-                                "system.switch_cpus.StoreSet__0.LFSTInvalidations",
-                                "system.switch_cpus.lsq0.numStoresSearched",
-                                "system.switch_cpus.lsq0.rescheduledLoads",
-                                "system.switch_cpus.iew.memOrderViolationEvents",
-                                "system.switch_cpus.iew.notExactPhysicalAddrViolation",
-                                "system.switch_cpus.iew.bypassStoreSetViolationAddition",
-                                "system.switch_cpus.numInsts",
-                                "system.switch_cpus.numCycles"]
+field_names_to_aggregate = ["system.switch_cpus.StoreSet__0.BypassStoreSetCheck",
+                            "system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck",
+                            "system.switch_cpus.StoreSet__0.SSITOverwrites",
+                            "system.switch_cpus.StoreSet__0.SSITCollisions",
+                            "system.switch_cpus.StoreSet__0.LFSTInvalidations",
+                            "system.switch_cpus.lsq0.numStoresSearched",
+                            "system.switch_cpus.lsq0.mistakenReschedules",
+                            "system.switch_cpus.lsq0.loadToUse::mean",
+                            "system.switch_cpus.lsq0.loadToUse::stddev",
+                            "system.switch_cpus.iew.cyclesStoreQueueAccessed",
+                            "system.switch_cpus.iew.memOrderViolationEvents",
+                            "system.switch_cpus.iew.notExactPhysicalAddrViolation",
+                            "system.switch_cpus.iew.bypassStoreSetViolationAddition",
+                            "system.switch_cpus.numInsts",
+                            "system.switch_cpus.numCycles"]
 
-    # Output file to store the aggregated results
-    output_file = "results.txt"
 
-    # Aggregate the values for the specified field names
-    aggregated_values = aggregate_values(field_names_to_aggregate)
+# Output file to store the aggregated results
+output_file = "results.txt"
 
-    aggregated_values["Adjusted Mem Order Violation Events"] = aggregated_values.get("system.switch_cpus.iew.memOrderViolationEvents") - aggregated_values.get("system.switch_cpus.iew.notExactPhysicalAddrViolation")
-    aggregated_values["Non-PND Violations"] = aggregated_values.get("Adjusted Mem Order Violation Events") - aggregated_values.get("system.switch_cpus.iew.bypassStoreSetViolationAddition")
-    aggregated_values["CPI"] = aggregated_values.get("system.switch_cpus.numCycles") / aggregated_values.get("system.switch_cpus.numInsts")
-    aggregated_values["Lookup reduction"] = aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck") / (aggregated_values.get("system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck") + aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck"))
+# Aggregate the values for the specified field names
+aggregated_values = aggregate_values(field_names_to_aggregate)
 
-    # Write the results to the output file
-    write_results(output_file, aggregated_values)
+aggregated_values["Adjusted Mem Order Violation Events"] = aggregated_values.get("system.switch_cpus.iew.memOrderViolationEvents") - aggregated_values.get("system.switch_cpus.iew.notExactPhysicalAddrViolation")
+aggregated_values["Non-PND Violations"] = aggregated_values.get("Adjusted Mem Order Violation Events") - aggregated_values.get("system.switch_cpus.iew.bypassStoreSetViolationAddition")
+aggregated_values["CPI"] = aggregated_values.get("system.switch_cpus.numCycles") / aggregated_values.get("system.switch_cpus.numInsts")
+aggregated_values["Lookup reduction"] = aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck") / (aggregated_values.get("system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck") + aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck"))
+
+# Write the results to the output file
+write_results(output_file, aggregated_values)

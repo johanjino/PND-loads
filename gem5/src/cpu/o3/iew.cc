@@ -201,6 +201,8 @@ IEW::IEWStats::IEWStats(CPU *cpu)
              "Number of instructions producing a value"),
     ADD_STAT(consumerInst, statistics::units::Count::get(),
              "Number of instructions consuming a value"),
+    ADD_STAT(cyclesStoreQueueAccessed, statistics::units::Count::get(),
+             "Number of cycles the store queue is accessed"),
     ADD_STAT(wbRate, statistics::units::Rate<
                 statistics::units::Count, statistics::units::Cycle>::get(),
              "Insts written-back per cycle"),
@@ -1199,6 +1201,7 @@ IEW::executeInsts()
     // Execute/writeback any instructions that are available.
     int insts_to_execute = fromIssue->size;
     int inst_num = 0;
+    bool store_queue_accessed_this_cycle = false;
     for (; inst_num < insts_to_execute;
           ++inst_num) {
 
@@ -1257,6 +1260,9 @@ IEW::executeInsts()
                     continue;
                 }
             } else if (inst->isLoad()) {
+
+                if (!inst->isSpecbCheck()) store_queue_accessed_this_cycle = true;
+
                 // Loads will mark themselves as executed, and their writeback
                 // event adds the instruction to the queue to commit
                 fault = ldstQueue.executeLoad(inst);
@@ -1277,6 +1283,7 @@ IEW::executeInsts()
 
 
             } else if (inst->isStore()) {
+                store_queue_accessed_this_cycle = true;
                 fault = ldstQueue.executeStore(inst);
 
                 if (inst->isTranslationDelayed() &&
@@ -1324,6 +1331,9 @@ IEW::executeInsts()
             instToCommit(inst);
 
         }
+
+        if (store_queue_accessed_this_cycle)
+            iewStats.cyclesStoreQueueAccessed++;
 
         updateExeInstStats(inst);
 
