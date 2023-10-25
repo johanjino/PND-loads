@@ -1590,7 +1590,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 
                 if (HadPartialCoverage.find(&load_inst) == HadPartialCoverage.end())
                     HadPartialCoverage[&load_inst] = std::list<InstSeqNum>();
-                HadPartialCoverage[&load_inst].insert(load_inst->seqNum, 0);
+                HadPartialCoverage[&load_inst].insert(HadPartialCoverage[&load_inst].begin(), load_inst->seqNum);
 
                 // Here is where stalling of the load happens...
                 // Must stall load and force it to retry, so long as it's the
