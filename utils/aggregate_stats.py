@@ -6,25 +6,41 @@ def aggregate_values(field_names):
                               "system.switch_cpus.lsq0.loadToUse::stddev": []}
     aggregated_values = collections.defaultdict(float)
 
+    broken_chkpts = []
+
     # Iterate through each .out directory
+    print("Benchmark: ", os.getcwd().split("/")[-1])
     for dirname in os.listdir("."):
-        if os.path.isdir(dirname):
+        if os.path.isdir(dirname) and dirname[0].isdigit() and dirname.split('.')[1] == 'out':
             stats_file = os.path.join(dirname, "stats.txt")
-            if os.path.isfile(stats_file):
-                seen_fields = set()
-                with open(stats_file, "r") as stats:
-                    # Process each line in the file
-                    lines = stats.readlines()
-                    for line in lines:
-                        if len(line.strip().split()) == 0: continue
-                        field_name = line.strip().split()[0]
-                        if field_name in field_names and field_name in seen_fields:
-                            value = float(line.strip().split()[1])
-                            if field_name in field_names_to_average:
-                                field_names_to_average[field_name].append(value)
-                            else:
-                                aggregated_values[field_name] += value
-                        seen_fields.add(field_name)
+            chkpt_number = int(dirname[0])
+            for cpt in os.listdir("."):
+                if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == chkpt_number:
+                    weight = float(cpt.split('_')[5])
+            seen_fields = collections.defaultdict(int)
+            with open(stats_file, "r") as stats:
+                # Process each line in the file
+                lines = stats.readlines()
+                if len(lines) == 0:
+                    print("Checkpoint " + str(chkpt_number) + " has empty stats file")
+                    broken_chkpts.append(chkpt_number)
+                for line in lines:
+                    if len(line.strip().split()) == 0: continue
+                    field_name = line.strip().split()[0]
+                    if field_name in field_names and seen_fields[field_name] != 0:
+                        value = float(line.strip().split()[1]) * weight
+                        if field_name in field_names_to_average:
+                            field_names_to_average[field_name].append(value)
+                        else:
+                            aggregated_values[field_name] += value
+                    seen_fields[field_name] += 1
+                for field in seen_fields:
+                    if seen_fields[field] != 2:
+                        print("Checkpoint " + str(chkpt_number) + " has seen fields with a value other than 2")
+                        broken_chkpts.append(chkpt_number)
+
+    if len(broken_chkpts) > 0:
+        exit(1)
 
     for field_name in field_names_to_average:
         values = field_names_to_average[field_name]
