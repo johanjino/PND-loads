@@ -3,19 +3,21 @@ import collections
 
 def aggregate_values(field_names):
     field_names_to_average = {"system.switch_cpus.lsq0.loadToUse::mean": [],
-                              "system.switch_cpus.lsq0.loadToUse::stddev": []}
+                              "system.switch_cpus.lsq0.loadToUse::stdev": []}
     aggregated_values = collections.defaultdict(float)
 
     broken_chkpts = []
 
     # Iterate through each .out directory
-    print("Benchmark: ", os.getcwd().split("/")[-1])
+    pna = ''
+    if "only_pna" in os.getcwd(): pna = ' PNA'
+    print("Benchmark: ", os.getcwd().split("/")[-1]+pna)
     for dirname in os.listdir("."):
         if os.path.isdir(dirname) and dirname[0].isdigit() and dirname.split('.')[1] == 'out':
             stats_file = os.path.join(dirname, "stats.txt")
-            chkpt_number = int(dirname[0])
+            chkpt_number = int(dirname.split('.')[0])
             for cpt in os.listdir("."):
-                if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == chkpt_number:
+                if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == (chkpt_number-1):
                     weight = float(cpt.split('_')[5])
             seen_fields = collections.defaultdict(int)
             with open(stats_file, "r") as stats:
@@ -33,14 +35,20 @@ def aggregate_values(field_names):
                             field_names_to_average[field_name].append(value)
                         else:
                             aggregated_values[field_name] += value
-                    seen_fields[field_name] += 1
+                    if field_name in field_names:
+                        seen_fields[field_name] += 1
                 for field in seen_fields:
                     if seen_fields[field] != 2:
                         print("Checkpoint " + str(chkpt_number) + " has seen fields with a value other than 2")
                         broken_chkpts.append(chkpt_number)
+                        break
 
     if len(broken_chkpts) > 0:
-        exit(1)
+        f = open("broken", "w")
+        f.write(os.getcwd().split("/")[-1]+'\n')
+        for i in broken_chkpts:
+            f.write(str(i)+"\n")
+        f.close()
 
     for field_name in field_names_to_average:
         values = field_names_to_average[field_name]
@@ -62,7 +70,7 @@ field_names_to_aggregate = ["system.switch_cpus.StoreSet__0.BypassStoreSetCheck"
                             "system.switch_cpus.lsq0.numStoresSearched",
                             "system.switch_cpus.lsq0.mistakenReschedules",
                             "system.switch_cpus.lsq0.loadToUse::mean",
-                            "system.switch_cpus.lsq0.loadToUse::stddev",
+                            "system.switch_cpus.lsq0.loadToUse::stdev",
                             "system.switch_cpus.iew.cyclesStoreQueueAccessed",
                             "system.switch_cpus.iew.memOrderViolationEvents",
                             "system.switch_cpus.iew.notExactPhysicalAddrViolation",
