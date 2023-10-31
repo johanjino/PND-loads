@@ -9,13 +9,18 @@ def aggregate_values(field_names):
     broken_chkpts = []
 
     # Iterate through each .out directory
-    pna = ''
-    if "only_pna" in os.getcwd(): pna = ' PNA'
+    if "only_pna" in os.getcwd():
+        pna = ' PNA'
+        broken_file = open("broken", "w")
+    else:
+        pna = 'base'
+        broken_chkpts = [i.strip().split(",")[0] for i in open("broken").readlines()[1:-1]]
     print("Benchmark: ", os.getcwd().split("/")[-1]+pna)
     for dirname in os.listdir("."):
         if os.path.isdir(dirname) and dirname[0].isdigit() and dirname.split('.')[1] == 'out':
             stats_file = os.path.join(dirname, "stats.txt")
             chkpt_number = int(dirname.split('.')[0])
+            if chkpt_number in broken_chkpts: continue
             for cpt in os.listdir("."):
                 if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == (chkpt_number-1):
                     weight = float(cpt.split('_')[5])
@@ -25,7 +30,7 @@ def aggregate_values(field_names):
                 lines = stats.readlines()
                 if len(lines) == 0:
                     print("Checkpoint " + str(chkpt_number) + " has empty stats file")
-                    broken_chkpts.append(chkpt_number)
+                    broken_chkpts.append((chkpt_number, weight))
                 for line in lines:
                     if len(line.strip().split()) == 0: continue
                     field_name = line.strip().split()[0]
@@ -44,11 +49,13 @@ def aggregate_values(field_names):
                         break
 
     if len(broken_chkpts) > 0:
-        f = open("broken", "w")
-        f.write(os.getcwd().split("/")[-1]+'\n')
-        for i in broken_chkpts:
-            f.write(str(i)+"\n")
-        f.close()
+        broken_file.write(os.getcwd().split("/")[-1]+'\n')
+        total_weight = 0
+        for n, w in broken_chkpts:
+            broken_file.write(str(n)+","+str(w)+"\n")
+            total_weight += w
+        broken_file.write("Total missing weight: "+str(total_weight)+"\n")
+        broken_file.close()
 
     for field_name in field_names_to_average:
         values = field_names_to_average[field_name]
