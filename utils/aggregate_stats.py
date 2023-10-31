@@ -14,7 +14,10 @@ def aggregate_values(field_names):
         broken_file = open("broken", "w")
     else:
         pna = 'base'
-        broken_chkpts = [i.strip().split(",")[0] for i in open("broken").readlines()[1:-1]]
+        if os.path.exists("./broken"):
+            broken_chkpts = [i.strip().split(",")[0] for i in open("broken").readlines()[1:-1]]
+        else:
+            broken_chkpts = []
     print("Benchmark: ", os.getcwd().split("/")[-1]+pna)
     for dirname in os.listdir("."):
         if os.path.isdir(dirname) and dirname[0].isdigit() and dirname.split('.')[1] == 'out':
@@ -45,7 +48,7 @@ def aggregate_values(field_names):
                 for field in seen_fields:
                     if seen_fields[field] != 2:
                         print("Checkpoint " + str(chkpt_number) + " has seen fields with a value other than 2")
-                        broken_chkpts.append(chkpt_number)
+                        broken_chkpts.append((chkpt_number, weight))
                         break
 
     if len(broken_chkpts) > 0:
@@ -54,7 +57,7 @@ def aggregate_values(field_names):
         for n, w in broken_chkpts:
             broken_file.write(str(n)+","+str(w)+"\n")
             total_weight += w
-        broken_file.write("Total missing weight: "+str(total_weight)+"\n")
+        broken_file.write("Total missing weight: "+str(total_weight*100)+"%\n")
         broken_file.close()
 
     for field_name in field_names_to_average:
