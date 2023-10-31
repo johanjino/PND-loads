@@ -32,7 +32,7 @@ for out_dir in os.listdir(base_dir):
                 if scaled_up:
                     run += " --l1d_size=128KiB --l1i_size=128KiB --l2_size=4MB"
                 p = Popen(run, shell=True)
-                while waited < 60*20 and finished == False:
+                while waited < 60*10 and finished == False:
                     time.sleep(60)
                     waited += 60
                     if Popen.poll(p) != None:
