@@ -1434,7 +1434,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
     while (store_it != storeWBIt && !load_inst->isDataPrefetch()) {
         // Move the index to one younger
         store_it--;
-        ++stats.numStoresSearched;
+        if (!load_inst->isSpecbCheck()) ++stats.numStoresSearched;
         assert(store_it->valid());
         assert(store_it->instruction()->seqNum < load_inst->seqNum);
         int store_size = store_it->size();
@@ -1625,6 +1625,8 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
     }
 
     cache:
+
+    if (load_inst->isSpecbCheck()) request->mainReq()->inst = reinterpret_cast<void *>(load_inst.data);
 
     if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end()){
         auto seqNum = std::find(HadPartialCoverage[&load_inst].begin(), HadPartialCoverage[&load_inst].end(), load_inst->seqNum);

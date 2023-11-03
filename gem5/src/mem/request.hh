@@ -101,6 +101,8 @@ class Request
     typedef uint8_t ArchFlagsType;
     typedef gem5::Flags<FlagsType> Flags;
 
+    void *inst = nullptr;
+
     enum : FlagsType
     {
         /**

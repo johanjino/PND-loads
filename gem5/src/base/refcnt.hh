@@ -127,6 +127,7 @@ class RefCountingPtr
 {
   public:
     using PtrType = T*;
+    T *data;
 
   protected:
     /** Convenience aliases for const/non-const versions of T w/ friendship. */
@@ -143,7 +144,6 @@ class RefCountingPtr
     /** @} */
     /// The stored pointer.
     /// Arguably this should be private.
-    T *data;
 
     /**
      * Copy a new pointer value and increment the reference count if

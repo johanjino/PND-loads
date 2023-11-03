@@ -66,6 +66,7 @@ INITIALIZE_PASS(AArch64LoadAliasMetadataInsertion, "aarch64-load-alias-metadata"
                 AARCH64_LOAD_ALIAS_METADATA_NAME, false, false)
 
 bool hasHint(MachineInstr &MI, unsigned AddrSpace){
+  return false;
   for (auto MemOp: MI.memoperands()){
     const Value *ir_pointer = MemOp->getValue();
     if (ir_pointer == NULL)

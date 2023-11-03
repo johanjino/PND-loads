@@ -51,7 +51,7 @@ def aggregate_values(field_names):
                         broken_chkpts.append((chkpt_number, weight))
                         break
 
-    if len(broken_chkpts) > 0:
+    if len(broken_chkpts) > 0 and pna = ' PNA':
         broken_file.write(os.getcwd().split("/")[-1]+'\n')
         total_weight = 0
         for n, w in broken_chkpts:
