@@ -36,8 +36,11 @@ def aggregate_values(field_names):
                     broken_chkpts.append((chkpt_number, weight))
                 for line in lines:
                     if len(line.strip().split()) == 0: continue
-                    if '----' in line: begin_marker += 1
+                    if '----' in line:
+                        begin_marker += 1
+                        if begin_marker == 3: continue #skip this line
                     if begin_marker != 3: continue
+                    if 'bad format' in line: continue
                     field_name = line.strip().split()[0]
                     value = float(line.strip().split()[1]) * weight
                     if field_name in field_names_to_average:
