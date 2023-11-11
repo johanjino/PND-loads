@@ -66,10 +66,15 @@ def aggregate_values(field_names):
     return aggregated_values
 
 def write_results(results_file, aggregated_values):
+    seen_fields = set()
     with open(results_file, "w") as file:
         for field_name, value in aggregated_values.items():
             name = field_name.split(".")[-1]
-            file.write(f"{name} {value}\n")
+            if name not in seen_fields:
+                file.write(f"{name} {value}\n")
+                seen_fields.add(name)
+            elif value != 0:
+                print("Field "+(field_name)+" has duplicate but doesn't have a value of 0")
 
 field_names_to_aggregate = ["system.switch_cpus.StoreSet__0.BypassStoreSetCheck",
                             "system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck",

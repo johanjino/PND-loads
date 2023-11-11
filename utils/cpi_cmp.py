@@ -3,8 +3,8 @@ import os
 stats = {"CPI", "numStoresSearched",
           "SSITCollisions",
           "memOrderViolationEvents",
-          "LFSTInvalidations", "mistakenReschedules", "cyclesStoreQueueAccessed",
-         "loadToUse::mean", "loadToUse::stddev"}
+          "LFSTInvalidations", #"mistakenReschedules", "cyclesStoreQueueAccessed",
+         "loadToUse::mean", "loadToUse::stdev"}
 
 def get_values(results):
     values = {}
