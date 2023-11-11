@@ -11,10 +11,10 @@ def aggregate_values(field_names):
     # Iterate through each .out directory
     if "only_pna" in os.getcwd():
         pna = ' PNA'
-        broken_file = open("broken", "w")
+        broken_file = open("broken_original", "w")
     else:
         pna = 'base'
-        if os.path.exists("./broken"):
+        if os.path.exists("./broken_original"):
             broken_chkpts = [i.strip().split(",")[0] for i in open("broken").readlines()[1:-1]]
         else:
             broken_chkpts = []
@@ -23,7 +23,7 @@ def aggregate_values(field_names):
         if os.path.isdir(dirname) and dirname[0].isdigit() and dirname.split('.')[1] == 'out':
             stats_file = os.path.join(dirname, "stats.txt")
             chkpt_number = int(dirname.split('.')[0])
-            if chkpt_number in broken_chkpts: continue
+            #if chkpt_number in broken_chkpts: continue
             for cpt in os.listdir("."):
                 if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == (chkpt_number-1):
                     weight = float(cpt.split('_')[5])
@@ -37,21 +37,20 @@ def aggregate_values(field_names):
                 for line in lines:
                     if len(line.strip().split()) == 0: continue
                     field_name = line.strip().split()[0]
-                    if field_name in field_names and seen_fields[field_name] != 0:
+                    if seen_fields[field_name] != 0:
                         value = float(line.strip().split()[1]) * weight
                         if field_name in field_names_to_average:
                             field_names_to_average[field_name].append(value)
                         else:
                             aggregated_values[field_name] += value
-                    if field_name in field_names:
-                        seen_fields[field_name] += 1
+                    seen_fields[field_name] += 1
                 for field in seen_fields:
                     if seen_fields[field] != 2:
                         print("Checkpoint " + str(chkpt_number) + " has seen fields with a value other than 2")
                         broken_chkpts.append((chkpt_number, weight))
                         break
 
-    if len(broken_chkpts) > 0 and pna = ' PNA':
+    if len(broken_chkpts) > 0 and pna == ' PNA':
         broken_file.write(os.getcwd().split("/")[-1]+'\n')
         total_weight = 0
         for n, w in broken_chkpts:
