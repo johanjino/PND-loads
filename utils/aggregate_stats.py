@@ -27,7 +27,7 @@ def aggregate_values(field_names):
             for cpt in os.listdir("."):
                 if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == (chkpt_number-1):
                     weight = float(cpt.split('_')[5])
-            seen_fields = collections.defaultdict(int)
+            begin_marker = 0
             with open(stats_file, "r") as stats:
                 # Process each line in the file
                 lines = stats.readlines()
@@ -36,19 +36,19 @@ def aggregate_values(field_names):
                     broken_chkpts.append((chkpt_number, weight))
                 for line in lines:
                     if len(line.strip().split()) == 0: continue
+                    if '----' in line: begin_marker += 1
+                    if begin_marker != 3: continue
                     field_name = line.strip().split()[0]
-                    if seen_fields[field_name] != 0:
-                        value = float(line.strip().split()[1]) * weight
-                        if field_name in field_names_to_average:
-                            field_names_to_average[field_name].append(value)
-                        else:
-                            aggregated_values[field_name] += value
-                    seen_fields[field_name] += 1
-                for field in seen_fields:
-                    if seen_fields[field] != 2:
-                        print("Checkpoint " + str(chkpt_number) + " has seen fields with a value other than 2")
-                        broken_chkpts.append((chkpt_number, weight))
-                        break
+                    value = float(line.strip().split()[1]) * weight
+                    if field_name in field_names_to_average:
+                        field_names_to_average[field_name].append(value)
+                    else:
+                        aggregated_values[field_name] += value
+                if begin_marker != 4:
+                    if begin_marker != 2:
+                        print("something fucky is happening")
+                        exit(1)
+                    print("Checkpoint "+str(chkpt_number)+" only has warmup")
 
     if len(broken_chkpts) > 0 and pna == ' PNA':
         broken_file.write(os.getcwd().split("/")[-1]+'\n')
