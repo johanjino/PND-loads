@@ -72,7 +72,7 @@ def write_results(results_file, aggregated_values):
     seen_fields = set()
     with open(results_file, "w") as file:
         for field_name, value in aggregated_values.items():
-            name = '.'.join(field_name.split(".")[-2:])
+            name = '.'.join(field_name.split(".")[2:])
             if name not in seen_fields:
                 file.write(f"{name} {value}\n")
                 seen_fields.add(name)

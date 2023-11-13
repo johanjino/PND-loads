@@ -1,3 +1,5 @@
 *.ll
 *.pyc
+*.s
+benchmarks/forwarding_micro
 gem5/src/cpu/o3/BaseO3CPU.py

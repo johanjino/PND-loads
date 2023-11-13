@@ -1626,8 +1626,6 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 
     cache:
 
-    if (load_inst->isSpecbCheck()) request->mainReq()->inst = reinterpret_cast<void *>(load_inst.data);
-
     if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end()){
         auto seqNum = std::find(HadPartialCoverage[&load_inst].begin(), HadPartialCoverage[&load_inst].end(), load_inst->seqNum);
         if (seqNum != HadPartialCoverage[&load_inst].end()){
