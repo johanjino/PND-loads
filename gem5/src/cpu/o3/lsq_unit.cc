@@ -1454,12 +1454,33 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
             auto st_s = store_it->instruction()->effAddr;
             auto st_e = st_s + store_size;
 
+            auto req_s_dep = request->mainReq()->getVaddr() >> depCheckShift;
+            auto req_e_dep = req_s + request->mainReq()->getSize() >> depCheckShift;
+            auto st_s_dep = store_it->instruction()->effAddr >> depCheckShift;
+            auto st_e_dep = st_s + store_size >> depCheckShift;
+
             bool store_has_lower_limit = req_s >= st_s;
             bool store_has_upper_limit = req_e <= st_e;
             bool lower_load_has_store_part = req_s < st_e;
             bool upper_load_has_store_part = req_e > st_s;
 
             auto coverage = AddrRangeCoverage::NoAddrRangeCoverage;
+
+            //check for forwarding violation caused by PND load
+            if (load_inst->isSpecbCheck() && !store_it->instruction()->isAtomic() &&
+                ((st_e_dep >= req_s_dep && st_s_dep <= req_e_dep) ||
+                ((store_has_lower_limit && lower_load_has_store_part) ||
+                (store_has_upper_limit && upper_load_has_store_part) ||
+                 (lower_load_has_store_part && upper_load_has_store_part)))){
+                if ((memDepViolator && ld_inst->seqNum > memDepViolator->seqNum)) break;
+                memDepViolator = load_inst;
+                ++stats.memOrderViolation;
+                return std::make_shared<GenericISA::M5PanicFault>(
+                    "Detected fault with "
+                    "inst [sn:%lli] and [sn:%lli] at address %#x\n",
+                    store_it->instruction()->seqNum, load_inst->seqNum, req_s_dep);
+            }
+
 
             //THE CASE IF WE CAN FORWARD the value of the STORE to the LOAD
             // If the store entry is not atomic (atomic does not have valid
