@@ -281,7 +281,6 @@ LSQUnit::LSQUnitStats::LSQUnitStats(statistics::Group *parent)
                 "first time a load is issued and its completion"),
       ADD_STAT(numStoresSearched, statistics::units::Count::get(), "Number of store entries searched by a "
                "load looking for a forward in the SQ"),
-      ADD_STAT(mistakenReschedules, statistics::units::Count::get(), "Number of mistaken reschedules during forwarding")
 {
     loadToUse
         .init(0, 299, 10)
@@ -1426,10 +1425,6 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
     // Check the SQ for any previous stores that might lead to forwarding
     auto store_it = load_inst->sqIt;
     assert (store_it >= storeWBIt);
-    // PND loads do not need to search SQ
-    if (load_inst->isSpecbCheck()){
-        goto cache;
-    }
     // End once we've reached the top of the LSQ
     while (store_it != storeWBIt && !load_inst->isDataPrefetch()) {
         // Move the index to one younger
@@ -1609,10 +1604,6 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                     continue;
                 }
 
-                if (HadPartialCoverage.find(&load_inst) == HadPartialCoverage.end())
-                    HadPartialCoverage[&load_inst] = std::list<InstSeqNum>();
-                HadPartialCoverage[&load_inst].insert(HadPartialCoverage[&load_inst].begin(), load_inst->seqNum);
-
                 // Here is where stalling of the load happens...
                 // Must stall load and force it to retry, so long as it's the
                 // oldest load that needs to do so.
@@ -1642,16 +1633,6 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                 load_entry.setRequest(nullptr);
                 return NoFault;
             }
-        }
-    }
-
-    cache:
-
-    if (HadPartialCoverage.find(&load_inst) != HadPartialCoverage.end()){
-        auto seqNum = std::find(HadPartialCoverage[&load_inst].begin(), HadPartialCoverage[&load_inst].end(), load_inst->seqNum);
-        if (seqNum != HadPartialCoverage[&load_inst].end()){
-            HadPartialCoverage[&load_inst].erase(seqNum);
-            ++stats.mistakenReschedules;
         }
     }
 

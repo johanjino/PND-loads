@@ -506,8 +506,6 @@ class LSQUnit
     /** Flag for memory model. */
     bool needsTSO;
 
-    std::map<const DynInstPtr *, std::list<InstSeqNum>> HadPartialCoverage;
-
   protected:
     // Will also need how many read/write ports the Dcache has.  Or keep track
     // of that in stage that is one level up, and only call executeLoad/Store
@@ -546,8 +544,6 @@ class LSQUnit
          *  in the SQ */
         statistics::Scalar numStoresSearched;
 
-        /** Number of mistaken reschedules in store forwarding from partial coverages */
-        statistics::Scalar mistakenReschedules;
     } stats;
 
   public:
