@@ -339,8 +339,6 @@ class ROB
         statistics::Scalar reads;
         // The number of rob_writes
         statistics::Scalar writes;
-        // The number of iterations in a loop
-        statistics::Scalar iterations;
     } stats;
 };
 

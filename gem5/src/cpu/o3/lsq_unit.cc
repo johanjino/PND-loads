@@ -50,8 +50,6 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/o3/lsq.hh"
 #include "debug/Activity.hh"
-#include "debug/DefAlias.hh"
-#include "debug/DefNotAlias.hh"
 #include "debug/HtmCpu.hh"
 #include "debug/IEW.hh"
 #include "debug/LSQUNIThitexternalsnoopviolation.hh"
@@ -589,7 +587,7 @@ LSQUnit::checkViolations(typename LoadQueue::iterator& loadIt,
                         "mem order violation: memDepViolator: %x | "
                         "ld_inst: %x \n",memDepViolator, ld_inst);
 
-            if ((memDepViolator && ld_inst->seqNum > memDepViolator->seqNum))
+            if (memDepViolator && ld_inst->seqNum > memDepViolator->seqNum)
                     break;
 
                 DPRINTF(LSQUnit, "Detected fault with inst [sn:%lli] and "
@@ -1510,15 +1508,6 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 
                 coverage = AddrRangeCoverage::PartialAddrRangeCoverage;
             }
-            // int temp;
-            // switch (coverage) {
-            //     case AddrRangeCoverage::PartialAddrRangeCoverage:
-            //         temp = 0;
-            //     case AddrRangeCoverage::FullAddrRangeCoverage:
-            //         temp = 1;
-            //     case AddrRangeCoverage::NoAddrRangeCoverage:
-            //         temp = 2;
-            // }
             if (coverage == AddrRangeCoverage::FullAddrRangeCoverage) {
                 // Get shift amount for offset into the store's data.
                 int shift_amt = request->mainReq()->getVaddr() -

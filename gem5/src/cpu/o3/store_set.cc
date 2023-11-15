@@ -38,8 +38,6 @@
 #include "cpu/o3/inst_queue.hh"
 #include "cpu/o3/limits.hh"
 #include "debug/Counter.hh"
-#include "debug/DefAlias.hh"
-#include "debug/DefNotAlias.hh"
 #include "debug/flagcheck.hh"
 #include "debug/LSQUNITisnotLoadviolation.hh"
 #include "debug/MemDepUnit.hh"

@@ -54,7 +54,6 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/timebuf.hh"
 #include "debug/Activity.hh"
-#include "debug/DefAlias.hh"
 #include "debug/Drain.hh"
 #include "debug/IEW.hh"
 #include "debug/IEWFetchDirectLsqviolation.hh"
@@ -1100,30 +1099,7 @@ IEW::dispatchInsts(ThreadID tid)
         // If the instruction queue is not full, then add the
         // instruction.
         if (add_to_iq) {
-            /* DefAlias additions
-            We make the lod dependent on the store queue tail to hopefully
-            reduce the chance of a violation...
-             */
-            // if (inst->isDefAlias()){
-            //     dep_store = ldstQueue.getDepStoreSeqNum(tid, inst);
-            // }
-            // if (inst->isDefAlias() && dep_store){
-            //     instQueue.dep_inst = dep_store;
-            //     // DPRINTF(DefAlias, "Store tail seq num: [sn:%llu]"
-            //     //         " for load inst: [sn:%llu] \n",
-            //     //         dep_store, inst->seqNum);
-            // }
-            if (inst->isDefAlias()){
-                dep_store = ldstQueue.getStoreTailSeqNum(tid);
-                if (dep_store){
-                    instQueue.dep_instruction = dep_store;
-                    DPRINTF(DefAlias, "Found dependent in never alias case:"
-                    " load inst [sn:%lli] @ PC %x\n",
-                    inst->seqNum, inst->pcState().instAddr());
-                }
-                else{
-                    instQueue.dep_instruction = 0;
-                }
+                instQueue.dep_instruction = 0;
             }
             // DPRINTF(flagcheck, "isSpecbCheck %x | isDefAlias %x\n | inst: %x",
             //             inst->isSpecbCheck(), inst->isDefAlias(),
@@ -1407,12 +1383,6 @@ IEW::executeInsts()
                 */
                 if (violator->isSpecbCheck()){
                     DPRINTF(Speculate, "Speculate instruction handling");
-                    //do nothing....
-                    ++iewStats.bypassStoreSetViolationAddition;
-                }
-                else if (violator->isDefAlias()){
-                    DPRINTF(DefAlias, "Definitely aliased "
-                                    "instruction handling");
                     //do nothing....
                     ++iewStats.bypassStoreSetViolationAddition;
                 }

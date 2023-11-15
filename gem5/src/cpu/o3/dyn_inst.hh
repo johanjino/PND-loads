@@ -586,11 +586,11 @@ class DynInst : public ExecContext, public RefCounted
     bool isHtmCmd() const { return staticInst->isHtmCmd(); }
      //added flags
     bool isSpecbCheck() const { return staticInst->isSpecbCheck(); }
-    bool isDefAlias() const { return staticInst->isDefAlias(); }
-    bool isNotAlias() const { return staticInst->isNotAlias(); }
+    bool isDefAlias() const { return false; }
+    bool isNotAlias() const { return false; }
 
     void setSpecFlag() { staticInst->setSpecbCheck(); }
-    void setDefAliasFlag() { staticInst->setDefAlias(); }
+    void setDefAliasFlag() { return; }
 
     uint64_t
     getHtmTransactionUid() const override

@@ -38,8 +38,6 @@
 #include "cpu/o3/inst_queue.hh"
 #include "cpu/o3/limits.hh"
 #include "debug/Counter.hh"
-#include "debug/DefAlias.hh"
-#include "debug/DefNotAlias.hh"
 #include "debug/flagcheck.hh"
 #include "debug/LSQUNITisnotLoadviolation.hh"
 #include "debug/MemDepUnit.hh"
@@ -251,14 +249,6 @@ MemDepUnit::insert(const DynInstPtr &inst)
                 inst->isSpecbCheck()) {
         DPRINTF(Speculate, "Definitely aliased instruction handling");
         //DO NOT CHECK STORE SET BECAUSE NOT NEEDED.
-        ++stats.BypassStoreSetCheck;
-    }
-    else if (inst->isDefAlias()) {
-        if (extra_dep){
-            producing_stores.push_back(extra_dep);
-            DPRINTF(DefAlias, "Instruction is definitely going to alias,"
-            " making dependent on tail of store queue...\n");
-        }
         ++stats.BypassStoreSetCheck;
     }
     else {
@@ -525,12 +515,6 @@ MemDepUnit::wakeDependents(const DynInstPtr &inst)
     MemDepEntryPtr inst_entry = findInHash(inst);
     // Looping through store/etc..'s dependent instructions...
 
-    /*Counter stuff... (the stores effective address )
-    */
-    Addr inst_eff_addr1 = inst->effAddr >> depCheckShift;
-    Addr inst_eff_addr2 = (inst->effAddr + inst->effSize - 1) >> depCheckShift;
-
-
     for (int i = 0; i < inst_entry->dependInsts.size(); ++i ) {
         MemDepEntryPtr woken_inst = inst_entry->dependInsts[i];
 
@@ -559,36 +543,6 @@ MemDepUnit::wakeDependents(const DynInstPtr &inst)
             !woken_inst->squashed) {
             moveToReady(woken_inst);
         }
-
-        /*Counter stuff (the load's effective address..)
-        */
-        Addr woken_eff_addr1 = woken_inst->inst->effAddr >> depCheckShift;
-        Addr woken_eff_addr2 = (woken_inst->inst->effAddr +
-        woken_inst->inst->effSize - 1) >> depCheckShift;
-        DPRINTF(Counter, "woken instruction: %x | depCheckShift %x "
-                    "| woken_inst_eff"
-                    " address %x\n", woken_inst->inst->getEMI(),
-                    depCheckShift, woken_inst->inst->effAddr);
-
-
-        //the check for correct violation as done in checkViolations in the LSQ
-        if (inst->isStore() && woken_inst->inst->effAddrValid()
-            && !woken_inst->inst->isDefAlias() &&
-            !woken_inst->inst->isSpecbCheck()){
-
-            // start of debug flags
-            DPRINTF(Counter, "Load effective addr1 %x | addr2 %x :"
-                        " WokenAddr1 %x "
-                        "| WokenAddr2 %x \n",inst_eff_addr1, inst_eff_addr2,
-                        woken_eff_addr1, woken_eff_addr2);
-            DPRINTF(Counter, "StorePC %x | wokenPC %x | valid effAddr %x \n",
-                    inst->pcState().instAddr(),
-                    woken_inst->inst->pcState().instAddr(),
-                    woken_inst->inst->effAddr);
-            // end of debug flags
-
-        }
-
     }
 
     inst_entry->dependInsts.clear();

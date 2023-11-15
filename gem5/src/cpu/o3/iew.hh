@@ -341,9 +341,6 @@ class IEW
     /** Skid buffer between rename and IEW. */
     std::queue<DynInstPtr> skidBuffer[MaxThreads];
 
-    /** List of definitely aliased instructions that need to be executed. */
-    std::list<DynInstPtr> DefAliasInstsToExecute;
-
     /** Scoreboard pointer. */
     Scoreboard* scoreboard;
 

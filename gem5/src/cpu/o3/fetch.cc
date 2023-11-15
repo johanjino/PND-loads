@@ -1063,11 +1063,6 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
 
     DPRINTF(Fetch, "[tid:%i] Instruction PC %s created [sn:%lli].\n",
             tid, this_pc, seq);
-    //Changed from Fetch to my Debug Flag..
-    DPRINTF(FetchInstruction, "[tid:%i] Instruction is: %s "
-    "and the hex is: %x\n", tid,
-    instruction->staticInst->disassemble(this_pc.instAddr()),
-    instruction->staticInst->getEMI());
 
 #if TRACING_ON
     if (trace) {

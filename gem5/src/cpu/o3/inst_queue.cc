@@ -48,10 +48,7 @@
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/fu_pool.hh"
 #include "cpu/o3/limits.hh"
-#include "debug/DefAlias.hh"
-#include "debug/DefNotAlias.hh"
 #include "debug/IQ.hh"
-#include "debug/Speculate.hh"
 #include "enums/OpClass.hh"
 #include "params/BaseO3CPU.hh"
 #include "sim/core.hh"
@@ -594,16 +591,8 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
     addToProducers(new_inst);
 
     if (new_inst->isMemRef()) {
-        if (new_inst->isDefAlias() && dep_instruction){
-            DPRINTF(DefAlias, "Definitely aliased instruction handling\n");
-            memDepUnit[new_inst->threadNumber].extra_dep = dep_instruction;
-        }
-        else{
-            memDepUnit[new_inst->threadNumber].extra_dep = 0;
-            // memDepUnit[new_inst->threadNumber].extra_load_dep = 0;
-        }
+        memDepUnit[new_inst->threadNumber].extra_dep = 0;
         memDepUnit[new_inst->threadNumber].insert(new_inst);
-
     } else {
         addIfReady(new_inst);
     }

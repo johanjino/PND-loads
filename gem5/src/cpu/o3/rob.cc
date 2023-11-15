@@ -45,7 +45,6 @@
 #include "base/logging.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/limits.hh"
-#include "debug/DefAlias.hh"
 #include "debug/Fetch.hh"
 #include "debug/ROB.hh"
 #include "params/BaseO3CPU.hh"
@@ -255,11 +254,6 @@ ROB::retireHead(ThreadID tid)
 
     head_inst->clearInROB();
     head_inst->setCommitted();
-
-    if (head_inst->pcState().instAddr()==0x40079c){
-        ++stats.iterations;
-        DPRINTF(DefAlias, "iteration number: %x \n", stats.iterations.value());
-    }
 
     //Update "Global" Head of ROB
     updateHead();
@@ -532,9 +526,7 @@ ROB::ROBStats::ROBStats(statistics::Group *parent)
     ADD_STAT(reads, statistics::units::Count::get(),
         "The number of ROB reads"),
     ADD_STAT(writes, statistics::units::Count::get(),
-        "The number of ROB writes"),
-    ADD_STAT(iterations, statistics::units::Count::get(),
-        "The number of iterations in the loop")
+        "The number of ROB writes")
 {
 }
 

@@ -101,11 +101,6 @@ class InstructionQueue
     // Typedef of iterator through the list of instructions.
     typedef typename std::list<DynInstPtr>::iterator ListIt;
 
-    // Definitely aliased addition...
-    InstSeqNum dep_instruction;
-
-    DynInstPtr dep_load;
-
     /** FU completion event class. */
     class FUCompletion : public Event
     {

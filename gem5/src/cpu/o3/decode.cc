@@ -48,7 +48,6 @@
 #include "cpu/o3/limits.hh"
 #include "debug/Activity.hh"
 #include "debug/Decode.hh"
-#include "debug/FlagCheck.hh"
 #include "debug/O3PipeView.hh"
 #include "params/BaseO3CPU.hh"
 #include "sim/full_system.hh"
@@ -653,12 +652,6 @@ Decode::decodeInsts(ThreadID tid)
 
         DynInstPtr inst = std::move(insts_to_decode.front());
         insts_to_decode.pop();
-
-        DPRINTF(FlagCheck, "[tid:%i] Processing instruction [sn:%lli] with "
-                "PC %s and the machInst: %x and FLAG: %x\n",
-                tid, inst->seqNum, inst->pcState(), inst->getName(), inst->isSpecbCheck());
-        
-        
 
         if (inst->isSquashed()) {
             DPRINTF(Decode, "[tid:%i] Instruction %i with PC %s is "
