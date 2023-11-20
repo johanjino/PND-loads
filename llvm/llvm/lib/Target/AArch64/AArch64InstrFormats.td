@@ -3268,7 +3268,7 @@ def uimm12s16 : uimm12_scaled<16>;
 
 class PNDLoadUI<dag oops, dag iops, string asm, list<dag> pattern>
     : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]", "", pattern> {
-    let Inst{31-0} = 1;
+    let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 
 class BaseLoadStoreUI<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
@@ -3461,7 +3461,7 @@ class LoadLiteralPND<RegisterOperand regtype, string asm, list<dag> pat>
     : I<(outs regtype:$Rt), (ins am_ldrlit:$label),
         asm, "\t$Rt, $label", "", pat>,
       Sched<[WriteLD]> {
-      let Inst{31-0} = 1;
+      let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 let mayLoad = 1, mayStore = 0, hasSideEffects = 0, AddedComplexity = 20 in
 class LoadLiteral<bits<2> opc, bit V, RegisterOperand regtype, string asm, list<dag> pat>
@@ -3637,7 +3637,7 @@ def ro128 : ROAddrMode<ro_Windexed128, ro_Xindexed128, ro_Wextend128,
 
 class PNDLoadRO<string asm, dag ins, dag outs, list<dag> pat>
     : I<ins, outs, asm, "\t$Rt, [$Rn, $Rm, $extend]", "", pat> {
-    let Inst{31-0} = 1;
+    let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 
 class LoadStore8RO<bits<2> sz, bit V, bits<2> opc, string asm, dag ins,
@@ -3668,7 +3668,7 @@ class ROInstAlias<string asm, DAGOperand regtype, Instruction INST>
 
 multiclass LoadROPND<DAGOperand regtype, string asm, ValueType Ty, SDPatternOperator loadop> {
   let AddedComplexity = 10 in
-  def roW : LoadPNDRO<asm,
+  def roW : PNDLoadRO<asm,
                  (outs regtype:$Rt),
                  (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend8:$extend),
                  [(set (Ty regtype:$Rt),
@@ -3678,7 +3678,7 @@ multiclass LoadROPND<DAGOperand regtype, string asm, ValueType Ty, SDPatternOper
   }
 
   let AddedComplexity = 10 in
-  def roX : LoadPNDRO<asm,
+  def roX : PNDLoadRO<asm,
                  (outs regtype:$Rt),
                  (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend8:$extend),
                  [(set (Ty regtype:$Rt),
@@ -4326,7 +4326,7 @@ def gi_am_unscaled128 :
 
 class PNDLoadUnscale<dag oops, dag iops, string asm, list<dag> pattern>
     : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]", "", pattern> {
-    let Inst{31-0} = 1;
+    let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 
 class BaseLoadStoreUnscale<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
@@ -4525,7 +4525,7 @@ class BaseLoadStorePreIdx<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
 
 class PNDLoadPre<dag oops, dag iops, string asm, string cstr, list<dag> pat>
     : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]!", cstr, pat> {
-    let Inst{31-0} = 1;
+    let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 
 class BaseLoadStorePreIdxPA<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
@@ -4622,8 +4622,8 @@ class StorePreIdx<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
 //---
 
 class PNDLoadPost<dag oops, dag iops, string asm, string cstr, list<dag> pat>
-    : I<oops, iops, asm, "\t$Rt, [$Rn], $offset" cstr, pat> {
-    let Inst{31-0} = 1;
+    : I<oops, iops, asm, "\t$Rt, [$Rn], $offset", cstr, pat> {
+    let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 
 class BaseLoadStorePostIdx<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
@@ -4742,7 +4742,7 @@ class StorePostIdx<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
 
 class PNDLoadPairOffset<dag oops, dag iops, string asm>
     : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn, $offset]", "", []> {
-    let Inst{31-0} = 1;
+    let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 
 class BaseLoadStorePairOffset<bits<2> opc, bit V, bit L, dag oops, dag iops,

@@ -2821,13 +2821,13 @@ defm LDRBPNA : LoadUIPND<FPR8Op, uimm12s1, "ldrpna",
 defm LDRH : LoadUI<0b01, 1, 0b01, FPR16Op, uimm12s2, "ldr",
                    [(set (f16 FPR16Op:$Rt),
                          (load (am_indexed16 GPR64sp:$Rn, uimm12s2:$offset)))]>;
-defm LDRHPNA : LoadUIPND<0, 0b01, FPR16Op, uimm12s2, "ldrpna",
+defm LDRHPNA : LoadUIPND<FPR16Op, uimm12s2, "ldrpna",
                    [(set (f16 FPR16Op:$Rt),
                          (load (am_indexed16 GPR64sp:$Rn, uimm12s2:$offset)))]>;
 defm LDRS : LoadUI<0b10, 1, 0b01, FPR32Op, uimm12s4, "ldr",
                    [(set (f32 FPR32Op:$Rt),
                          (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
-defm LDRSPNA : LoadUIPND<1, 0b11, FPR32Op, uimm12s4, "ldrpna",
+defm LDRSPNA : LoadUIPND<FPR32Op, uimm12s4, "ldrpna",
                    [(set (f32 FPR32Op:$Rt),
                          (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
 defm LDRD : LoadUI<0b11, 1, 0b01, FPR64Op, uimm12s8, "ldr",
@@ -3049,7 +3049,7 @@ def LDRWPNAl : LoadLiteralPND<GPR32z, "ldrpna",
   [(set GPR32z:$Rt, (load (AArch64adr alignedglobal:$label)))]>;
 def LDRXl : LoadLiteral<0b01, 0, GPR64z, "ldr",
   [(set GPR64z:$Rt, (load (AArch64adr alignedglobal:$label)))]>;
-def LDRXPNAl : LoadLiteralPND<"ldrpna",
+def LDRXPNAl : LoadLiteralPND<GPR64z, "ldrpna",
   [(set GPR64z:$Rt, (load (AArch64adr alignedglobal:$label)))]>;
 def LDRSl : LoadLiteral<0b00, 1, FPR32Op, "ldr",
   [(set (f32 FPR32Op:$Rt), (load (AArch64adr alignedglobal:$label)))]>;

@@ -2,7 +2,7 @@ import re
 import os
 
 def process_files_in_directory(directory_path):
-    regex_pattern = re.compile(r'LR.*PA')
+    regex_pattern = re.compile(r'LD.*PA.*:$')
 
     for root, dirs, files in os.walk(directory_path):
         for filename in files:
