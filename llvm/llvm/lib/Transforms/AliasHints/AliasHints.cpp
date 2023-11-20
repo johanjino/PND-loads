@@ -2,6 +2,7 @@
 #include "llvm/Transforms/AliasHints/AliasHints.h"
 #include "llvm/Analysis/AliasAnalysis.h"
 #include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/MemoryLocation.h"
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
 #include <cstdint>
 #include <vector>
@@ -96,6 +97,91 @@ bool isVariantAtAllLevels(Value *Ptr, Loop *ParentLoop, LoopInfo &LI, ScalarEvol
     return true;
 }
 
+static bool canComputePointerDiff(ScalarEvolution &SE,
+                                  const SCEV *A, const SCEV *B) {
+    if (SE.getEffectiveSCEVType(A->getType()) !=
+        SE.getEffectiveSCEVType(B->getType()))
+    return false;
+
+    return SE.instructionCouldExistWitthOperands(A, B);
+}
+
+uint64_t CACHE_LINE_SIZE = 64;
+
+bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution &SE, AAResults &AA){
+
+    LoadInst *L;
+    StoreInst *S;
+    if (isa<LoadInst>(Load)) L = reinterpret_cast<LoadInst *>(Load);
+    else { errs() << "Load argument not a load!\n"; exit(1); }
+    if (isa<StoreInst>(Store)) S = reinterpret_cast<StoreInst *>(Store);
+    else { errs() << "Store argument not a store!\n"; exit(1); }
+
+    MemoryLocation LocA = MemoryLocation(
+        L->getPointerOperand(),
+        LocationSize::precise(CACHE_LINE_SIZE),
+        L->getAAMetadata());
+    MemoryLocation LocB = MemoryLocation(
+        S->getPointerOperand(),
+        LocationSize::precise(CACHE_LINE_SIZE),
+        S->getAAMetadata());
+
+    if (AA.isNoAlias(LocA, LocB)) return true;
+
+    //kind of insane, but just copy pasting SCEV AA here because I don't want to figure out how to
+    //plug into it in a nice way and not sure how to enable it from clang
+    if (LocA.Size.isZero() || LocB.Size.isZero())
+    return true;
+
+    // This is SCEVAAResult. Get the SCEVs!
+    const SCEV *AS = SE.getSCEV(const_cast<Value *>(LocA.Ptr));
+    const SCEV *BS = SE.getSCEV(const_cast<Value *>(LocB.Ptr));
+
+    // If they evaluate to the same expression, it's a MustAlias.
+    if (AS == BS)
+    return false;
+
+    // If something is known about the difference between the two addresses,
+    // see if it's enough to prove a NoAlias.
+    if (canComputePointerDiff(SE, AS, BS)) {
+    unsigned BitWidth = SE.getTypeSizeInBits(AS->getType());
+    APInt ASizeInt(BitWidth, LocA.Size.hasValue()
+                                    ? LocA.Size.getValue()
+                                    : MemoryLocation::UnknownSize);
+    APInt BSizeInt(BitWidth, LocB.Size.hasValue()
+                                    ? LocB.Size.getValue()
+                                    : MemoryLocation::UnknownSize);
+
+    // Compute the difference between the two pointers.
+    const SCEV *BA = SE.getMinusSCEV(BS, AS);
+
+    // Test whether the difference is known to be great enough that memory of
+    // the given sizes don't overlap. This assumes that ASizeInt and BSizeInt
+    // are non-zero, which is special-cased above.
+    if (!isa<SCEVCouldNotCompute>(BA) &&
+        ASizeInt.ule(SE.getUnsignedRange(BA).getUnsignedMin()) &&
+        (-BSizeInt).uge(SE.getUnsignedRange(BA).getUnsignedMax()))
+        return true;
+
+    // Folding the subtraction while preserving range information can be tricky
+    // (because of INT_MIN, etc.); if the prior test failed, swap AS and BS
+    // and try again to see if things fold better that way.
+
+    // Compute the difference between the two pointers.
+    const SCEV *AB = SE.getMinusSCEV(AS, BS);
+
+    // Test whether the difference is known to be great enough that memory of
+    // the given sizes don't overlap. This assumes that ASizeInt and BSizeInt
+    // are non-zero, which is special-cased above.
+    if (!isa<SCEVCouldNotCompute>(AB) &&
+        BSizeInt.ule(SE.getUnsignedRange(AB).getUnsignedMin()) &&
+        (-ASizeInt).uge(SE.getUnsignedRange(AB).getUnsignedMax()))
+        return true;
+    }
+
+    return false;
+}
+
 //FIXME: handle calls with modref and add TBAA
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                                         SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
@@ -112,7 +198,8 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         MemoryDepChecker MDC = LAI->getDepChecker();
         if (MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
             was_LAI_analysed = true;
-            MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load];
+            MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load].first;
+            Instruction *Store = MDC.QueryResults[Load].second;
             if (Type != MemoryDepChecker::Dependence::NoDep &&
                 Type != MemoryDepChecker::Dependence::Forward &&
                 Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
@@ -120,7 +207,8 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
             }
             if ((Type == MemoryDepChecker::Dependence::Forward ||
                 Type == MemoryDepChecker::Dependence::ForwardButPreventsForwarding) &&
-                !isVariantAtAllLevels(Load->getPointerOperand(), LI.getLoopFor(Load->getParent()), LI, SE)){
+                !isVariantAtAllLevels(Load->getPointerOperand(), LI.getLoopFor(Load->getParent()), LI, SE) &&
+                !isSeparateCacheLine(Load, Store, SE, AA)){
                 return AliasHint::Unchanged;
             }
         }

@@ -992,9 +992,7 @@ static MachineBasicBlock::iterator InsertSEH(MachineBasicBlock::iterator MBBI,
   default:
     llvm_unreachable("No SEH Opcode for this instruction");
   case AArch64::LDPDpost:
-case AArch64::LDPDPApost:
 case AArch64::LDPDPNApost:
-  case AArch64::LDPQPApost:
   case AArch64::LDPQPNApost:
     Imm = -Imm;
     LLVM_FALLTHROUGH;
@@ -1009,7 +1007,6 @@ case AArch64::LDPDPNApost:
     break;
   }
   case AArch64::LDPXpost:
-case AArch64::LDPXPApost:
 case AArch64::LDPXPNApost:
     Imm = -Imm;
     LLVM_FALLTHROUGH;
@@ -1029,7 +1026,6 @@ case AArch64::LDPXPNApost:
     break;
   }
   case AArch64::LDRDpost:
-  case AArch64::LDRDPApost:
   case AArch64::LDRDPNApost:
     Imm = -Imm;
     LLVM_FALLTHROUGH;
@@ -1042,7 +1038,6 @@ case AArch64::LDPXPNApost:
     break;
   }
   case AArch64::LDRXpost:
-  case AArch64::LDRXPApost:
   case AArch64::LDRXPNApost:
     Imm = -Imm;
     LLVM_FALLTHROUGH;
@@ -1056,9 +1051,7 @@ case AArch64::LDPXPNApost:
   }
   case AArch64::STPDi:
   case AArch64::LDPDi:
-case AArch64::LDPDPAi:
 case AArch64::LDPDPNAi:
-  case AArch64::LDPQPAi:
   case AArch64::LDPQPNAi: {
     unsigned Reg0 =  RegInfo->getSEHRegNum(MBBI->getOperand(0).getReg());
     unsigned Reg1 =  RegInfo->getSEHRegNum(MBBI->getOperand(1).getReg());
@@ -1071,7 +1064,6 @@ case AArch64::LDPDPNAi:
   }
   case AArch64::STPXi:
   case AArch64::LDPXi:
-  case AArch64::LDPXPAi:
     case AArch64::LDPXPNAi:{
     Register Reg0 = MBBI->getOperand(0).getReg();
     Register Reg1 = MBBI->getOperand(1).getReg();
@@ -1089,7 +1081,6 @@ case AArch64::LDPDPNAi:
   }
   case AArch64::STRXui:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
   {
     int Reg = RegInfo->getSEHRegNum(MBBI->getOperand(0).getReg());
@@ -1101,7 +1092,6 @@ case AArch64::LDPDPNAi:
   }
   case AArch64::STRDui:
   case AArch64::LDRDui:
-  case AArch64::LDRDPAui:
   case AArch64::LDRDPNAui: {
     unsigned Reg = RegInfo->getSEHRegNum(MBBI->getOperand(0).getReg());
     MIB = BuildMI(MF, DL, TII.get(AArch64::SEH_SaveFReg))
@@ -1169,17 +1159,11 @@ static MachineBasicBlock::iterator convertCalleeSaveRestoreToSPPrePostIncDec(
   case AArch64::LDPXi:
     NewOpc = AArch64::LDPXpost;
     break;
-case AArch64::LDPXPAi:
-    NewOpc = AArch64::LDPXPApost;
-    break;
 case AArch64::LDPXPNAi:
     NewOpc = AArch64::LDPXPNApost;
     break;
   case AArch64::LDPDi:
     NewOpc = AArch64::LDPDpost;
-    break;
-case AArch64::LDPDPAi:
-    NewOpc = AArch64::LDPDPApost;
     break;
 case AArch64::LDPDPNAi:
     NewOpc = AArch64::LDPDPNApost;
@@ -1187,17 +1171,11 @@ case AArch64::LDPDPNAi:
   case AArch64::LDPQi:
     NewOpc = AArch64::LDPQpost;
     break;
-case AArch64::LDPQPAi:
-    NewOpc = AArch64::LDPQPApost;
-    break;
 case AArch64::LDPQPNAi:
     NewOpc = AArch64::LDPQPNApost;
     break;
   case AArch64::LDRXui:
     NewOpc = AArch64::LDRXpost;
-    break;
-  case AArch64::LDRXPAui:
-    NewOpc = AArch64::LDRXPApost;
     break;
   case AArch64::LDRXPNAui:
     NewOpc = AArch64::LDRXPNApost;
@@ -1205,17 +1183,11 @@ case AArch64::LDPQPNAi:
   case AArch64::LDRDui:
     NewOpc = AArch64::LDRDpost;
     break;
-  case AArch64::LDRDPAui:
-    NewOpc = AArch64::LDRDPApost;
-    break;
   case AArch64::LDRDPNAui:
     NewOpc = AArch64::LDRDPNApost;
     break;
   case AArch64::LDRQui:
     NewOpc = AArch64::LDRQpost;
-    break;
-  case AArch64::LDRQPAui:
-    NewOpc = AArch64::LDRQPApost;
     break;
   case AArch64::LDRQPNAui:
     NewOpc = AArch64::LDRQPNApost;
@@ -1303,26 +1275,20 @@ static void fixupCalleeSaveRestoreStackOffset(MachineInstr &MI,
   case AArch64::STPDi:
   case AArch64::STRDui:
   case AArch64::LDPXi:
-case AArch64::LDPXPAi:
 case AArch64::LDPXPNAi:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
   case AArch64::LDPDi:
-case AArch64::LDPDPAi:
 case AArch64::LDPDPNAi:
   case AArch64::LDRDui:
-  case AArch64::LDRDPAui:
   case AArch64::LDRDPNAui:
     Scale = 8;
     break;
   case AArch64::STPQi:
   case AArch64::STRQui:
   case AArch64::LDPQi:
-case AArch64::LDPQPAi:
 case AArch64::LDPQPNAi:
   case AArch64::LDRQui:
-  case AArch64::LDRQPAui:
   case AArch64::LDRQPNAui:
     Scale = 16;
     break;

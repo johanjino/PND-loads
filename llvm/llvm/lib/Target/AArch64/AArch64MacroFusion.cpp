@@ -215,7 +215,6 @@ static bool isAddressLdStPair(const MachineInstr *FirstMI,
   case AArch64::LDRSui:
   case AArch64::LDRWui:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRSBWui:
   case AArch64::LDRSBXui:
   case AArch64::LDRSHWui:

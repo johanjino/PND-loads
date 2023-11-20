@@ -2545,12 +2545,12 @@ def UDF : UDFType<0, "udf">;
 
 // Pair (indexed, offset)
 defm LDPW : LoadPairOffset<0b00, 0, GPR32z, simm7s4, "ldp">;
-defm LDPWPA : LoadPairOffset2<0b11, 0, GPR32z, simm7s4, "ldppa">;
 defm LDPWPNA : LoadPairOffset<0b11, 0, GPR32z, simm7s4, "ldppna">;
 defm LDPX : LoadPairOffset<0b10, 0, GPR64z, simm7s8, "ldp">;
 defm LDPXPNA : LoadPairOffsetPNA<0b10, 0, GPR64z, simm7s8, "ldppna">;
-defm LDPXPA : LoadPairOffsetPA<0b10, 0, GPR64z, simm7s8, "ldppa">;
 defm LDPS : LoadPairOffset<0b00, 1, FPR32Op, simm7s4, "ldp">;
+//FIXME base class is fucked
+defm LDPSPNA : LoadPairOffsetPA<0b10, 0, FPR32Op, simm7s4, "ldppna">;
 defm LDPD : LoadPairOffset<0b01, 1, FPR64Op, simm7s8, "ldp">;
 defm LDPDPNA : LoadPairOffsetPNA<0b10, 1, FPR64Op, simm7s8, "ldppna">;
 defm LDPDPA : LoadPairOffsetPA<0b10, 1, FPR64Op, simm7s8, "ldppa">;
@@ -2559,15 +2559,15 @@ defm LDPQPA : LoadPairOffset2<0b11, 1, FPR128Op, simm7s16, "ldppa">;
 defm LDPQPNA : LoadPairOffset<0b11, 1, FPR128Op, simm7s16, "ldppna">;
 
 defm LDPSW : LoadPairOffset<0b01, 0, GPR64z, simm7s4, "ldpsw">;
+defm LDPSWPNA : LoadPairOffset2<0b11, 0, GPR64z, simm7s4, "ldpswpna">;
 
 // Pair (pre-indexed)
 def LDPWpre : LoadPairPreIdx<0b00, 0, GPR32z, simm7s4, "ldp">;
-def LDPWPApre : LoadPairPreIdx2<0b11, 0, GPR32z, simm7s4, "ldppa">;
 def LDPWPNApre : LoadPairPreIdx<0b11, 0, GPR32z, simm7s4, "ldppna">;
 def LDPXpre : LoadPairPreIdx<0b10, 0, GPR64z, simm7s8, "ldp">;
 def LDPXPNApre : LoadPairPreIdxPNA<0b11, 0, GPR64z, simm7s8, "ldppna">;
-def LDPXPApre : LoadPairPreIdxPA<0b11, 0, GPR64z, simm7s8, "ldppa">;
 def LDPSpre : LoadPairPreIdx<0b00, 1, FPR32Op, simm7s4, "ldp">;
+def LDPSPNApre : LoadPairPreIdxPA<0b10, 0, FPR32Op, simm7s4, "ldppna">;
 def LDPDpre : LoadPairPreIdx<0b01, 1, FPR64Op, simm7s8, "ldp">;
 def LDPDPNApre : LoadPairPreIdxPNA<0b11, 1, FPR64Op, simm7s8, "ldppna">;
 def LDPDPApre : LoadPairPreIdxPA<0b11, 1, FPR64Op, simm7s8, "ldppa">;
@@ -2576,15 +2576,16 @@ def LDPQPApre : LoadPairPreIdx2<0b11, 1, FPR128Op, simm7s8, "ldppa">;
 def LDPQPNApre : LoadPairPreIdx<0b11, 1, FPR128Op, simm7s8, "ldppna">;
 
 def LDPSWpre : LoadPairPreIdx<0b01, 0, GPR64z, simm7s4, "ldpsw">;
+def LDPSWPNApre : LoadPairPreIdx2<0b11, 0, GPR64z, simm7s4, "ldpswpna">;
 
 // Pair (post-indexed)
 def LDPWpost : LoadPairPostIdx<0b00, 0, GPR32z, simm7s4, "ldp">;
-def LDPWPApost : LoadPairPostIdx2<0b11, 0, GPR32z, simm7s4, "ldppa">;
 def LDPWPNApost : LoadPairPostIdx<0b11, 0, GPR32z, simm7s4, "ldppna">;
 def LDPXpost : LoadPairPostIdx<0b10, 0, GPR64z, simm7s8, "ldp">;
 def LDPXPNApost : LoadPairPostIdxPNA<0b01, 0, GPR64z, simm7s8, "ldppna">;
 def LDPXPApost : LoadPairPostIdxPA<0b01, 0, GPR64z, simm7s8, "ldppa">;
 def LDPSpost : LoadPairPostIdx<0b00, 1, FPR32Op, simm7s4, "ldp">;
+def LDPSPNApost : LoadPairPostIdxPA<0b10, 0, FPR32Op, simm7s4, "ldppna">;
 def LDPDpost : LoadPairPostIdx<0b01, 1, FPR64Op, simm7s8, "ldp">;
 def LDPDPNApost : LoadPairPostIdxPNA<0b01, 1, FPR64Op, simm7s8, "ldppna">;
 def LDPDPApost : LoadPairPostIdxPA<0b01, 1, FPR64Op, simm7s8, "ldppa">;
@@ -2593,6 +2594,7 @@ def LDPQPApost : LoadPairPostIdx2<0b11, 1, FPR64Op, simm7s8, "ldppa">;
 def LDPQPNApost : LoadPairPostIdx<0b11, 1, FPR64Op, simm7s8, "ldppna">;
 
 def LDPSWpost : LoadPairPostIdx<0b01, 0, GPR64z, simm7s4, "ldpsw">;
+def LDPSWPNApost : LoadPairPostIdx2<0b11, 0, GPR64z, simm7s4, "ldpswpna">;
 
 
 // Pair (no allocate)
@@ -2610,44 +2612,42 @@ def : Pat<(AArch64ldp (am_indexed7s64 GPR64sp:$Rn, simm7s8:$offset)),
 //---
 
 // Integer
-defm LDRBB : Load8RO<0b00,  0, 0b01, GPR32, "ldrb", i32, zextloadi8>;
-defm LDRBBPNA : Load8RO<0b01,  1, 0b11, GPR32, "ldrbpna", i32, zextloadi8>;
+defm LDRBB : Load8RO<0b00, 0, 0b01, GPR32, "ldrb", i32, zextloadi8>;
+defm LDRBBPNA : LoadROPND<GPR32, "ldrbpna", i32, zextloadi8>;
 defm LDRHH : Load16RO<0b01, 0, 0b01, GPR32, "ldrh", i32, zextloadi16>;
-defm LDRHHPNA : Load16RO<0b11, 1, 0b11, GPR32, "ldrhpna", i32, zextloadi16>;
+defm LDRHHPNA : LoadROPND<GPR32, "ldrhpna", i32, zextloadi16>;
 defm LDRW  : Load32RO<0b10, 0, 0b01, GPR32, "ldr", i32, load>;
-defm LDRWPNA  : Load32RO<0b01, 1, 0b10, GPR32, "ldrpna", i32, load>;
+defm LDRWPNA  : LoadROPND<GPR32, "ldrpna", i32, load>;
 defm LDRX  : Load64RO<0b11, 0, 0b01, GPR64, "ldr", i64, load>;
-defm LDRXPNA  : Load64RO<0b11, 0, 0b11, GPR64, "ldrpna", i64, load>;
+defm LDRXPNA  : LoadROPND<GPR64, "ldrpna", i64, load>;
 
 // Floating-point
-defm LDRB : Load8RO<0b00,   1, 0b01, FPR8Op,   "ldr", untyped, load>;
-defm LDRBPNA : Load8RO<0b00,   0, 0b00, FPR8Op,   "ldrpna", untyped, load>;
-defm LDRH : Load16RO<0b01,  1, 0b01, FPR16Op,  "ldr", f16, load>;
-defm LDRHPNA : Load16ROPA<0b00,  0, 0b01, FPR16Op,  "ldrpna", f16, load>;
-defm LDRS : Load32RO<0b10,  1, 0b01, FPR32Op,  "ldr", f32, load>;
-defm LDRSPNA : Load32RO<0b10,  1, 0b11, FPR32Op,  "ldrpna", f32, load>;
-defm LDRD : Load64RO<0b11,  1, 0b01, FPR64Op,  "ldr", f64, load>;
-defm LDRDPNA : Load64RO<0b11,  1, 0b10, FPR64Op,  "ldrpna", f64, load>;
+defm LDRB : Load8RO<0b00, 1, 0b01, FPR8Op,   "ldr", untyped, load>;
+defm LDRBPNA : LoadROPND<FPR8Op,   "ldrpna", untyped, load>;
+defm LDRH : Load16RO<0b01, 1, 0b01, FPR16Op,  "ldr", f16, load>;
+defm LDRHPNA : LoadROPND<FPR16Op,  "ldrpna", f16, load>;
+defm LDRS : Load32RO<0b10, 1, 0b01, FPR32Op,  "ldr", f32, load>;
+defm LDRSPNA : LoadROPND< FPR32Op,  "ldrpna", f32, load>;
+defm LDRD : Load64RO<0b11, 1, 0b01, FPR64Op,  "ldr", f64, load>;
+defm LDRDPNA : LoadROPND<FPR64Op,  "ldrpna", f64, load>;
 defm LDRQ : Load128RO<0b00, 1, 0b11, FPR128Op, "ldr", f128, load>;
-defm LDRQPNA : Load128RO<0b10, 1, 0b10, FPR128Op, "ldrpna", f128, load>;
-defm LDRQPA : Load128ROPA<0b00, 1, 0b11, FPR128Op, "ldrpa", f128, load>;
+defm LDRQPNA : LoadROPND<FPR128Op, "ldrpna", f128, load>;
 
 // Load sign-extended half-word
 defm LDRSHW : Load16RO<0b01, 0, 0b11, GPR32, "ldrsh", i32, sextloadi16>;
-defm LDRSHWPNA : Load16ROPA<0b00, 0, 0b10, GPR32, "ldrshpna", i32, sextloadi16>;
+defm LDRSHWPNA : LoadROPND<GPR32, "ldrshpna", i32, sextloadi16>;
 defm LDRSHX : Load16RO<0b01, 0, 0b10, GPR64, "ldrsh", i64, sextloadi16>;
-defm LDRSHXPNA : Load16ROPA<0b00, 0, 0b01, GPR64, "ldrshpna", i64, sextloadi16>;
+defm LDRSHXPNA : LoadROPND<GPR64, "ldrshpna", i64, sextloadi16>;
 
 // Load sign-extended byte
 defm LDRSBW : Load8RO<0b00, 0, 0b11, GPR32, "ldrsb", i32, sextloadi8>;
-defm LDRSBWPNA : Load8ROPA<0b00, 1, 0b00, GPR32, "ldrsbpna", i32, sextloadi8>;
+defm LDRSBWPNA : LoadROPND<GPR32, "ldrsbpna", i32, sextloadi8>;
 defm LDRSBX : Load8RO<0b00, 0, 0b10, GPR64, "ldrsb", i64, sextloadi8>;
-defm LDRSBXPNA : Load8ROPA<0b00, 1, 0b10, GPR64, "ldrsbpna", i64, sextloadi8>;
+defm LDRSBXPNA : LoadROPND<GPR64, "ldrsbpna", i64, sextloadi8>;
 
 // Load sign-extended word
 defm LDRSW  : Load32RO<0b10, 0, 0b10, GPR64, "ldrsw", i64, sextloadi32>;
-defm LDRSWPNA  : Load32RO<0b10, 0, 0b11, GPR64, "ldrswpna", i64, sextloadi32>;
-defm LDRSWPA  : Load32ROPA<0b00, 0, 0b11, GPR64, "ldrswpa", i64, sextloadi32>;
+defm LDRSWPNA  : LoadROPND<GPR64, "ldrswpna", i64, sextloadi32>;
 
 // Pre-fetch.
 defm PRFM : PrefetchRO<0b11, 0, 0b10, "prfm">;
@@ -2803,52 +2803,43 @@ let AddedComplexity = 10 in {
 defm LDRX : LoadUI<0b11, 0, 0b01, GPR64z, uimm12s8, "ldr",
                    [(set GPR64z:$Rt,
                          (load (am_indexed64 GPR64sp:$Rn, uimm12s8:$offset)))]>;
-defm LDRXPNA : LoadUI<0b11, 0, 0b11, GPR64z, uimm12s8, "ldrpna",
-                   [(set GPR64z:$Rt,
-                         (load (am_indexed64 GPR64sp:$Rn, uimm12s8:$offset)))]>;
-defm LDRXPA : LoadUIPA<0b00, 1, 0b01, GPR64z, uimm12s8, "ldrpa",
+defm LDRXPNA : LoadUIPND<GPR64z, uimm12s8, "ldrpna",
                    [(set GPR64z:$Rt,
                          (load (am_indexed64 GPR64sp:$Rn, uimm12s8:$offset)))]>;
 defm LDRW : LoadUI<0b10, 0, 0b01, GPR32z, uimm12s4, "ldr",
                    [(set GPR32z:$Rt,
                          (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
-defm LDRWPNA : LoadUI<0b01, 1, 0b10, GPR32z, uimm12s4, "ldrpna",
-                   [(set GPR32z:$Rt,
-                         (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
-defm LDRWPA : LoadUIPA<0b00, 0, 0b10, GPR32z, uimm12s4, "ldrpa",
+defm LDRWPNA : LoadUIPND<GPR32z, uimm12s4, "ldrpna",
                    [(set GPR32z:$Rt,
                          (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
 defm LDRB : LoadUI<0b00, 1, 0b01, FPR8Op, uimm12s1, "ldr",
                    [(set FPR8Op:$Rt,
                          (load (am_indexed8 GPR64sp:$Rn, uimm12s1:$offset)))]>;
+defm LDRBPNA : LoadUIPND<FPR8Op, uimm12s1, "ldrpna",
+                   [(set FPR8Op:$Rt,
+                         (load (am_indexed8 GPR64sp:$Rn, uimm12s1:$offset)))]>;
 defm LDRH : LoadUI<0b01, 1, 0b01, FPR16Op, uimm12s2, "ldr",
+                   [(set (f16 FPR16Op:$Rt),
+                         (load (am_indexed16 GPR64sp:$Rn, uimm12s2:$offset)))]>;
+defm LDRHPNA : LoadUIPND<0, 0b01, FPR16Op, uimm12s2, "ldrpna",
                    [(set (f16 FPR16Op:$Rt),
                          (load (am_indexed16 GPR64sp:$Rn, uimm12s2:$offset)))]>;
 defm LDRS : LoadUI<0b10, 1, 0b01, FPR32Op, uimm12s4, "ldr",
                    [(set (f32 FPR32Op:$Rt),
                          (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
-defm LDRSPNA : LoadUI<0b10, 1, 0b11, FPR32Op, uimm12s4, "ldrpna",
-                   [(set (f32 FPR32Op:$Rt),
-                         (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
-defm LDRSPA : LoadUIPA<0b00, 1, 0b00, FPR32Op, uimm12s4, "ldrpa",
+defm LDRSPNA : LoadUIPND<1, 0b11, FPR32Op, uimm12s4, "ldrpna",
                    [(set (f32 FPR32Op:$Rt),
                          (load (am_indexed32 GPR64sp:$Rn, uimm12s4:$offset)))]>;
 defm LDRD : LoadUI<0b11, 1, 0b01, FPR64Op, uimm12s8, "ldr",
                    [(set (f64 FPR64Op:$Rt),
                          (load (am_indexed64 GPR64sp:$Rn, uimm12s8:$offset)))]>;
-defm LDRDPNA : LoadUI<0b11, 1, 0b10, FPR64Op, uimm12s8, "ldrpna",
-                   [(set (f64 FPR64Op:$Rt),
-                         (load (am_indexed64 GPR64sp:$Rn, uimm12s8:$offset)))]>;
-defm LDRDPA : LoadUIPA<0b00, 1, 0b10, FPR64Op, uimm12s8, "ldrpa",
+defm LDRDPNA : LoadUIPND<FPR64Op, uimm12s8, "ldrpna",
                    [(set (f64 FPR64Op:$Rt),
                          (load (am_indexed64 GPR64sp:$Rn, uimm12s8:$offset)))]>;
 defm LDRQ : LoadUI<0b00, 1, 0b11, FPR128Op, uimm12s16, "ldr",
                  [(set (f128 FPR128Op:$Rt),
                        (load (am_indexed128 GPR64sp:$Rn, uimm12s16:$offset)))]>;
-defm LDRQPNA : LoadUI<0b10, 1, 0b10, FPR128Op, uimm12s16, "ldrpna",
-                 [(set (f128 FPR128Op:$Rt),
-                       (load (am_indexed128 GPR64sp:$Rn, uimm12s16:$offset)))]>;
-defm LDRQPA : LoadUIPA<0b00, 1, 0b11, FPR128Op, uimm12s16, "ldrpa",
+defm LDRQPNA : LoadUIPND<FPR128Op, uimm12s16, "ldrpna",
                  [(set (f128 FPR128Op:$Rt),
                        (load (am_indexed128 GPR64sp:$Rn, uimm12s16:$offset)))]>;
 
@@ -2940,11 +2931,7 @@ defm LDRHH : LoadUI<0b01, 0, 0b01, GPR32, uimm12s2, "ldrh",
                     [(set GPR32:$Rt,
                           (zextloadi16 (am_indexed16 GPR64sp:$Rn,
                                                      uimm12s2:$offset)))]>;
-defm LDRHHPNA : LoadUI<0b11, 1, 0b11, GPR32, uimm12s2, "ldrhpna",
-                    [(set GPR32:$Rt,
-                          (zextloadi16 (am_indexed16 GPR64sp:$Rn,
-                                                     uimm12s2:$offset)))]>;
-defm LDRHHPA : LoadUIPA<0b00, 0, 0b01, GPR32, uimm12s2, "ldrhpa",
+defm LDRHHPNA : LoadUIPND<GPR32, uimm12s2, "ldrhpna",
                     [(set GPR32:$Rt,
                           (zextloadi16 (am_indexed16 GPR64sp:$Rn,
                                                      uimm12s2:$offset)))]>;
@@ -2952,11 +2939,7 @@ defm LDRBB : LoadUI<0b00, 0, 0b01, GPR32, uimm12s1, "ldrb",
                     [(set GPR32:$Rt,
                           (zextloadi8 (am_indexed8 GPR64sp:$Rn,
                                                    uimm12s1:$offset)))]>;
-defm LDRBBPNA : LoadUI<0b01, 1, 0b11, GPR32, uimm12s1, "ldrbpna",
-                    [(set GPR32:$Rt,
-                          (zextloadi8 (am_indexed8 GPR64sp:$Rn,
-                                                   uimm12s1:$offset)))]>;
-defm LDRBBPA : LoadUIPA<0b00, 0, 0b00, GPR32, uimm12s1, "ldrbpa",
+defm LDRBBPNA : LoadUIPND<GPR32, uimm12s1, "ldrbpna",
                     [(set GPR32:$Rt,
                           (zextloadi8 (am_indexed8 GPR64sp:$Rn,
                                                    uimm12s1:$offset)))]>;
@@ -2993,11 +2976,7 @@ defm LDRSHW : LoadUI<0b01, 0, 0b11, GPR32, uimm12s2, "ldrsh",
                      [(set GPR32:$Rt,
                            (sextloadi16 (am_indexed16 GPR64sp:$Rn,
                                                       uimm12s2:$offset)))]>;
-defm LDRSHWPNA : LoadUISVE<0b00, 0, 0b00, GPR32, uimm12s2, "ldrshpna",
-                     [(set GPR32:$Rt,
-                           (sextloadi16 (am_indexed16 GPR64sp:$Rn,
-                                                      uimm12s2:$offset)))]>;
-defm LDRSHWPA : LoadUISVE<0b00, 0, 0b01, GPR32, uimm12s2, "ldrshpa",
+defm LDRSHWPNA : LoadUI2<0b00, 0, 0b11, GPR32, uimm12s2, "ldrshpna",
                      [(set GPR32:$Rt,
                            (sextloadi16 (am_indexed16 GPR64sp:$Rn,
                                                       uimm12s2:$offset)))]>;
@@ -3005,11 +2984,7 @@ defm LDRSHX : LoadUI<0b01, 0, 0b10, GPR64, uimm12s2, "ldrsh",
                      [(set GPR64:$Rt,
                            (sextloadi16 (am_indexed16 GPR64sp:$Rn,
                                                       uimm12s2:$offset)))]>;
-defm LDRSHXPNA : LoadUISVE<0b00, 0, 0b10, GPR64, uimm12s2, "ldrshpna",
-                     [(set GPR64:$Rt,
-                           (sextloadi16 (am_indexed16 GPR64sp:$Rn,
-                                                      uimm12s2:$offset)))]>;
-defm LDRSHXPA : LoadUISVE<0b00, 0, 0b11, GPR64, uimm12s2, "ldrshpa",
+defm LDRSHXPNA : LoadUI2<0b00, 1, 0b10, GPR64, uimm12s2, "ldrshpna",
                      [(set GPR64:$Rt,
                            (sextloadi16 (am_indexed16 GPR64sp:$Rn,
                                                       uimm12s2:$offset)))]>;
@@ -3019,11 +2994,7 @@ defm LDRSBW : LoadUI<0b00, 0, 0b11, GPR32, uimm12s1, "ldrsb",
                      [(set GPR32:$Rt,
                            (sextloadi8 (am_indexed8 GPR64sp:$Rn,
                                                     uimm12s1:$offset)))]>;
-defm LDRSBWPNA : LoadUISVE<0b00, 1, 0b00, GPR32, uimm12s1, "ldrsbpna",
-                     [(set GPR32:$Rt,
-                           (sextloadi8 (am_indexed8 GPR64sp:$Rn,
-                                                    uimm12s1:$offset)))]>;
-defm LDRSBWPA : LoadUISVE<0b00, 1, 0b01, GPR32, uimm12s1, "ldrsbpa",
+defm LDRSBWPNA : LoadUI2<0b00, 1, 0b00, GPR32, uimm12s1, "ldrsbpna",
                      [(set GPR32:$Rt,
                            (sextloadi8 (am_indexed8 GPR64sp:$Rn,
                                                     uimm12s1:$offset)))]>;
@@ -3031,11 +3002,7 @@ defm LDRSBX : LoadUI<0b00, 0, 0b10, GPR64, uimm12s1, "ldrsb",
                      [(set GPR64:$Rt,
                            (sextloadi8 (am_indexed8 GPR64sp:$Rn,
                                                     uimm12s1:$offset)))]>;
-defm LDRSBXPNA : LoadUISVE<0b00, 1, 0b10, GPR64, uimm12s1, "ldrsbpna",
-                     [(set GPR64:$Rt,
-                           (sextloadi8 (am_indexed8 GPR64sp:$Rn,
-                                                    uimm12s1:$offset)))]>;
-defm LDRSBXPA : LoadUISVE<0b00, 1, 0b11, GPR64, uimm12s1, "ldrsbpa",
+defm LDRSBXPNA : LoadUI2<0b00, 0, 0b10, GPR64, uimm12s1, "ldrsbpna",
                      [(set GPR64:$Rt,
                            (sextloadi8 (am_indexed8 GPR64sp:$Rn,
                                                     uimm12s1:$offset)))]>;
@@ -3046,10 +3013,6 @@ defm LDRSW  : LoadUI<0b10, 0, 0b10, GPR64, uimm12s4, "ldrsw",
                            (sextloadi32 (am_indexed32 GPR64sp:$Rn,
                                                       uimm12s4:$offset)))]>;
 defm LDRSWPNA  : LoadUI<0b10, 0, 0b11, GPR64, uimm12s4, "ldrswpna",
-                     [(set GPR64:$Rt,
-                           (sextloadi32 (am_indexed32 GPR64sp:$Rn,
-                                                      uimm12s4:$offset)))]>;
-defm LDRSWPA  : LoadUIPA<0b00, 0, 0b11, GPR64, uimm12s4, "ldrswpa",
                      [(set GPR64:$Rt,
                            (sextloadi32 (am_indexed32 GPR64sp:$Rn,
                                                       uimm12s4:$offset)))]>;
@@ -3082,17 +3045,29 @@ def alignedglobal : PatLeaf<(iPTR iPTR:$label), [{
 
 def LDRWl : LoadLiteral<0b00, 0, GPR32z, "ldr",
   [(set GPR32z:$Rt, (load (AArch64adr alignedglobal:$label)))]>;
+def LDRWPNAl : LoadLiteralPND<GPR32z, "ldrpna",
+  [(set GPR32z:$Rt, (load (AArch64adr alignedglobal:$label)))]>;
 def LDRXl : LoadLiteral<0b01, 0, GPR64z, "ldr",
+  [(set GPR64z:$Rt, (load (AArch64adr alignedglobal:$label)))]>;
+def LDRXPNAl : LoadLiteralPND<"ldrpna",
   [(set GPR64z:$Rt, (load (AArch64adr alignedglobal:$label)))]>;
 def LDRSl : LoadLiteral<0b00, 1, FPR32Op, "ldr",
   [(set (f32 FPR32Op:$Rt), (load (AArch64adr alignedglobal:$label)))]>;
+def LDRSPNAl : LoadLiteralPND<FPR32Op, "ldrpna",
+  [(set (f32 FPR32Op:$Rt), (load (AArch64adr alignedglobal:$label)))]>;
 def LDRDl : LoadLiteral<0b01, 1, FPR64Op, "ldr",
   [(set (f64 FPR64Op:$Rt), (load (AArch64adr alignedglobal:$label)))]>;
+def LDRDPNAl : LoadLiteralPND<FPR64Op, "ldrpna",
+  [(set (f64 FPR64Op:$Rt), (load (AArch64adr alignedglobal:$label)))]>;
 def LDRQl : LoadLiteral<0b10, 1, FPR128Op, "ldr",
+  [(set (f128 FPR128Op:$Rt), (load (AArch64adr alignedglobal:$label)))]>;
+def LDRQPNAl : LoadLiteralPND<FPR128Op, "ldrpna",
   [(set (f128 FPR128Op:$Rt), (load (AArch64adr alignedglobal:$label)))]>;
 
 // load sign-extended word
 def LDRSWl : LoadLiteral<0b10, 0, GPR64z, "ldrsw",
+  [(set GPR64z:$Rt, (sextloadi32 (AArch64adr alignedglobal:$label)))]>;
+def LDRSWPNal : LoadLiteralPND<GPR64z, "ldrswpna",
   [(set GPR64z:$Rt, (sextloadi32 (AArch64adr alignedglobal:$label)))]>;
 
 let AddedComplexity = 20 in {
@@ -3109,52 +3084,43 @@ def PRFMl : PrefetchLiteral<0b11, 0, "prfm", []>;
 defm LDURX : LoadUnscaled<0b11, 0, 0b01, GPR64z, "ldur",
                     [(set GPR64z:$Rt,
                           (load (am_unscaled64 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURXPNA : LoadUnscaled<0b11, 0, 0b11, GPR64z, "ldurpna",
-                    [(set GPR64z:$Rt,
-                          (load (am_unscaled64 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURXPA : LoadUnscaledPA<1, 0b01, GPR64z, "ldurpa",
+defm LDURXPNA : LoadUnscaledPND<GPR64z, "ldurpna",
                     [(set GPR64z:$Rt,
                           (load (am_unscaled64 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURW : LoadUnscaled<0b10, 0, 0b01, GPR32z, "ldur",
                     [(set GPR32z:$Rt,
                           (load (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURWPNA : LoadUnscaled<0b01, 1, 0b10, GPR32z, "ldurpna",
+defm LDURWPNA : LoadUnscaledPND<GPR32z, "ldurpna",
                     [(set GPR32z:$Rt,
                           (load (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURWPA : LoadUnscaledPA<0, 0b10, GPR32z, "ldurpa",
-                    [(set GPR32z:$Rt,
-                          (load (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURB : LoadUnscaled<0b00, 1, 0b01, FPR8Op, "ldur",
+defm LDURB : LoadUnscaled<0b01, 1, 0b11, FPR8Op, "ldur",
+                    [(set FPR8Op:$Rt,
+                          (load (am_unscaled8 GPR64sp:$Rn, simm9:$offset)))]>;
+defm LDURBPNA : LoadUnscaledPND<FPR8Op, "ldurpna",
                     [(set FPR8Op:$Rt,
                           (load (am_unscaled8 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURH : LoadUnscaled<0b01, 1, 0b01, FPR16Op, "ldur",
                     [(set (f16 FPR16Op:$Rt),
                           (load (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
+defm LDURHPNA : LoadUnscaledPND<FPR16Op, "ldurpna",
+                    [(set (f16 FPR16Op:$Rt),
+                          (load (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURS : LoadUnscaled<0b10, 1, 0b01, FPR32Op, "ldur",
                     [(set (f32 FPR32Op:$Rt),
                           (load (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURSPNA : LoadUnscaled<0b10, 1, 0b11, FPR32Op, "ldurpna",
-                    [(set (f32 FPR32Op:$Rt),
-                          (load (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURSPA : LoadUnscaledPA<1, 0b00, FPR32Op, "ldurpa",
+defm LDURSPNA : LoadUnscaledPND<FPR32Op, "ldurpna",
                     [(set (f32 FPR32Op:$Rt),
                           (load (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURD : LoadUnscaled<0b11, 1, 0b01, FPR64Op, "ldur",
                     [(set (f64 FPR64Op:$Rt),
                           (load (am_unscaled64 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURDPNA : LoadUnscaled<0b11, 1, 0b10, FPR64Op, "ldurpna",
-                    [(set (f64 FPR64Op:$Rt),
-                          (load (am_unscaled64 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURDPA : LoadUnscaledPA<1, 0b10, FPR64Op, "ldurpa",
+defm LDURDPNA : LoadUnscaledPND<FPR64Op, "ldurpna",
                     [(set (f64 FPR64Op:$Rt),
                           (load (am_unscaled64 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURQ : LoadUnscaled<0b00, 1, 0b11, FPR128Op, "ldur",
                     [(set (f128 FPR128Op:$Rt),
                           (load (am_unscaled128 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURQPNA : LoadUnscaled<0b10, 1, 0b10, FPR128Op, "ldurpna",
-                    [(set (f128 FPR128Op:$Rt),
-                          (load (am_unscaled128 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURQPA : LoadUnscaledPA<1, 0b11, FPR128Op, "ldurpa",
+defm LDURQPNA : LoadUnscaledPND<FPR128Op, "ldurpna",
                     [(set (f128 FPR128Op:$Rt),
                           (load (am_unscaled128 GPR64sp:$Rn, simm9:$offset)))]>;
 
@@ -3163,11 +3129,7 @@ defm LDURHH
              [(set GPR32:$Rt,
                     (zextloadi16 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURHHPNA
-    : LoadUnscaled<0b11, 1, 0b11, GPR32, "ldurhpna",
-             [(set GPR32:$Rt,
-                    (zextloadi16 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURHHPA
-    : LoadUnscaledPA<0, 0b01, GPR32, "ldurhpa",
+    : LoadUnscaledPND<GPR32, "ldurhpna",
              [(set GPR32:$Rt,
                     (zextloadi16 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURBB
@@ -3175,11 +3137,7 @@ defm LDURBB
              [(set GPR32:$Rt,
                     (zextloadi8 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURBBPNA
-    : LoadUnscaled<0b01, 1, 0b11, GPR32, "ldurbpna",
-             [(set GPR32:$Rt,
-                    (zextloadi8 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURBBPA
-    : LoadUnscaledPA<0, 0b00, GPR32, "ldurbpa",
+    : LoadUnscaledPND<GPR32, "ldurbpna",
              [(set GPR32:$Rt,
                     (zextloadi8 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
 
@@ -3312,8 +3270,16 @@ defm LDURSHW
     : LoadUnscaled<0b01, 0, 0b11, GPR32, "ldursh",
                [(set GPR32:$Rt,
                     (sextloadi16 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
+defm LDURSHWPNA
+    : LoadUnscaledPND<GPR32, "ldurshpna",
+               [(set GPR32:$Rt,
+                    (sextloadi16 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURSHX
     : LoadUnscaled<0b01, 0, 0b10, GPR64, "ldursh",
+              [(set GPR64:$Rt,
+                    (sextloadi16 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
+defm LDURSHXPNA
+    : LoadUnscaledPND<GPR64, "ldurshpna",
               [(set GPR64:$Rt,
                     (sextloadi16 (am_unscaled16 GPR64sp:$Rn, simm9:$offset)))]>;
 
@@ -3322,8 +3288,16 @@ defm LDURSBW
     : LoadUnscaled<0b00, 0, 0b11, GPR32, "ldursb",
                 [(set GPR32:$Rt,
                       (sextloadi8 (am_unscaled8 GPR64sp:$Rn, simm9:$offset)))]>;
+defm LDURSBWPNA
+    : LoadUnscaledPND<GPR32, "ldursbpna",
+                [(set GPR32:$Rt,
+                      (sextloadi8 (am_unscaled8 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURSBX
     : LoadUnscaled<0b00, 0, 0b10, GPR64, "ldursb",
+                [(set GPR64:$Rt,
+                      (sextloadi8 (am_unscaled8 GPR64sp:$Rn, simm9:$offset)))]>;
+defm LDURSBXPNA
+    : LoadUnscaledPND<GPR64, "ldursbpna",
                 [(set GPR64:$Rt,
                       (sextloadi8 (am_unscaled8 GPR64sp:$Rn, simm9:$offset)))]>;
 
@@ -3333,11 +3307,7 @@ defm LDURSW
               [(set GPR64:$Rt,
                     (sextloadi32 (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
 defm LDURSWPNA
-    : LoadUnscaled<0b10, 0, 0b11, GPR64, "ldurswpna",
-              [(set GPR64:$Rt,
-                    (sextloadi32 (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
-defm LDURSWPA
-    : LoadUnscaledPA<0, 0b11, GPR64, "ldurswpa",
+    : LoadUnscaledPND<GPR64, "ldurswpna",
               [(set GPR64:$Rt,
                     (sextloadi32 (am_unscaled32 GPR64sp:$Rn, simm9:$offset)))]>;
 
@@ -3384,100 +3354,80 @@ defm LDTRSW  : LoadUnprivileged<0b10, 0, 0b10, GPR64, "ldtrsw">;
 //---
 // (immediate pre-indexed)
 def LDRWpre : LoadPreIdx<0b10, 0, 0b01, GPR32z, "ldr">;
-def LDRWPNApre : LoadPreIdx<0b01, 1, 0b10, GPR32z, "ldrpna">;
-def LDRWPApre : LoadPreIdxPA<0b00, 0, 0b10, GPR32z, "ldrpa">;
+def LDRWPNApre : LoadPreIdxPND<GPR32z, "ldrpna">;
 def LDRXpre : LoadPreIdx<0b11, 0, 0b01, GPR64z, "ldr">;
-def LDRXPNApre : LoadPreIdx<0b11, 0, 0b11, GPR64z, "ldrpna">;
-def LDRXPApre : LoadPreIdxPA<0b00, 1, 0b01, GPR64z, "ldrpa">;
+def LDRXPNApre : LoadPreIdxPND<GPR64z, "ldrpna">;
 def LDRBpre : LoadPreIdx<0b00, 1, 0b01, FPR8Op,  "ldr">;
+def LDRBPNApre : LoadPreIdxPND<FPR8Op,  "ldrpna">;
 def LDRHpre : LoadPreIdx<0b01, 1, 0b01, FPR16Op, "ldr">;
+def LDRHPNApre : LoadPreIdxPND<FPR16Op, "ldrpna">;
 def LDRSpre : LoadPreIdx<0b10, 1, 0b01, FPR32Op, "ldr">;
-def LDRSPNApre : LoadPreIdx<0b10, 1, 0b11, FPR32Op, "ldrpna">;
-def LDRSPApre : LoadPreIdxPA<0b00, 1, 0b00, FPR32Op, "ldrpa">;
+def LDRSPNApre : LoadPreIdxPND<FPR32Op, "ldrpna">;
 def LDRDpre : LoadPreIdx<0b11, 1, 0b01, FPR64Op, "ldr">;
-def LDRDPNApre : LoadPreIdx<0b11, 1, 0b10, FPR64Op, "ldrpna">;
-def LDRDPApre : LoadPreIdxPA<0b00, 1, 0b10, FPR64Op, "ldrpa">;
+def LDRDPNApre : LoadPreIdxPND<FPR64Op, "ldrpna">;
 def LDRQpre : LoadPreIdx<0b00, 1, 0b11, FPR128Op, "ldr">;
-def LDRQPNApre : LoadPreIdx<0b10, 1, 0b10, FPR128Op, "ldrpna">;
-def LDRQPApre : LoadPreIdxPA<0b00, 1, 0b11, FPR128Op, "ldrpa">;
+def LDRQPNApre : LoadPreIdxPND<FPR128Op, "ldrpna">;
 
 // load sign-extended half-word
 def LDRSHWpre : LoadPreIdx<0b01, 0, 0b11, GPR32z, "ldrsh">;
-def LDRSHWPNApre : LoadPreIdxSVE<0b00, 0, 0b00, GPR32z, "ldrshpna">;
-def LDRSHWPApre : LoadPreIdxSVE<0b00, 0, 0b01, GPR32z, "ldrshpa">;
+def LDRSHWPNApre : LoadPreIdxPND<GPR32z, "ldrshpna">;
 def LDRSHXpre : LoadPreIdx<0b01, 0, 0b10, GPR64z, "ldrsh">;
-def LDRSHXPNApre : LoadPreIdxSVE<0b00, 0, 0b10, GPR64z, "ldrshpna">;
-def LDRSHXPApre : LoadPreIdxSVE<0b00, 0, 0b11, GPR64z, "ldrshpa">;
+def LDRSHXPNApre : LoadPreIdxPND<GPR64z, "ldrshpna">;
 
 // load sign-extended byte
 def LDRSBWpre : LoadPreIdx<0b00, 0, 0b11, GPR32z, "ldrsb">;
-def LDRSBWPNApre : LoadPreIdxSVE<0b00, 1, 0b00, GPR32z, "ldrsbpna">;
-def LDRSBWPApre : LoadPreIdxSVE<0b00, 1, 0b01, GPR32z, "ldrsbpa">;
+def LDRSBWPNApre : LoadPreIdxPND<GPR32z, "ldrsbpna">;
 def LDRSBXpre : LoadPreIdx<0b00, 0, 0b10, GPR64z, "ldrsb">;
-def LDRSBXPNApre : LoadPreIdxSVE<0b00, 1, 0b10, GPR64z, "ldrsbpna">;
-def LDRSBXPApre : LoadPreIdxSVE<0b00, 1, 0b11, GPR64z, "ldrsbpa">;
+def LDRSBXPNApre : LoadPreIdxPND<GPR64z, "ldrsbpna">;
 
 // load zero-extended byte
 def LDRBBpre : LoadPreIdx<0b00, 0, 0b01, GPR32z, "ldrb">;
-def LDRBBPNApre : LoadPreIdx<0b01, 1, 0b11, GPR32z, "ldrbpna">;
-def LDRBBPApre : LoadPreIdxPA<0b00, 0, 0b00, GPR32z, "ldrbpa">;
+def LDRBBPNApre : LoadPreIdxPND<GPR32z, "ldrbpna">;
 def LDRHHpre : LoadPreIdx<0b01, 0, 0b01, GPR32z, "ldrh">;
-def LDRHHPNApre : LoadPreIdx<0b11, 1, 0b11, GPR32z, "ldrhpna">;
-def LDRHHPApre : LoadPreIdxPA<0b00, 0, 0b01, GPR32z, "ldrhpa">;
+def LDRHHPNApre : LoadPreIdxPND<GPR32z, "ldrhpna">;
 
 // load sign-extended word
 def LDRSWpre : LoadPreIdx<0b10, 0, 0b10, GPR64z, "ldrsw">;
-def LDRSWPNApre : LoadPreIdx<0b10, 0, 0b11, GPR64z, "ldrswpna">;
-def LDRSWPApre : LoadPreIdxPA<0b00, 0, 0b11, GPR64z, "ldrswpa">;
+def LDRSWPNApre : LoadPreIdxPND<GPR64z, "ldrswpna">;
 
 //---
 // (immediate post-indexed)
 def LDRWpost : LoadPostIdx<0b10, 0, 0b01, GPR32z, "ldr">;
-def LDRWPNApost : LoadPostIdx<0b01, 1, 0b10, GPR32z, "ldrpna">;
-def LDRWPApost : LoadPostIdxPA<0b00, 0, 0b10, GPR32z, "ldrpa">;
+def LDRWPNApost : LoadPostIdxPND<GPR32z, "ldrpna">;
 def LDRXpost : LoadPostIdx<0b11, 0, 0b01, GPR64z, "ldr">;
-def LDRXPNApost : LoadPostIdx<0b11, 0, 0b11, GPR64z, "ldrpna">;
-def LDRXPApost : LoadPostIdxPA<0b00, 1, 0b01, GPR64z, "ldrpa">;
+def LDRXPNApost : LoadPostIdxPND<GPR64z, "ldrpna">;
 def LDRBpost : LoadPostIdx<0b00, 1, 0b01, FPR8Op,  "ldr">;
+def LDRBPNApost : LoadPostIdxPND<FPR8Op,  "ldrpna">;
 def LDRHpost : LoadPostIdx<0b01, 1, 0b01, FPR16Op, "ldr">;
+def LDRHPNApost : LoadPostIdxPND<FPR16Op, "ldrpna">;
 def LDRSpost : LoadPostIdx<0b10, 1, 0b01, FPR32Op, "ldr">;
-def LDRSPNApost : LoadPostIdx<0b10, 1, 0b11, FPR32Op, "ldrpna">;
-def LDRSPApost : LoadPostIdxPA<0b00, 1, 0b00, FPR32Op, "ldrpa">;
+def LDRSPNApost : LoadPostIdxPND<FPR32Op, "ldrpna">;
 def LDRDpost : LoadPostIdx<0b11, 1, 0b01, FPR64Op, "ldr">;
-def LDRDPNApost : LoadPostIdx<0b11, 1, 0b10, FPR64Op, "ldrpna">;
-def LDRDPApost : LoadPostIdxPA<0b00, 1, 0b10, FPR64Op, "ldrpa">;
+def LDRDPNApost : LoadPostIdxPND<FPR64Op, "ldrpna">;
 def LDRQpost : LoadPostIdx<0b00, 1, 0b11, FPR128Op, "ldr">;
-def LDRQPNApost : LoadPostIdx<0b10, 1, 0b10, FPR128Op, "ldrpna">;
-def LDRQPApost : LoadPostIdxPA<0b00, 1, 0b11, FPR128Op, "ldrpa">;
+def LDRQPNApost : LoadPostIdxPND<FPR128Op, "ldrpna">;
 
 // load sign-extended half-word
 def LDRSHWpost : LoadPostIdx<0b01, 0, 0b11, GPR32z, "ldrsh">;
-def LDRSHWPNApost : LoadPostIdxSVE<0b00, 0, 0b00, GPR32z, "ldrshpna">;
-def LDRSHWPApost : LoadPostIdxSVE<0b00, 0, 0b01, GPR32z, "ldrshpa">;
+def LDRSHWPNApost : LoadPostIdxPND<GPR32z, "ldrshpna">;
 def LDRSHXpost : LoadPostIdx<0b01, 0, 0b10, GPR64z, "ldrsh">;
-def LDRSHXPNApost : LoadPostIdxSVE<0b00, 0, 0b10, GPR64z, "ldrshpna">;
-def LDRSHXPApost : LoadPostIdxSVE<0b00, 0, 0b11, GPR64z, "ldrshpa">;
+def LDRSHXPNApost : LoadPostIdxPND<GPR64z, "ldrshpna">;
 
 // load sign-extended byte
 def LDRSBWpost : LoadPostIdx<0b00, 0, 0b11, GPR32z, "ldrsb">;
-def LDRSBWPNApost : LoadPostIdxSVE<0b00, 1, 0b00, GPR32z, "ldrsbpna">;
-def LDRSBWPApost : LoadPostIdxSVE<0b00, 1, 0b01, GPR32z, "ldrsbpa">;
+def LDRSBWPNApost : LoadPostIdxPND<GPR32z, "ldrsbpna">;
 def LDRSBXpost : LoadPostIdx<0b00, 0, 0b10, GPR64z, "ldrsb">;
-def LDRSBXPNApost : LoadPostIdxSVE<0b00, 1, 0b10, GPR64z, "ldrsbpna">;
-def LDRSBXPApost : LoadPostIdxSVE<0b00, 1, 0b11, GPR64z, "ldrsbpa">;
+def LDRSBXPNApost : LoadPostIdxPND<GPR64z, "ldrsbpna">;
 
 // load zero-extended byte
 def LDRBBpost : LoadPostIdx<0b00, 0, 0b01, GPR32z, "ldrb">;
-def LDRBBPNApost : LoadPostIdx<0b01, 1, 0b11, GPR32z, "ldrbpna">;
-def LDRBBPApost : LoadPostIdxPA<0b00, 0, 0b00, GPR32z, "ldrbpa">;
+def LDRBBPNApost : LoadPostIdxPND<GPR32z, "ldrbpna">;
 def LDRHHpost : LoadPostIdx<0b01, 0, 0b01, GPR32z, "ldrh">;
-def LDRHHPNApost : LoadPostIdx<0b11, 1, 0b11, GPR32z, "ldrhpna">;
-def LDRHHPApost : LoadPostIdxPA<0b00, 0, 0b01, GPR32z, "ldrhpa">;
+def LDRHHPNApost : LoadPostIdxPND<GPR32z, "ldrhpna">;
 
 // load sign-extended word
 def LDRSWpost : LoadPostIdx<0b10, 0, 0b10, GPR64z, "ldrsw">;
-def LDRSWPNApost : LoadPostIdx<0b10, 0, 0b11, GPR64z, "ldrswpna">;
-def LDRSWPApost : LoadPostIdxPA<0b00, 0, 0b11, GPR64z, "ldrswpa">;
+def LDRSWPNApost : LoadPostIdxPND<GPR64z, "ldrswpna">;
 
 //===----------------------------------------------------------------------===//
 // Store instructions.

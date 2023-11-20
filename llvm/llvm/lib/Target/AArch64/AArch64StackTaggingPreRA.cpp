@@ -108,7 +108,6 @@ static bool isUncheckedLoadOrStoreOpcode(unsigned Opcode) {
   case AArch64::LDRHHui:
   case AArch64::LDRWui:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
 
   case AArch64::LDRBui:
   case AArch64::LDRHui:
@@ -136,12 +135,10 @@ static bool isUncheckedLoadOrStoreOpcode(unsigned Opcode) {
   case AArch64::STRQui:
 
   case AArch64::LDPWi:
-  case AArch64::LDPWPAi:
   case AArch64::LDPWPNAi:
   case AArch64::LDPXi:
   case AArch64::LDPSi:
   case AArch64::LDPDi:
-  case AArch64::LDPQPAi:
   case AArch64::LDPQPNAi:
   case AArch64::LDPQi:
 

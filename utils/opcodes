@@ -1,17 +1,7 @@
-missing:
-LDPS
-LDPSW
-LDRB 
-LDRH
-LDRBui
-LDRHui
-LDRSui
-LDR*l
-LDURB
-LDURH
-LDURSHW
-LDURSHX
-LDURSBW
-LDURSBX
+situation: BaseLoadStore(Pre/Post)PA is in SVE space :/
+renew SVE part and look at what's free
+need to find opcode space in 27=1, 25=0. consider disabling LDP
 
-currently at UI
+note that we may be in SVE space but without clashing, as LLVM doesn't complain. lets pray.
+
+also, I can't even find where PALDURLoads (BaseLoadStoreUnscalePA) is called?? so need to add control flow for the missing functions there

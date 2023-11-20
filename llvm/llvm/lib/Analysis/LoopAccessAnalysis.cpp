@@ -2016,21 +2016,27 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
 
             Instruction *Source = getMemoryInstructions()[A.second];
             Instruction *Destination = getMemoryInstructions()[B.second];
-            if (isa<LoadInst>(Source) && QueryResults.find(Source) != QueryResults.end())
-              QueryResults[Source] = Dependence::NoDep;
-            if (isa<LoadInst>(Destination) && QueryResults.find(Destination) != QueryResults.end())
-              QueryResults[Destination] = Dependence::NoDep;
+            if (isa<LoadInst>(Source) && QueryResults.find(Source) != QueryResults.end()){
+              QueryResults[Source].first = Dependence::NoDep;
+              QueryResults[Source].second = nullptr;
+            }
+            if (isa<LoadInst>(Destination) && QueryResults.find(Destination) != QueryResults.end()){
+              QueryResults[Destination].first = Dependence::NoDep;
+              QueryResults[Destination].second = nullptr;
+            }
 
             Dependence::DepType Type =
                 isDependent(*A.first, A.second, *B.first, B.second, Strides);
 
             if (isa<LoadInst>(Source) &&
-                Type > QueryResults[Source]){
-                QueryResults[Source] = Type;
+                Type > QueryResults[Source].first){
+                QueryResults[Source].first = Type;
+                QueryResults[Source].second = Destination;
             }
             if (isa<LoadInst>(Destination) &&
-                Type > QueryResults[Destination]){
-                QueryResults[Destination] = Type;
+                Type > QueryResults[Destination].first){
+                QueryResults[Destination].first = Type;
+                QueryResults[Destination].second = Source;
             }
 
             if (Type == Dependence::SafeDistance ||
