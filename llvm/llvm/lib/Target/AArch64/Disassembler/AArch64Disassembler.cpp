@@ -1000,53 +1000,41 @@ DecodeUnsignedLdStInstruction(MCInst &Inst, uint32_t insn, uint64_t Addr,
     break;
   case AArch64::STRBBui:
   case AArch64::LDRBBui:
-case AArch64::LDRBBPAui:
 case AArch64::LDRBBPNAui:
   case AArch64::LDRSBWui:
-case AArch64::LDRSBWPAui:
 case AArch64::LDRSBWPNAui:
   case AArch64::STRHHui:
   case AArch64::LDRHHui:
-case AArch64::LDRHHPAui:
 case AArch64::LDRHHPNAui:
   case AArch64::LDRSHWui:
-case AArch64::LDRSHWPAui:
 case AArch64::LDRSHWPNAui:
   case AArch64::STRWui:
   case AArch64::LDRWui:
-  case AArch64::LDRWPAui:
   case AArch64::LDRWPNAui:
     DecodeGPR32RegisterClass(Inst, Rt, Addr, Decoder);
     break;
   case AArch64::LDRSBXui:
-case AArch64::LDRSBXPAui:
 case AArch64::LDRSBXPNAui:
   case AArch64::LDRSHXui:
-case AArch64::LDRSHXPAui:
 case AArch64::LDRSHXPNAui:
   case AArch64::LDRSWui:
-case AArch64::LDRSWPAui:
 case AArch64::LDRSWPNAui:
   case AArch64::STRXui:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
     DecodeGPR64RegisterClass(Inst, Rt, Addr, Decoder);
     break;
   case AArch64::LDRQui:
-  case AArch64::LDRQPAui:
   case AArch64::LDRQPNAui:
   case AArch64::STRQui:
     DecodeFPR128RegisterClass(Inst, Rt, Addr, Decoder);
     break;
   case AArch64::LDRDui:
-  case AArch64::LDRDPAui:
   case AArch64::LDRDPNAui:
   case AArch64::STRDui:
     DecodeFPR64RegisterClass(Inst, Rt, Addr, Decoder);
     break;
   case AArch64::LDRSui:
-  case AArch64::LDRSPAui:
   case AArch64::LDRSPNAui:
   case AArch64::STRSui:
     DecodeFPR32RegisterClass(Inst, Rt, Addr, Decoder);
@@ -1084,87 +1072,64 @@ static DecodeStatus DecodeSignedLdStInstruction(MCInst &Inst, uint32_t insn,
   default:
     break;
   case AArch64::LDRSBWpre:
-case AArch64::LDRSBWPApre:
 case AArch64::LDRSBWPNApre:
   case AArch64::LDRSHWpre:
-case AArch64::LDRSHWPApre:
 case AArch64::LDRSHWPNApre:
   case AArch64::STRBBpre:
   case AArch64::LDRBBpre:
   case AArch64::STRHHpre:
   case AArch64::LDRHHpre:
-case AArch64::LDRHHPApre:
 case AArch64::LDRHHPNApre:
   case AArch64::STRWpre:
   case AArch64::LDRWpre:
-  case AArch64::LDRWPApre:
   case AArch64::LDRWPNApre:
   case AArch64::LDRSBWpost:
-case AArch64::LDRSBWPApost:
 case AArch64::LDRSBWPNApost:
   case AArch64::LDRSHWpost:
-case AArch64::LDRSHWPApost:
 case AArch64::LDRSHWPNApost:
   case AArch64::STRBBpost:
   case AArch64::LDRBBpost:
-case AArch64::LDRBBPApost:
 case AArch64::LDRBBPNApost:
   case AArch64::STRHHpost:
   case AArch64::LDRHHpost:
-  case AArch64::LDRHHPApost:
   case AArch64::LDRHHPNApost:
   case AArch64::STRWpost:
   case AArch64::LDRWpost:
-  case AArch64::LDRWPApost:
   case AArch64::LDRWPNApost:
   case AArch64::LDRSBXpre:
-case AArch64::LDRSBXPApre:
 case AArch64::LDRSBXPNApre:
   case AArch64::LDRSHXpre:
-case AArch64::LDRSHXPApre:
 case AArch64::LDRSHXPNApre:
   case AArch64::STRXpre:
   case AArch64::LDRSWpre:
-case AArch64::LDRSWPApre:
 case AArch64::LDRSWPNApre:
   case AArch64::LDRXpre:
-  case AArch64::LDRXPApre:
   case AArch64::LDRXPNApre:
   case AArch64::LDRSBXpost:
-case AArch64::LDRSBXPApost:
 case AArch64::LDRSBXPNApost:
   case AArch64::LDRSHXpost:
-case AArch64::LDRSHXPApost:
 case AArch64::LDRSHXPNApost:
   case AArch64::STRXpost:
   case AArch64::LDRSWpost:
-case AArch64::LDRSWPApost:
 case AArch64::LDRSWPNApost:
   case AArch64::LDRXpost:
-  case AArch64::LDRXPApost:
   case AArch64::LDRXPNApost:
   case AArch64::LDRQpre:
-  case AArch64::LDRQPApre:
   case AArch64::LDRQPNApre:
   case AArch64::STRQpre:
   case AArch64::LDRQpost:
-  case AArch64::LDRQPApost:
   case AArch64::LDRQPNApost:
   case AArch64::STRQpost:
   case AArch64::LDRDpre:
-  case AArch64::LDRDPApre:
   case AArch64::LDRDPNApre:
   case AArch64::STRDpre:
   case AArch64::LDRDpost:
-  case AArch64::LDRDPApost:
   case AArch64::LDRDPNApost:
   case AArch64::STRDpost:
   case AArch64::LDRSpre:
-  case AArch64::LDRSPApre:
   case AArch64::LDRSPNApre:
   case AArch64::STRSpre:
   case AArch64::LDRSpost:
-  case AArch64::LDRSPApost:
   case AArch64::LDRSPNApost:
   case AArch64::STRSpost:
   case AArch64::LDRHpre:
@@ -1188,17 +1153,14 @@ case AArch64::LDRSWPNApost:
     break;
   case AArch64::STURBBi:
   case AArch64::LDURBBi:
-case AArch64::LDURBBPAi:
 case AArch64::LDURBBPNAi:
   case AArch64::LDURSBWi:
   case AArch64::STURHHi:
   case AArch64::LDURHHi:
-case AArch64::LDURHHPAi:
 case AArch64::LDURHHPNAi:
   case AArch64::LDURSHWi:
   case AArch64::STURWi:
   case AArch64::LDURWi:
-case AArch64::LDURWPAi:
 case AArch64::LDURWPNAi:
   case AArch64::LDTRSBWi:
   case AArch64::LDTRSHWi:
@@ -1209,40 +1171,30 @@ case AArch64::LDURWPNAi:
   case AArch64::LDTRBi:
   case AArch64::STTRBi:
   case AArch64::LDRSBWpre:
-case AArch64::LDRSBWPApre:
 case AArch64::LDRSBWPNApre:
   case AArch64::LDRSHWpre:
-case AArch64::LDRSHWPApre:
 case AArch64::LDRSHWPNApre:
   case AArch64::STRBBpre:
   case AArch64::LDRBBpre:
-case AArch64::LDRBBPApre:
 case AArch64::LDRBBPNApre:
   case AArch64::STRHHpre:
   case AArch64::LDRHHpre:
-case AArch64::LDRHHPApre:
 case AArch64::LDRHHPNApre:
   case AArch64::STRWpre:
   case AArch64::LDRWpre:
-  case AArch64::LDRWPApre:
   case AArch64::LDRWPNApre:
   case AArch64::LDRSBWpost:
-case AArch64::LDRSBWPApost:
 case AArch64::LDRSBWPNApost:
   case AArch64::LDRSHWpost:
-case AArch64::LDRSHWPApost:
 case AArch64::LDRSHWPNApost:
   case AArch64::STRBBpost:
   case AArch64::LDRBBpost:
-case AArch64::LDRBBPApost:
 case AArch64::LDRBBPNApost:
   case AArch64::STRHHpost:
   case AArch64::LDRHHpost:
-case AArch64::LDRHHPApost:
 case AArch64::LDRHHPNApost:
   case AArch64::STRWpost:
   case AArch64::LDRWpost:
-  case AArch64::LDRWPApost:
   case AArch64::LDRWPNApost:
   case AArch64::STLURBi:
   case AArch64::STLURHi:
@@ -1257,11 +1209,9 @@ case AArch64::LDRHHPNApost:
   case AArch64::LDURSBXi:
   case AArch64::LDURSHXi:
   case AArch64::LDURSWi:
-case AArch64::LDURSWPAi:
 case AArch64::LDURSWPNAi:
   case AArch64::STURXi:
   case AArch64::LDURXi:
-case AArch64::LDURXPAi:
 case AArch64::LDURXPNAi:
   case AArch64::LDTRSBXi:
   case AArch64::LDTRSHXi:
@@ -1269,30 +1219,22 @@ case AArch64::LDURXPNAi:
   case AArch64::STTRXi:
   case AArch64::LDTRXi:
   case AArch64::LDRSBXpre:
-case AArch64::LDRSBXPApre:
 case AArch64::LDRSBXPNApre:
   case AArch64::LDRSHXpre:
-case AArch64::LDRSHXPApre:
 case AArch64::LDRSHXPNApre:
   case AArch64::STRXpre:
   case AArch64::LDRSWpre:
-case AArch64::LDRSWPApre:
 case AArch64::LDRSWPNApre:
   case AArch64::LDRXpre:
-  case AArch64::LDRXPApre:
   case AArch64::LDRXPNApre:
   case AArch64::LDRSBXpost:
-case AArch64::LDRSBXPApost:
 case AArch64::LDRSBXPNApost:
   case AArch64::LDRSHXpost:
-case AArch64::LDRSHXPApost:
 case AArch64::LDRSHXPNApost:
   case AArch64::STRXpost:
   case AArch64::LDRSWpost:
-case AArch64::LDRSWPApost:
 case AArch64::LDRSWPNApost:
   case AArch64::LDRXpost:
-  case AArch64::LDRXPApost:
   case AArch64::LDRXPNApost:
   case AArch64::LDAPURSWi:
   case AArch64::LDAPURSHXi:
@@ -1302,43 +1244,34 @@ case AArch64::LDRSWPNApost:
     DecodeGPR64RegisterClass(Inst, Rt, Addr, Decoder);
     break;
   case AArch64::LDURQi:
-case AArch64::LDURQPAi:
 case AArch64::LDURQPNAi:
   case AArch64::STURQi:
   case AArch64::LDRQpre:
-  case AArch64::LDRQPApre:
   case AArch64::LDRQPNApre:
   case AArch64::STRQpre:
   case AArch64::LDRQpost:
-  case AArch64::LDRQPApost:
   case AArch64::LDRQPNApost:
   case AArch64::STRQpost:
     DecodeFPR128RegisterClass(Inst, Rt, Addr, Decoder);
     break;
   case AArch64::LDURDi:
-case AArch64::LDURDPAi:
 case AArch64::LDURDPNAi:
   case AArch64::STURDi:
   case AArch64::LDRDpre:
-  case AArch64::LDRDPApre:
   case AArch64::LDRDPNApre:
   case AArch64::STRDpre:
   case AArch64::LDRDpost:
-  case AArch64::LDRDPApost:
   case AArch64::LDRDPNApost:
   case AArch64::STRDpost:
     DecodeFPR64RegisterClass(Inst, Rt, Addr, Decoder);
     break;
   case AArch64::LDURSi:
-case AArch64::LDURSPAi:
 case AArch64::LDURSPNAi:
   case AArch64::STURSi:
   case AArch64::LDRSpre:
-  case AArch64::LDRSPApre:
   case AArch64::LDRSPNApre:
   case AArch64::STRSpre:
   case AArch64::LDRSpost:
-  case AArch64::LDRSPApost:
   case AArch64::LDRSPNApost:
   case AArch64::STRSpost:
     DecodeFPR32RegisterClass(Inst, Rt, Addr, Decoder);
@@ -1480,37 +1413,29 @@ static DecodeStatus DecodePairLdStInstruction(MCInst &Inst, uint32_t insn,
   default:
     break;
   case AArch64::LDPXpost:
-case AArch64::LDPXPApost:
 case AArch64::LDPXPNApost:
   case AArch64::STPXpost:
   case AArch64::LDPSWpost:
   case AArch64::LDPXpre:
-case AArch64::LDPXPApre:
 case AArch64::LDPXPNApre:
   case AArch64::STPXpre:
   case AArch64::LDPSWpre:
   case AArch64::LDPWpost:
-case AArch64::LDPWPApost:
 case AArch64::LDPWPNApost:
   case AArch64::STPWpost:
   case AArch64::LDPWpre:
-case AArch64::LDPWPApre:
 case AArch64::LDPWPNApre:
   case AArch64::STPWpre:
   case AArch64::LDPQpost:
-case AArch64::LDPQPApost:
 case AArch64::LDPQPNApost:
   case AArch64::STPQpost:
   case AArch64::LDPQpre:
-case AArch64::LDPQPApre:
 case AArch64::LDPQPNApre:
   case AArch64::STPQpre:
   case AArch64::LDPDpost:
-case AArch64::LDPDPApost:
 case AArch64::LDPDPNApost:
   case AArch64::STPDpost:
   case AArch64::LDPDpre:
-case AArch64::LDPDPApre:
 case AArch64::LDPDPNApre:
   case AArch64::STPDpre:
   case AArch64::LDPSpost:
@@ -1527,12 +1452,10 @@ case AArch64::LDPDPNApre:
   default:
     return Fail;
   case AArch64::LDPXpost:
-case AArch64::LDPXPApost:
 case AArch64::LDPXPNApost:
   case AArch64::STPXpost:
   case AArch64::LDPSWpost:
   case AArch64::LDPXpre:
-case AArch64::LDPXPApre:
 case AArch64::LDPXPNApre:
   case AArch64::STPXpre:
   case AArch64::LDPSWpre:
@@ -1543,7 +1466,6 @@ case AArch64::LDPXPNApre:
   case AArch64::LDNPXi:
   case AArch64::STNPXi:
   case AArch64::LDPXi:
-case AArch64::LDPXPAi:
 case AArch64::LDPXPNAi:
   case AArch64::STPXi:
   case AArch64::LDPSWi:
@@ -1552,11 +1474,9 @@ case AArch64::LDPXPNAi:
     DecodeGPR64RegisterClass(Inst, Rt2, Addr, Decoder);
     break;
   case AArch64::LDPWpost:
-case AArch64::LDPWPApost:
 case AArch64::LDPWPNApost:
   case AArch64::STPWpost:
   case AArch64::LDPWpre:
-case AArch64::LDPWPApre:
 case AArch64::LDPWPNApre:
   case AArch64::STPWpre:
     NeedsDisjointWritebackTransfer = true;
@@ -1564,7 +1484,6 @@ case AArch64::LDPWPNApre:
   case AArch64::LDNPWi:
   case AArch64::STNPWi:
   case AArch64::LDPWi:
-case AArch64::LDPWPAi:
 case AArch64::LDPWPNAi:
   case AArch64::STPWi:
     DecodeGPR32RegisterClass(Inst, Rt, Addr, Decoder);
@@ -1573,15 +1492,12 @@ case AArch64::LDPWPNAi:
   case AArch64::LDNPQi:
   case AArch64::STNPQi:
   case AArch64::LDPQpost:
-case AArch64::LDPQPApost:
 case AArch64::LDPQPNApost:
   case AArch64::STPQpost:
   case AArch64::LDPQi:
-case AArch64::LDPQPAi:
 case AArch64::LDPQPNAi:
   case AArch64::STPQi:
   case AArch64::LDPQpre:
-case AArch64::LDPQPApre:
 case AArch64::LDPQPNApre:
   case AArch64::STPQpre:
     DecodeFPR128RegisterClass(Inst, Rt, Addr, Decoder);
@@ -1590,15 +1506,12 @@ case AArch64::LDPQPNApre:
   case AArch64::LDNPDi:
   case AArch64::STNPDi:
   case AArch64::LDPDpost:
-case AArch64::LDPDPApost:
 case AArch64::LDPDPNApost:
   case AArch64::STPDpost:
   case AArch64::LDPDi:
-case AArch64::LDPDPAi:
 case AArch64::LDPDPNAi:
   case AArch64::STPDi:
   case AArch64::LDPDpre:
-case AArch64::LDPDPApre:
 case AArch64::LDPDPNApre:
   case AArch64::STPDpre:
     DecodeFPR64RegisterClass(Inst, Rt, Addr, Decoder);

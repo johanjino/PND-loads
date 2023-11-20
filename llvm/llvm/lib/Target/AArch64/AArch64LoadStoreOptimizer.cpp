@@ -273,64 +273,45 @@ static unsigned getMatchingNonSExtOpcode(unsigned Opc,
   case AArch64::STRXpre:
   case AArch64::STURXi:
   case AArch64::LDRDui:
-  case AArch64::LDRDPAui:
   case AArch64::LDRDPNAui:
   case AArch64::LDURDi:
-case AArch64::LDURDPAi:
 case AArch64::LDURDPNAi:
   case AArch64::LDRDpre:
-  case AArch64::LDRDPApre:
   case AArch64::LDRDPNApre:
   case AArch64::LDRQui:
-  case AArch64::LDRQPAui:
   case AArch64::LDRQPNAui:
   case AArch64::LDURQi:
-case AArch64::LDURQPAi:
 case AArch64::LDURQPNAi:
   case AArch64::LDRQpre:
-  case AArch64::LDRQPApre:
   case AArch64::LDRQPNApre:
   case AArch64::LDRWui:
-  case AArch64::LDRWPAui:
   case AArch64::LDRWPNAui:
   case AArch64::LDURWi:
-case AArch64::LDURWPAi:
 case AArch64::LDURWPNAi:
   case AArch64::LDRWpre:
-  case AArch64::LDRWPApre:
   case AArch64::LDRWPNApre:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
   case AArch64::LDURXi:
-case AArch64::LDURXPAi:
 case AArch64::LDURXPNAi:
   case AArch64::LDRXpre:
-  case AArch64::LDRXPApre:
   case AArch64::LDRXPNApre:
   case AArch64::STRSui:
   case AArch64::STURSi:
   case AArch64::STRSpre:
   case AArch64::LDRSui:
-  case AArch64::LDRSPAui:
   case AArch64::LDRSPNAui:
   case AArch64::LDURSi:
-case AArch64::LDURSPAi:
 case AArch64::LDURSPNAi:
   case AArch64::LDRSpre:
-  case AArch64::LDRSPApre:
   case AArch64::LDRSPNApre:
     return Opc;
   case AArch64::LDRSWui:
     return AArch64::LDRWui;
-case AArch64::LDRSWPAui:
-    return AArch64::LDRWPAui;
 case AArch64::LDRSWPNAui:
     return AArch64::LDRWPNAui;
   case AArch64::LDURSWi:
     return AArch64::LDURWi;
-case AArch64::LDURSWPAi:
-    return AArch64::LDURWPAi;
 case AArch64::LDURSWPNAi:
     return AArch64::LDURWPNAi;
   }
@@ -385,66 +366,49 @@ static unsigned getMatchingPairOpcode(unsigned Opc) {
   case AArch64::STRXpre:
     return AArch64::STPXpre;
   case AArch64::LDRSui:
-  case AArch64::LDRSPAui:
   case AArch64::LDRSPNAui:
   case AArch64::LDURSi:
     return AArch64::LDPSi;
-case AArch64::LDURSPAi:
 case AArch64::LDURSPNAi:
   case AArch64::LDRSpre:
     return AArch64::LDPSpre;
-  case AArch64::LDRSPApre:
   case AArch64::LDRSPNApre:
     return AArch64::LDPSpre;
   case AArch64::LDRDui:
-  case AArch64::LDRDPAui:
   case AArch64::LDRDPNAui:
   case AArch64::LDURDi:
-case AArch64::LDURDPAi:
 case AArch64::LDURDPNAi:
     return AArch64::LDPDi;
   case AArch64::LDRDpre:
-  case AArch64::LDRDPApre:
   case AArch64::LDRDPNApre:
     return AArch64::LDPDpre;
   case AArch64::LDRQui:
-  case AArch64::LDRQPAui:
   case AArch64::LDRQPNAui:
   case AArch64::LDURQi:
-case AArch64::LDURQPAi:
 case AArch64::LDURQPNAi:
     return AArch64::LDPQi;
   case AArch64::LDRQpre:
-  case AArch64::LDRQPApre:
   case AArch64::LDRQPNApre:
     return AArch64::LDPQpre;
   case AArch64::LDRWui:
-  case AArch64::LDRWPAui:
   case AArch64::LDRWPNAui:
   case AArch64::LDURWi:
-case AArch64::LDURWPAi:
 case AArch64::LDURWPNAi:
     return AArch64::LDPWi;
   case AArch64::LDRWpre:
-  case AArch64::LDRWPApre:
   case AArch64::LDRWPNApre:
     return AArch64::LDPWpre;
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
   case AArch64::LDURXi:
-case AArch64::LDURXPAi:
 case AArch64::LDURXPNAi:
     return AArch64::LDPXi;
   case AArch64::LDRXpre:
-  case AArch64::LDRXPApre:
   case AArch64::LDRXPNApre:
     return AArch64::LDPXpre;
   case AArch64::LDRSWui:
-case AArch64::LDRSWPAui:
 case AArch64::LDRSWPNAui:
   case AArch64::LDURSWi:
-case AArch64::LDURSWPAi:
 case AArch64::LDURSWPNAi:
     return AArch64::LDPSWi;
   }
@@ -458,7 +422,6 @@ static unsigned isMatchingStore(MachineInstr &LoadInst,
   default:
     llvm_unreachable("Unsupported load instruction!");
   case AArch64::LDRBBui:
-case AArch64::LDRBBPAui:
 case AArch64::LDRBBPNAui:
     return StOpc == AArch64::STRBBui || StOpc == AArch64::STRHHui ||
            StOpc == AArch64::STRWui || StOpc == AArch64::STRXui;
@@ -466,7 +429,6 @@ case AArch64::LDRBBPNAui:
     return StOpc == AArch64::STURBBi || StOpc == AArch64::STURHHi ||
            StOpc == AArch64::STURWi || StOpc == AArch64::STURXi;
   case AArch64::LDRHHui:
-case AArch64::LDRHHPAui:
 case AArch64::LDRHHPNAui:
     return StOpc == AArch64::STRHHui || StOpc == AArch64::STRWui ||
            StOpc == AArch64::STRXui;
@@ -474,19 +436,15 @@ case AArch64::LDRHHPNAui:
     return StOpc == AArch64::STURHHi || StOpc == AArch64::STURWi ||
            StOpc == AArch64::STURXi;
   case AArch64::LDRWui:
-  case AArch64::LDRWPAui:
   case AArch64::LDRWPNAui:
     return StOpc == AArch64::STRWui || StOpc == AArch64::STRXui;
   case AArch64::LDURWi:
-case AArch64::LDURWPAi:
 case AArch64::LDURWPNAi:
     return StOpc == AArch64::STURWi || StOpc == AArch64::STURXi;
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
     return StOpc == AArch64::STRXui;
   case AArch64::LDURXi:
-case AArch64::LDURXPAi:
 case AArch64::LDURXPNAi:
     return StOpc == AArch64::STURXi;
   }
@@ -516,74 +474,51 @@ static unsigned getPreIndexedOpcode(unsigned Opc) {
     return AArch64::STRXpre;
   case AArch64::LDRSui:
     return AArch64::LDRSpre;
-  case AArch64::LDRSPAui:
-    return AArch64::LDRSPApre;
   case AArch64::LDRSPNAui:
     return AArch64::LDRSPNApre;
   case AArch64::LDRDui:
     return AArch64::LDRDpre;
-  case AArch64::LDRDPAui:
-    return AArch64::LDRDPApre;
   case AArch64::LDRDPNAui:
     return AArch64::LDRDPNApre;
   case AArch64::LDRQui:
     return AArch64::LDRQpre;
-  case AArch64::LDRQPAui:
-    return AArch64::LDRQPApre;
   case AArch64::LDRQPNAui:
     return AArch64::LDRQPNApre;
   case AArch64::LDRBBui:
     return AArch64::LDRBBpre;
-case AArch64::LDRBBPAui:
-    return AArch64::LDRBBPApre;
 case AArch64::LDRBBPNAui:
     return AArch64::LDRBBPNApre;
   case AArch64::LDRHHui:
     return AArch64::LDRHHpre;
-case AArch64::LDRHHPAui:
-    return AArch64::LDRHHPApre;
 case AArch64::LDRHHPNAui:
     return AArch64::LDRHHPNApre;
   case AArch64::LDRWui:
     return AArch64::LDRWpre;
-  case AArch64::LDRWPAui:
-    return AArch64::LDRWPApre;
   case AArch64::LDRWPNAui:
     return AArch64::LDRWpre;
   case AArch64::LDRXui:
     return AArch64::LDRXpre;
-  case AArch64::LDRXPAui:
-    return AArch64::LDRXPApre;
   case AArch64::LDRXPNAui:
     return AArch64::LDRXPNApre;
   case AArch64::LDRSWui:
     return AArch64::LDRSWpre;
-case AArch64::LDRSWPAui:
-    return AArch64::LDRSWPApre;
 case AArch64::LDRSWPNAui:
-    return AArch64::LDRSWPApre;
   case AArch64::LDPSi:
     return AArch64::LDPSpre;
   case AArch64::LDPSWi:
     return AArch64::LDPSWpre;
   case AArch64::LDPDi:
     return AArch64::LDPDpre;
-case AArch64::LDPDPAi:
-    return AArch64::LDPDPApre;
 case AArch64::LDPDPNAi:
     return AArch64::LDPDPNApre;
-  case AArch64::LDPQPAi:
-    return AArch64::LDPQPApre;
   case AArch64::LDPQPNAi:
     return AArch64::LDPQPNApre;
   case AArch64::LDPQi:
     return AArch64::LDPQpre;
   case AArch64::LDPWi:
-case AArch64::LDPWPAi:
 case AArch64::LDPWPNAi:
     return AArch64::LDPWpre;
   case AArch64::LDPXi:
-case AArch64::LDPXPAi:
 case AArch64::LDPXPNAi:
     return AArch64::LDPXpre;
   case AArch64::STPSi:
@@ -634,63 +569,43 @@ static unsigned getPostIndexedOpcode(unsigned Opc) {
     return AArch64::STRXpost;
   case AArch64::LDRSui:
   case AArch64::LDURSi:
-case AArch64::LDURSPAi:
 case AArch64::LDURSPNAi:
     return AArch64::LDRSpost;
-  case AArch64::LDRSPAui:
-    return AArch64::LDRSPApost;
   case AArch64::LDRSPNAui:
     return AArch64::LDRSPNApost;
   case AArch64::LDRDui:
   case AArch64::LDURDi:
-case AArch64::LDURDPAi:
 case AArch64::LDURDPNAi:
     return AArch64::LDRDpost;
-  case AArch64::LDRDPAui:
-    return AArch64::LDRDPApost;
   case AArch64::LDRDPNAui:
     return AArch64::LDRDPNApost;
   case AArch64::LDRQui:
   case AArch64::LDURQi:
-case AArch64::LDURQPAi:
 case AArch64::LDURQPNAi:
     return AArch64::LDRQpost;
-  case AArch64::LDRQPAui:
-    return AArch64::LDRQPApost;
   case AArch64::LDRQPNAui:
     return AArch64::LDRQPNApost;
   case AArch64::LDRBBui:
     return AArch64::LDRBBpost;
-case AArch64::LDRBBPAui:
-    return AArch64::LDRBBPApost;
 case AArch64::LDRBBPNAui:
     return AArch64::LDRBBPNApost;
   case AArch64::LDRHHui:
     return AArch64::LDRHHpost;
-case AArch64::LDRHHPAui:
-    return AArch64::LDRHHPApost;
 case AArch64::LDRHHPNAui:
     return AArch64::LDRHHPNApost;
   case AArch64::LDRWui:
   case AArch64::LDURWi:
-case AArch64::LDURWPAi:
 case AArch64::LDURWPNAi:
     return AArch64::LDRWpost;
-  case AArch64::LDRWPAui:
-    return AArch64::LDRWPApost;
   case AArch64::LDRWPNAui:
     return AArch64::LDRWPNApost;
   case AArch64::LDRXui:
   case AArch64::LDURXi:
-case AArch64::LDURXPAi:
 case AArch64::LDURXPNAi:
     return AArch64::LDRXpost;
-  case AArch64::LDRXPAui:
-    return AArch64::LDRXPApost;
   case AArch64::LDRXPNAui:
     return AArch64::LDRXPNApost;
   case AArch64::LDRSWui:
-case AArch64::LDRSWPAui:
 case AArch64::LDRSWPNAui:
     return AArch64::LDRSWpost;
   case AArch64::LDPSi:
@@ -698,21 +613,16 @@ case AArch64::LDRSWPNAui:
   case AArch64::LDPSWi:
     return AArch64::LDPSWpost;
   case AArch64::LDPDi:
-case AArch64::LDPDPAi:
 case AArch64::LDPDPNAi:
     return AArch64::LDPDpost;
-  case AArch64::LDPQPAi:
-    return AArch64::LDPQPApost;
   case AArch64::LDPQPNAi:
     return AArch64::LDPQPNApost;
   case AArch64::LDPQi:
     return AArch64::LDPQpost;
   case AArch64::LDPWi:
-case AArch64::LDPWPAi:
 case AArch64::LDPWPNAi:
     return AArch64::LDPWpost;
   case AArch64::LDPXi:
-case AArch64::LDPXPAi:
 case AArch64::LDPXPNAi:
     return AArch64::LDPXpost;
   case AArch64::STPSi:
@@ -758,32 +668,22 @@ static bool isPreLdStPairCandidate(MachineInstr &FirstMI, MachineInstr &MI) {
     return (OpcB == AArch64::STRXui) || (OpcB == AArch64::STURXi);
   case AArch64::LDRSpre:
     return (OpcB == AArch64::LDRSui) || (OpcB == AArch64::LDURSi);
-  case AArch64::LDRSPApre:
-    return OpcB == AArch64::LDRSPAui;
   case AArch64::LDRSPNApre:
     return OpcB == AArch64::LDRSPNAui;
   case AArch64::LDRDpre:
     return (OpcB == AArch64::LDRDui) || (OpcB == AArch64::LDURDi);
-  case AArch64::LDRDPApre:
-    return OpcB == AArch64::LDRDPAui;
   case AArch64::LDRDPNApre:
     return OpcB == AArch64::LDRDPNAui;
   case AArch64::LDRQpre:
     return (OpcB == AArch64::LDRQui) || (OpcB == AArch64::LDURQi);
-  case AArch64::LDRQPApre:
-    return OpcB == AArch64::LDRQPAui;
   case AArch64::LDRQPNApre:
     return OpcB == AArch64::LDRQPNAui;
   case AArch64::LDRWpre:
     return (OpcB == AArch64::LDRWui) || (OpcB == AArch64::LDURWi);
-  case AArch64::LDRWPApre:
-    return OpcB == AArch64::LDRWPAui;
   case AArch64::LDRWPNApre:
     return OpcB == AArch64::LDRWPNAui;
   case AArch64::LDRXpre:
     return (OpcB == AArch64::LDRXui) || (OpcB == AArch64::LDURXi);
-  case AArch64::LDRXPApre:
-    return OpcB == AArch64::LDRXPAui;
   case AArch64::LDRXPNApre:
     return OpcB == AArch64::LDRXPNAui;
   }
@@ -850,25 +750,19 @@ static bool isPromotableLoadFromStore(MachineInstr &MI) {
     return false;
   // Scaled instructions.
   case AArch64::LDRBBui:
-case AArch64::LDRBBPAui:
 case AArch64::LDRBBPNAui:
   case AArch64::LDRHHui:
-case AArch64::LDRHHPAui:
 case AArch64::LDRHHPNAui:
   case AArch64::LDRWui:
-  case AArch64::LDRWPAui:
   case AArch64::LDRWPNAui:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
   // Unscaled instructions.
   case AArch64::LDURBBi:
   case AArch64::LDURHHi:
   case AArch64::LDURWi:
-case AArch64::LDURWPAi:
 case AArch64::LDURWPNAi:
   case AArch64::LDURXi:
-case AArch64::LDURXPAi:
 case AArch64::LDURXPNAi:
     return true;
   }
@@ -889,22 +783,16 @@ static bool isMergeableLdStUpdate(MachineInstr &MI) {
   case AArch64::STRBBui:
   case AArch64::LDRSui:
   case AArch64::LDRDui:
-  case AArch64::LDRDPAui:
   case AArch64::LDRDPNAui:
   case AArch64::LDRQui:
-  case AArch64::LDRQPAui:
   case AArch64::LDRQPNAui:
   case AArch64::LDRXui:
-  case AArch64::LDRXPAui:
   case AArch64::LDRXPNAui:
   case AArch64::LDRWui:
-  case AArch64::LDRWPAui:
   case AArch64::LDRWPNAui:
   case AArch64::LDRHHui:
-case AArch64::LDRHHPAui:
 case AArch64::LDRHHPNAui:
   case AArch64::LDRBBui:
-case AArch64::LDRBBPAui:
 case AArch64::LDRBBPNAui:
   case AArch64::STGOffset:
   case AArch64::STZGOffset:
@@ -918,34 +806,25 @@ case AArch64::LDRBBPNAui:
   case AArch64::STURWi:
   case AArch64::STURXi:
   case AArch64::LDURSi:
-case AArch64::LDURSPAi:
 case AArch64::LDURSPNAi:
   case AArch64::LDURDi:
-case AArch64::LDURDPAi:
 case AArch64::LDURDPNAi:
   case AArch64::LDURQi:
-case AArch64::LDURQPAi:
 case AArch64::LDURQPNAi:
   case AArch64::LDURWi:
-case AArch64::LDURWPAi:
 case AArch64::LDURWPNAi:
   case AArch64::LDURXi:
-case AArch64::LDURXPAi:
 case AArch64::LDURXPNAi:
   // Paired instructions.
   case AArch64::LDPSi:
   case AArch64::LDPSWi:
   case AArch64::LDPDi:
-case AArch64::LDPDPAi:
 case AArch64::LDPDPNAi:
-  case AArch64::LDPQPAi:
   case AArch64::LDPQPNAi:
   case AArch64::LDPQi:
   case AArch64::LDPWi:
-case AArch64::LDPWPAi:
 case AArch64::LDPWPNAi:
   case AArch64::LDPXi:
-case AArch64::LDPXPAi:
 case AArch64::LDPXPNAi:
   case AArch64::STPSi:
   case AArch64::STPDi:

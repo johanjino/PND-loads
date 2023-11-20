@@ -4733,16 +4733,12 @@ bool AArch64AsmParser::validateInstruction(MCInst &Inst, SMLoc &IDLoc,
   switch (Inst.getOpcode()) {
   case AArch64::LDPSWpre:
   case AArch64::LDPWpost:
-case AArch64::LDPWPApost:
 case AArch64::LDPWPNApost:
   case AArch64::LDPWpre:
-case AArch64::LDPWPApre:
 case AArch64::LDPWPNApre:
   case AArch64::LDPXpost:
-case AArch64::LDPXPApost:
 case AArch64::LDPXPNApost:
   case AArch64::LDPXpre:
-  case AArch64::LDPXPApre:
   case AArch64::LDPXPNApre: {
     unsigned Rt = Inst.getOperand(1).getReg();
     unsigned Rt2 = Inst.getOperand(2).getReg();
@@ -4756,18 +4752,14 @@ case AArch64::LDPXPNApost:
     LLVM_FALLTHROUGH;
   }
   case AArch64::LDPDi:
-case AArch64::LDPDPAi:
 case AArch64::LDPDPNAi:
-  case AArch64::LDPQPAi:
   case AArch64::LDPQPNAi:
   case AArch64::LDPQi:
   case AArch64::LDPSi:
   case AArch64::LDPSWi:
   case AArch64::LDPWi:
-case AArch64::LDPWPAi:
 case AArch64::LDPWPNAi:
   case AArch64::LDPXi:
-  case AArch64::LDPXPAi:
   case AArch64::LDPXPNAi: {
     unsigned Rt = Inst.getOperand(0).getReg();
     unsigned Rt2 = Inst.getOperand(1).getReg();
@@ -4776,16 +4768,12 @@ case AArch64::LDPWPNAi:
     break;
   }
   case AArch64::LDPDpost:
-case AArch64::LDPDPApost:
 case AArch64::LDPDPNApost:
   case AArch64::LDPDpre:
-case AArch64::LDPDPApre:
 case AArch64::LDPDPNApre:
   case AArch64::LDPQpost:
-  case AArch64::LDPQPApost:
   case AArch64::LDPQPNApost:
   case AArch64::LDPQpre:
-  case AArch64::LDPQPApre:
   case AArch64::LDPQPNApre:
   case AArch64::LDPSpost:
   case AArch64::LDPSpre:
@@ -4818,62 +4806,44 @@ case AArch64::LDPDPNApre:
     break;
   }
   case AArch64::LDRBBpre:
-case AArch64::LDRBBPApre:
 case AArch64::LDRBBPNApre:
   case AArch64::LDRBpre:
   case AArch64::LDRHHpre:
-case AArch64::LDRHHPApre:
 case AArch64::LDRHHPNApre:
   case AArch64::LDRHpre:
   case AArch64::LDRSBWpre:
-case AArch64::LDRSBWPApre:
 case AArch64::LDRSBWPNApre:
   case AArch64::LDRSBXpre:
-case AArch64::LDRSBXPApre:
 case AArch64::LDRSBXPNApre:
   case AArch64::LDRSHWpre:
-case AArch64::LDRSHWPApre:
 case AArch64::LDRSHWPNApre:
   case AArch64::LDRSHXpre:
-case AArch64::LDRSHXPApre:
 case AArch64::LDRSHXPNApre:
   case AArch64::LDRSWpre:
-case AArch64::LDRSWPApre:
 case AArch64::LDRSWPNApre:
   case AArch64::LDRWpre:
-  case AArch64::LDRWPApre:
   case AArch64::LDRWPNApre:
   case AArch64::LDRXpre:
-  case AArch64::LDRXPApre:
   case AArch64::LDRXPNApre:
   case AArch64::LDRBBpost:
-case AArch64::LDRBBPApost:
 case AArch64::LDRBBPNApost:
   case AArch64::LDRBpost:
   case AArch64::LDRHHpost:
-case AArch64::LDRHHPApost:
 case AArch64::LDRHHPNApost:
   case AArch64::LDRHpost:
   case AArch64::LDRSBWpost:
-case AArch64::LDRSBWPApost:
 case AArch64::LDRSBWPNApost:
   case AArch64::LDRSBXpost:
-case AArch64::LDRSBXPApost:
 case AArch64::LDRSBXPNApost:
   case AArch64::LDRSHWpost:
-case AArch64::LDRSHWPApost:
 case AArch64::LDRSHWPNApost:
   case AArch64::LDRSHXpost:
-case AArch64::LDRSHXPApost:
 case AArch64::LDRSHXPNApost:
   case AArch64::LDRSWpost:
-case AArch64::LDRSWPApost:
 case AArch64::LDRSWPNApost:
   case AArch64::LDRWpost:
-  case AArch64::LDRWPApost:
   case AArch64::LDRWPNApost:
   case AArch64::LDRXpost:
-  case AArch64::LDRXPApost:
   case AArch64::LDRXPNApost: {
     unsigned Rt = Inst.getOperand(1).getReg();
     unsigned Rn = Inst.getOperand(2).getReg();

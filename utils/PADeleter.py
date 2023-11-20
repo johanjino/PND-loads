@@ -2,7 +2,7 @@ import re
 import os
 
 def process_files_in_directory(directory_path):
-    regex_pattern = re.compile(r'LD.*PA.*:$')
+    regex_pattern = re.compile(r'return AArch64::LD.*PA.*;$')
 
     for root, dirs, files in os.walk(directory_path):
         for filename in files:
@@ -27,6 +27,6 @@ def process_files_in_directory(directory_path):
 
 if __name__ == "__main__":
     # Example: Directory path containing .cpp files
-    directory_path = "~/Programming/PND-Loads/llvm/llvm/lib/Target/AArch64"
+    directory_path = "/home/muke/Programming/PND-Loads/llvm/llvm/lib/Target/AArch64"
 
     process_files_in_directory(directory_path)
