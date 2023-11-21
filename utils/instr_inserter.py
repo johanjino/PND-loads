@@ -1,8 +1,8 @@
 import re
 
 type_one_loads = list(map(str.upper, ["ldrbb", "ldrhh", "ldrsw", "ldrx", "ldrw", "ldrs", "ldrd", "ldrq", "ldrshw", "ldrshx", "ldrsbw", "ldrsbx"]))
-type_two_loads = list(map(str.upper, ["ldpw", "ldps", "ldpsw", "ldpx", "ldpd", "ldpq", "ldurshq", "ldurshx", "ldursbw", "ldursbx", "ldursw"]))
-type_three_loads = list(map(str.upper, ["ldurbb", "ldurhh", "ldurw", "ldursw", "ldurs", "ldurx", "ldurd", "ldurq"]))
+type_two_loads = list(map(str.upper, ["ldpw", "ldps", "ldpsw", "ldpx", "ldpd", "ldpq"]))
+type_three_loads = list(map(str.upper, ["ldurbb", "ldurhh", "ldurw", "ldurshx", "ldursbw", "ldursbx", "ldursw", "ldurs", "ldurx", "ldurd", "ldurq"]))
 literals = list(map(str.upper, ['ldrw', 'ldrx', 'ldrs', 'ldrd', 'ldrq']))
 
 files = ["/home/muke/Programming/Huawei/llvm-project/llvm-alias-pass/llvm/lib/Target/AArch64/AArch64"+s+".cpp" for s in ["LoadStoreOptimizer", "InstrInfo", "FrameLowering"]] + ["/home/muke/Programming/Huawei/llvm-project/llvm-alias-pass/llvm/lib/Target/AArch64/AsmParser/AArch64AsmParser.cpp"]+["/home/muke/Programming/Huawei/llvm-project/llvm-alias-pass/llvm/lib/Target/AArch64/Disassembler/AArch64Disassembler.cpp"]

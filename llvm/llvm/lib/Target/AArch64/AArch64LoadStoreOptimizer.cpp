@@ -960,7 +960,7 @@ AArch64LoadStoreOpt::mergePairedInsns(MachineBasicBlock::iterator I,
   if (NextI == Paired)
     NextI = next_nodbg(NextI, E);
 
-  return NextI;
+  //return NextI;
 
   int SExtIdx = Flags.getSExtIdx();
   unsigned Opc =
@@ -2235,7 +2235,7 @@ bool AArch64LoadStoreOpt::tryToMergeZeroStInst(
 // instruction.
 bool AArch64LoadStoreOpt::tryToPairLdStInst(MachineBasicBlock::iterator &MBBI) {
 
-  return false;
+  //return false;
 
   MachineInstr &MI = *MBBI;
   MachineBasicBlock::iterator E = MI.getParent()->end();
@@ -2280,7 +2280,7 @@ bool AArch64LoadStoreOpt::tryToPairLdStInst(MachineBasicBlock::iterator &MBBI) {
 bool AArch64LoadStoreOpt::tryToMergeLdStUpdate
     (MachineBasicBlock::iterator &MBBI) {
 
-  return false;
+  //return false;
 
   MachineInstr &MI = *MBBI;
   MachineBasicBlock::iterator E = MI.getParent()->end();

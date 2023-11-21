@@ -108,6 +108,24 @@ void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
         else continue;
         break;
     
+      case AArch64::LDURSBXi:
+        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
+          NewOpcode = AArch64::LDURSBXPNAi; //LDURSBXi-No-Predict-Alias
+        else continue;
+        break;
+    
+      case AArch64::LDURSBWi:
+        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
+          NewOpcode = AArch64::LDURSBWPNAi; //LDURSBWi-No-Predict-Alias
+        else continue;
+        break;
+    
+      case AArch64::LDURSHXi:
+        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
+          NewOpcode = AArch64::LDURSHXPNAi; //LDURSHXi-No-Predict-Alias
+        else continue;
+        break;
+    
       case AArch64::LDURSWi:
         if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
           NewOpcode = AArch64::LDURSWPNAi; //LDURSWi-No-Predict-Alias
@@ -129,96 +147,6 @@ void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
       case AArch64::LDURBBi:
         if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
           NewOpcode = AArch64::LDURBBPNAi; //LDURBBi-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSWi:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSWPNAi; //LDURSWi-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSWpost:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSWPNApost; //LDURSWpost-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSWpre:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSWPNApre; //LDURSWpre-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSBXi:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSBXPNAi; //LDURSBXi-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSBXpost:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSBXPNApost; //LDURSBXpost-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSBXpre:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSBXPNApre; //LDURSBXpre-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSBWi:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSBWPNAi; //LDURSBWi-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSBWpost:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSBWPNApost; //LDURSBWpost-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSBWpre:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSBWPNApre; //LDURSBWpre-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSHXi:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSHXPNAi; //LDURSHXi-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSHXpost:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSHXPNApost; //LDURSHXpost-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSHXpre:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSHXPNApre; //LDURSHXpre-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSHQi:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSHQPNAi; //LDURSHQi-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSHQpost:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSHQPNApost; //LDURSHQpost-No-Predict-Alias
-        else continue;
-        break;
-    
-      case AArch64::LDURSHQpre:
-        if (hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE))
-          NewOpcode = AArch64::LDURSHQPNApre; //LDURSHQpre-No-Predict-Alias
         else continue;
         break;
     

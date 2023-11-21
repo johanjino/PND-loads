@@ -3291,66 +3291,6 @@ class BaseLoadStoreUI<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
   let DecoderMethod = "DecodeUnsignedLdStInstruction";
 }
 
-class BaseLoadStoreUIPA<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
-                      string asm, list<dag> pattern>
-    : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]", "", pattern> {
-  bits<5> Rt;
-
-  bits<5> Rn;
-  bits<12> offset;
-
-  let Inst{31} = 0;
-  let Inst{30-29} = 0b00; //imm
-  let Inst{28-25} = 0b0010;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21-10} = offset;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeUnsignedLdStInstruction";
-}
-
-class BaseLoadStoreUI2<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
-                      string asm, list<dag> pattern>
-    : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]", "", pattern> {
-  bits<5> Rt;
-
-  bits<5> Rn;
-  bits<12> offset;
-
-  let Inst{31} = 0;
-  let Inst{30-29} = 0b00; //imm
-  let Inst{28-25} = 0b1010;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21-10} = offset;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeUnsignedLdStInstruction";
-}
-
-class BaseLoadStoreUISVE<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
-                      string asm, list<dag> pattern>
-    : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]", "", pattern> {
-  bits<5> Rt;
-
-  bits<5> Rn;
-  bits<12> offset;
-
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b00; //imm
-  let Inst{28-25} = 0b0010;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21-10} = offset;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeUnsignedLdStInstruction";
-}
-
 multiclass LoadUIPND<DAGOperand regtype,
                   Operand indextype, string asm, list<dag> pattern> {
   let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
@@ -3367,28 +3307,6 @@ multiclass LoadUI<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                   Operand indextype, string asm, list<dag> pattern> {
   let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
   def ui : BaseLoadStoreUI<sz, V, opc, (outs regtype:$Rt),
-                           (ins GPR64sp:$Rn, indextype:$offset),
-                           asm, pattern>,
-           Sched<[WriteLD]>;
-
-  def : InstAlias<asm # "\t$Rt, [$Rn]",
-                  (!cast<Instruction>(NAME # "ui") regtype:$Rt, GPR64sp:$Rn, 0)>;
-}
-multiclass LoadUIPA<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                  Operand indextype, string asm, list<dag> pattern> {
-  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
-  def ui : BaseLoadStoreUIPA<sz, V, opc, (outs regtype:$Rt),
-                           (ins GPR64sp:$Rn, indextype:$offset),
-                           asm, pattern>,
-           Sched<[WriteLD]>;
-
-  def : InstAlias<asm # "\t$Rt, [$Rn]",
-                  (!cast<Instruction>(NAME # "ui") regtype:$Rt, GPR64sp:$Rn, 0)>;
-}
-multiclass LoadUI2<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                  Operand indextype, string asm, list<dag> pattern> {
-  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
-  def ui : BaseLoadStoreUI2<sz, V, opc, (outs regtype:$Rt),
                            (ins GPR64sp:$Rn, indextype:$offset),
                            asm, pattern>,
            Sched<[WriteLD]>;
@@ -3474,34 +3392,6 @@ class LoadLiteral<bits<2> opc, bit V, RegisterOperand regtype, string asm, list<
   let Inst{29-27} = 0b011;
   let Inst{26}    = V;
   let Inst{25-24} = 0b00;
-  let Inst{23-5}  = label;
-  let Inst{4-0}   = Rt;
-}
-let mayLoad = 1, mayStore = 0, hasSideEffects = 0, AddedComplexity = 20 in
-class LoadLiteral2<bits<2> opc, bit V, RegisterOperand regtype, string asm, list<dag> pat>
-    : I<(outs regtype:$Rt), (ins am_ldrlit:$label),
-        asm, "\t$Rt, $label", "", pat>,
-      Sched<[WriteLD]> {
-  bits<5> Rt;
-  bits<19> label;
-  let Inst{31-30} = opc;
-  let Inst{29-27} = 0b011;
-  let Inst{26}    = V;
-  let Inst{25-24} = 0b10;
-  let Inst{23-5}  = label;
-  let Inst{4-0}   = Rt;
-}
-let mayLoad = 1, mayStore = 0, hasSideEffects = 0, AddedComplexity = 20 in
-class LoadLiteral3<bits<2> opc, bit V, RegisterOperand regtype, string asm, list<dag> pat>
-    : I<(outs regtype:$Rt), (ins am_ldrlit:$label),
-        asm, "\t$Rt, $label", "", pat>,
-      Sched<[WriteLD]> {
-  bits<5> Rt;
-  bits<19> label;
-  let Inst{31-30} = opc;
-  let Inst{29-27} = 0b011;
-  let Inst{26}    = V;
-  let Inst{25-24} = 0b11;
   let Inst{23-5}  = label;
   let Inst{4-0}   = Rt;
 }
@@ -3717,107 +3607,6 @@ multiclass Load8RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
   def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
 }
 
-class LoadStoreROPA<bits<2> sz, bit V, bits<2> opc, string asm, dag ins,
-                    dag outs, list<dag> pat>
-    : I<ins, outs, asm, "\t$Rt, [$Rn, $Rm, $extend]", "", pat> {
-  bits<5> Rt;
-  bits<5> Rn;
-  bits<5> Rm;
-  bits<2> extend;
-  let Inst{31} = 0;
-  let Inst{30-29} = 0b01; //reg
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21}    = 1;
-  let Inst{20-16} = Rm;
-  let Inst{15}    = extend{1}; // sign extend Rm?
-  let Inst{14}    = 1;
-  let Inst{12}    = extend{0}; // do shift?
-  let Inst{11-10} = 0b10;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-}
-
-class LoadStoreROSVE<bits<2> sz, bit V, bits<2> opc, string asm, dag ins,
-                    dag outs, list<dag> pat>
-    : I<ins, outs, asm, "\t$Rt, [$Rn, $Rm, $extend]", "", pat> {
-  bits<5> Rt;
-  bits<5> Rn;
-  bits<5> Rm;
-  bits<2> extend;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b01; //reg
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21}    = 1;
-  let Inst{20-16} = Rm;
-  let Inst{15}    = extend{1}; // sign extend Rm?
-  let Inst{14}    = 1;
-  let Inst{12}    = extend{0}; // do shift?
-  let Inst{11-10} = 0b10;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-}
-
-
-multiclass Load8ROPA<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                   string asm, ValueType Ty, SDPatternOperator loadop> {
-  let AddedComplexity = 10 in
-  def roW : LoadStoreROPA<sz, V, opc, asm,
-                 (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend8:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Windexed8 GPR64sp:$Rn, GPR32:$Rm,
-                                             ro_Wextend8:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b0;
-  }
-
-  let AddedComplexity = 10 in
-  def roX : LoadStoreROPA<sz, V, opc, asm,
-                 (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend8:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Xindexed8 GPR64sp:$Rn, GPR64:$Rm,
-                                             ro_Xextend8:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b1;
-  }
-
-  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
-}
-
-multiclass Load8ROSVE<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                   string asm, ValueType Ty, SDPatternOperator loadop> {
-  let AddedComplexity = 10 in
-  def roW : LoadStoreROSVE<sz, V, opc, asm,
-                 (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend8:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Windexed8 GPR64sp:$Rn, GPR32:$Rm,
-                                             ro_Wextend8:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b0;
-  }
-
-  let AddedComplexity = 10 in
-  def roX : LoadStoreROSVE<sz, V, opc, asm,
-                 (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend8:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Xindexed8 GPR64sp:$Rn, GPR64:$Rm,
-                                             ro_Xextend8:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b1;
-  }
-
-  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
-}
-
 multiclass Store8RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                     string asm, ValueType Ty, SDPatternOperator storeop> {
   let AddedComplexity = 10 in
@@ -3879,56 +3668,6 @@ multiclass Load16RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
 
   let AddedComplexity = 10 in
   def roX : LoadStore16RO<sz, V, opc, asm, (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend16:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Xindexed16 GPR64sp:$Rn, GPR64:$Rm,
-                                             ro_Xextend16:$extend)))]>,
-            Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b1;
-  }
-
-  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
-}
-
-multiclass Load16ROPA<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                    string asm, ValueType Ty, SDPatternOperator loadop> {
-  let AddedComplexity = 10 in
-  def roW : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend16:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Windexed16 GPR64sp:$Rn, GPR32:$Rm,
-                                              ro_Wextend16:$extend)))]>,
-            Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b0;
-  }
-
-  let AddedComplexity = 10 in
-  def roX : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend16:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Xindexed16 GPR64sp:$Rn, GPR64:$Rm,
-                                             ro_Xextend16:$extend)))]>,
-            Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b1;
-  }
-
-  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
-}
-
-multiclass Load16ROSVE<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                    string asm, ValueType Ty, SDPatternOperator loadop> {
-  let AddedComplexity = 10 in
-  def roW : LoadStoreROSVE<sz, V, opc, asm, (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend16:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Windexed16 GPR64sp:$Rn, GPR32:$Rm,
-                                              ro_Wextend16:$extend)))]>,
-            Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b0;
-  }
-
-  let AddedComplexity = 10 in
-  def roX : LoadStoreROSVE<sz, V, opc, asm, (outs regtype:$Rt),
                  (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend16:$extend),
                  [(set (Ty regtype:$Rt),
                        (loadop (ro_Xindexed16 GPR64sp:$Rn, GPR64:$Rm,
@@ -4012,31 +3751,6 @@ multiclass Load32RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
   def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
 }
 
-multiclass Load32ROPA<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                    string asm, ValueType Ty, SDPatternOperator loadop> {
-  let AddedComplexity = 10 in
-  def roW : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend32:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Windexed32 GPR64sp:$Rn, GPR32:$Rm,
-                                              ro_Wextend32:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b0;
-  }
-
-  let AddedComplexity = 10 in
-  def roX : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
-                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend32:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Xindexed32 GPR64sp:$Rn, GPR64:$Rm,
-                                              ro_Xextend32:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b1;
-  }
-
-  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
-}
-
 multiclass Store32RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                      string asm, ValueType Ty, SDPatternOperator storeop> {
   let AddedComplexity = 10 in
@@ -4109,31 +3823,6 @@ multiclass Load64RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
   def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
 }
 
-multiclass Load64ROPA<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                    string asm, ValueType Ty, SDPatternOperator loadop> {
-  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
-  def roW : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
-                (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend64:$extend),
-                [(set (Ty regtype:$Rt),
-                      (loadop (ro_Windexed64 GPR64sp:$Rn, GPR32:$Rm,
-                                             ro_Wextend64:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b0;
-  }
-
-  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
-  def roX : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
-                (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend64:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Xindexed64 GPR64sp:$Rn, GPR64:$Rm,
-                                              ro_Xextend64:$extend)))]>,
-           Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b1;
-  }
-
-  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
-}
-
 multiclass Store64RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                      string asm, ValueType Ty, SDPatternOperator storeop> {
   let AddedComplexity = 10, mayLoad = 0, mayStore = 1, hasSideEffects = 0 in
@@ -4195,31 +3884,6 @@ multiclass Load128RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
 
   let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
   def roX : LoadStore128RO<sz, V, opc, asm, (outs regtype:$Rt),
-                (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend128:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Xindexed128 GPR64sp:$Rn, GPR64:$Rm,
-                                               ro_Xextend128:$extend)))]>,
-            Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b1;
-  }
-
-  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
-}
-
-multiclass Load128ROPA<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
-                     string asm, ValueType Ty, SDPatternOperator loadop> {
-  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
-  def roW : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
-                (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend128:$extend),
-                 [(set (Ty regtype:$Rt),
-                       (loadop (ro_Windexed128 GPR64sp:$Rn, GPR32:$Rm,
-                                               ro_Wextend128:$extend)))]>,
-            Sched<[WriteLDIdx, ReadAdrBase]> {
-    let Inst{13} = 0b0;
-  }
-
-  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
-  def roX : LoadStoreROPA<sz, V, opc, asm, (outs regtype:$Rt),
                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend128:$extend),
                  [(set (Ty regtype:$Rt),
                        (loadop (ro_Xindexed128 GPR64sp:$Rn, GPR64:$Rm,
@@ -4349,27 +4013,6 @@ class BaseLoadStoreUnscale<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
   let DecoderMethod = "DecodeSignedLdStInstruction";
 }
 
-class BaseLoadStoreUnscalePA<bit sz, bits<2> opc, dag oops, dag iops,
-                           string asm, list<dag> pattern>
-    : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]", "", pattern> {
-  bits<5> Rt;
-  bits<5> Rn;
-  bits<9> offset;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b10; //ldur pa
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24} = sz;
-  let Inst{23-22} = opc;
-  let Inst{21}    = 0;
-  let Inst{20-12} = offset;
-  let Inst{11-10} = 0b00;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeSignedLdStInstruction";
-}
-
 // Armv8.4 LDAPR & STLR with Immediate Offset instruction
 multiclass BaseLoadUnscaleV84<string asm, bits<2> sz, bits<2> opc,
                               DAGOperand regtype > {
@@ -4410,17 +4053,6 @@ multiclass LoadUnscaled<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                    string asm, list<dag> pattern> {
   let AddedComplexity = 1 in // try this before LoadUI
   def i : BaseLoadStoreUnscale<sz, V, opc, (outs regtype:$Rt),
-                               (ins GPR64sp:$Rn, simm9:$offset), asm, pattern>,
-          Sched<[WriteLD]>;
-
-  def : InstAlias<asm # "\t$Rt, [$Rn]",
-                  (!cast<Instruction>(NAME # "i") regtype:$Rt, GPR64sp:$Rn, 0)>;
-}
-
-multiclass LoadUnscaledPA<bit sz, bits<2> opc, DAGOperand regtype,
-                   string asm, list<dag> pattern> {
-  let AddedComplexity = 1 in // try this before LoadUI
-  def i : BaseLoadStoreUnscalePA<sz, opc, (outs regtype:$Rt),
                                (ins GPR64sp:$Rn, simm9:$offset), asm, pattern>,
           Sched<[WriteLD]>;
 
@@ -4528,48 +4160,6 @@ class PNDLoadPre<dag oops, dag iops, string asm, string cstr, list<dag> pat>
     let Inst{31-0} = 0b11111111111111111111111111111111;
 }
 
-class BaseLoadStorePreIdxPA<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
-                          string asm, string cstr, list<dag> pat>
-    : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]!", cstr, pat> {
-  bits<5> Rt;
-  bits<5> Rn;
-  bits<9> offset;
-  let Inst{31} = 0;
-  let Inst{30-29} = 0b10; //pre
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21}    = 0;
-  let Inst{20-12} = offset;
-  let Inst{11-10} = 0b11;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeSignedLdStInstruction";
-}
-
-class BaseLoadStorePreIdx2<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
-                          string asm, string cstr, list<dag> pat>
-    : I<oops, iops, asm, "\t$Rt, [$Rn, $offset]!", cstr, pat> {
-  bits<5> Rt;
-  bits<5> Rn;
-  bits<9> offset;
-  let Inst{31} = 0;
-  let Inst{30-29} = 0b10; //pre
-  let Inst{28-27} = 0b10;
-  let Inst{26-25} = 0b10;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21}    = 0;
-  let Inst{20-12} = offset;
-  let Inst{11-10} = 0b11;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeSignedLdStInstruction";
-}
-
 let hasSideEffects = 0 in {
 let mayStore = 0, mayLoad = 1 in
 class LoadPreIdxPND<RegisterOperand regtype,
@@ -4587,24 +4177,6 @@ class LoadPreIdx<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
                      (ins GPR64sp:$Rn, simm9:$offset), asm,
                      "$Rn = $wback,@earlyclobber $wback", []>,
       Sched<[WriteAdr, WriteLD]>;
-let mayStore = 0, mayLoad = 1 in
-class LoadPreIdxPA<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
-             string asm>
-    : BaseLoadStorePreIdxPA<sz, V, opc,
-                     (outs GPR64sp:$wback, regtype:$Rt),
-                     (ins GPR64sp:$Rn, simm9:$offset), asm,
-                     "$Rn = $wback,@earlyclobber $wback", []>,
-      Sched<[WriteAdr, WriteLD]>;
-let mayStore = 0, mayLoad = 1 in
-class LoadPreIdx2<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
-             string asm>
-    : BaseLoadStorePreIdx2<sz, V, opc,
-                     (outs GPR64sp:$wback, regtype:$Rt),
-                     (ins GPR64sp:$Rn, simm9:$offset), asm,
-                     "$Rn = $wback,@earlyclobber $wback", []>,
-      Sched<[WriteAdr, WriteLD]>;
-let mayStore = 0, mayLoad = 1 in
-
 let mayStore = 1, mayLoad = 0 in
 class StorePreIdx<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
                   string asm, SDPatternOperator storeop, ValueType Ty>
@@ -4646,47 +4218,6 @@ class BaseLoadStorePostIdx<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
   let DecoderMethod = "DecodeSignedLdStInstruction";
 }
 
-class BaseLoadStorePostIdxPA<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
-                          string asm, string cstr, list<dag> pat>
-    : I<oops, iops, asm, "\t$Rt, [$Rn], $offset", cstr, pat> {
-  bits<5> Rt;
-  bits<5> Rn;
-  bits<9> offset;
-  let Inst{31} = 0;
-  let Inst{30-29} = 0b11; //post
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21}    = 0b0;
-  let Inst{20-12} = offset;
-  let Inst{11-10} = 0b01;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeSignedLdStInstruction";
-}
-class BaseLoadStorePostIdx2<bits<2> sz, bit V, bits<2> opc, dag oops, dag iops,
-                          string asm, string cstr, list<dag> pat>
-    : I<oops, iops, asm, "\t$Rt, [$Rn], $offset", cstr, pat> {
-  bits<5> Rt;
-  bits<5> Rn;
-  bits<9> offset;
-  let Inst{31} = 0;
-  let Inst{30-29} = 0b11; //post
-  let Inst{28-27} = 0b10;
-  let Inst{26-25} = 0b10;
-  let Inst{24} = V;
-  let Inst{23-22} = opc;
-  let Inst{21}    = 0b0;
-  let Inst{20-12} = offset;
-  let Inst{11-10} = 0b01;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodeSignedLdStInstruction";
-}
-
 let hasSideEffects = 0 in {
 let mayStore = 0, mayLoad = 1 in
 class LoadPostIdxPND<RegisterOperand regtype,
@@ -4704,23 +4235,6 @@ class LoadPostIdx<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
                       (ins GPR64sp:$Rn, simm9:$offset),
                       asm, "$Rn = $wback,@earlyclobber $wback", []>,
       Sched<[WriteAdr, WriteLD]>;
-let mayStore = 0, mayLoad = 1 in
-class LoadPostIdxPA<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
-             string asm>
-    : BaseLoadStorePostIdxPA<sz, V, opc,
-                      (outs GPR64sp:$wback, regtype:$Rt),
-                      (ins GPR64sp:$Rn, simm9:$offset),
-                      asm, "$Rn = $wback,@earlyclobber $wback", []>,
-      Sched<[WriteAdr, WriteLD]>;
-class LoadPostIdx2<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
-             string asm>
-    : BaseLoadStorePostIdx2<sz, V, opc,
-                      (outs GPR64sp:$wback, regtype:$Rt),
-                      (ins GPR64sp:$Rn, simm9:$offset),
-                      asm, "$Rn = $wback,@earlyclobber $wback", []>,
-      Sched<[WriteAdr, WriteLD]>;
-let mayStore = 0, mayLoad = 1 in
-
 let mayStore = 1, mayLoad = 0 in
 class StorePostIdx<bits<2> sz, bit V, bits<2> opc, RegisterOperand regtype,
                    string asm, SDPatternOperator storeop, ValueType Ty>
@@ -4765,49 +4279,6 @@ class BaseLoadStorePairOffset<bits<2> opc, bit V, bit L, dag oops, dag iops,
   let DecoderMethod = "DecodePairLdStInstruction";
 }
 
-class BaseLoadStorePairOffsetPNA<bits<2> opc, bit L, dag oops, dag iops,
-                              string asm>
-    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn, $offset]", "", []> {
-  bits<5> Rt;
-  bits<5> Rt2;
-  bits<5> Rn;
-  bits<7> offset;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b00;
-  let Inst{28-27} = 0b01;
-  let Inst{26} = L;
-  let Inst{25} = 0;
-  let Inst{24-23} = opc;
-  let Inst{22}    = L;
-  let Inst{21-15} = offset;
-  let Inst{14-10} = Rt2;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodePairLdStInstruction";
-}
-
-class BaseLoadStorePairOffsetPA<bits<2> opc, bit L, dag oops, dag iops,
-                              string asm>
-    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn, $offset]", "", []> {
-  bits<5> Rt;
-  bits<5> Rt2;
-  bits<5> Rn;
-  bits<7> offset;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b01; //PALDP
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24-23} = opc;
-  let Inst{22}    = L;
-  let Inst{21-15} = offset;
-  let Inst{14-10} = Rt2;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodePairLdStInstruction";
-}
-
 multiclass LoadPairOffset<bits<2> opc, bit V, RegisterOperand regtype,
                           Operand indextype, string asm> {
   let hasSideEffects = 0, mayStore = 0, mayLoad = 1 in
@@ -4821,10 +4292,10 @@ multiclass LoadPairOffset<bits<2> opc, bit V, RegisterOperand regtype,
                                                   GPR64sp:$Rn, 0)>;
 }
 
-multiclass LoadPairOffsetPNA<bits<2> opc, bit V, RegisterOperand regtype,
+multiclass LoadPairOffsetPND<RegisterOperand regtype,
                           Operand indextype, string asm> {
   let hasSideEffects = 0, mayStore = 0, mayLoad = 1 in
-  def i : BaseLoadStorePairOffsetPNA<opc, V,
+  def i : PNDLoadPairOffset<
                                   (outs regtype:$Rt, regtype:$Rt2),
                                   (ins GPR64sp:$Rn, indextype:$offset), asm>,
           Sched<[WriteLD, WriteLDHi]>;
@@ -4833,33 +4304,6 @@ multiclass LoadPairOffsetPNA<bits<2> opc, bit V, RegisterOperand regtype,
                   (!cast<Instruction>(NAME # "i") regtype:$Rt, regtype:$Rt2,
                                                   GPR64sp:$Rn, 0)>;
 }
-
-multiclass LoadPairOffsetPA<bits<2> opc, bit V, RegisterOperand regtype,
-                          Operand indextype, string asm> {
-  let hasSideEffects = 0, mayStore = 0, mayLoad = 1 in
-  def i : BaseLoadStorePairOffsetPA<opc, V,
-                                  (outs regtype:$Rt, regtype:$Rt2),
-                                  (ins GPR64sp:$Rn, indextype:$offset), asm>,
-          Sched<[WriteLD, WriteLDHi]>;
-
-  def : InstAlias<asm # "\t$Rt, $Rt2, [$Rn]",
-                  (!cast<Instruction>(NAME # "i") regtype:$Rt, regtype:$Rt2,
-                                                  GPR64sp:$Rn, 0)>;
-}
-
-multiclass LoadPairOffset2<bits<2> opc, bit V, RegisterOperand regtype,
-                          Operand indextype, string asm> {
-  let hasSideEffects = 0, mayStore = 0, mayLoad = 1 in
-  def i : BaseLoadStorePairOffset<opc, V, 0,
-                                  (outs regtype:$Rt, regtype:$Rt2),
-                                  (ins GPR64sp:$Rn, indextype:$offset), asm>,
-          Sched<[WriteLD, WriteLDHi]>;
-
-  def : InstAlias<asm # "\t$Rt, $Rt2, [$Rn]",
-                  (!cast<Instruction>(NAME # "i") regtype:$Rt, regtype:$Rt2,
-                                                  GPR64sp:$Rn, 0)>;
-}
-
 
 multiclass StorePairOffset<bits<2> opc, bit V, RegisterOperand regtype,
                            Operand indextype, string asm> {
@@ -4876,6 +4320,11 @@ multiclass StorePairOffset<bits<2> opc, bit V, RegisterOperand regtype,
 }
 
 // (pre-indexed)
+class PNDLoadPairPreIdx<dag oops, dag iops, string asm>
+    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn, $offset]!", "$Rn = $wback,@earlyclobber $wback", []> {
+    let Inst{31-0} = 0b11111111111111111111111111111111;
+}
+
 class BaseLoadStorePairPreIdx<bits<2> opc, bit V, bit L, dag oops, dag iops,
                               string asm>
     : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn, $offset]!", "$Rn = $wback,@earlyclobber $wback", []> {
@@ -4896,78 +4345,19 @@ class BaseLoadStorePairPreIdx<bits<2> opc, bit V, bit L, dag oops, dag iops,
   let DecoderMethod = "DecodePairLdStInstruction";
 }
 
-class BaseLoadStorePairPreIdxPNA<bits<2> opc, bit L, dag oops, dag iops,
-                              string asm>
-    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn, $offset]!", "$Rn = $wback,@earlyclobber $wback", []> {
-  bits<5> Rt;
-  bits<5> Rt2;
-  bits<5> Rn;
-  bits<7> offset;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b00;
-  let Inst{28-27} = 0b01;
-  let Inst{26}    = L;
-  let Inst{25} = 0;
-  let Inst{24-23} = opc;
-  let Inst{22}    = L;
-  let Inst{21-15} = offset;
-  let Inst{14-10} = Rt2;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodePairLdStInstruction";
-}
-
-class BaseLoadStorePairPreIdxPA<bits<2> opc, bit L, dag oops, dag iops,
-                              string asm>
-    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn, $offset]!", "$Rn = $wback,@earlyclobber $wback", []> {
-  bits<5> Rt;
-  bits<5> Rt2;
-  bits<5> Rn;
-  bits<7> offset;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b01; //PA LDP
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24-23} = opc;
-  let Inst{22}    = L;
-  let Inst{21-15} = offset;
-  let Inst{14-10} = Rt2;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodePairLdStInstruction";
-}
-
 let hasSideEffects = 0 in {
+let mayStore = 0, mayLoad = 1 in
+class LoadPairPreIdxPND<RegisterOperand regtype,
+                     Operand indextype, string asm>
+    : PNDLoadPairPreIdx<
+                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
+                              (ins GPR64sp:$Rn, indextype:$offset), asm>,
+      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
+
 let mayStore = 0, mayLoad = 1 in
 class LoadPairPreIdx<bits<2> opc, bit V, RegisterOperand regtype,
                      Operand indextype, string asm>
     : BaseLoadStorePairPreIdx<opc, V, 1,
-                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
-                              (ins GPR64sp:$Rn, indextype:$offset), asm>,
-      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
-
-let mayStore = 0, mayLoad = 1 in
-class LoadPairPreIdxPNA<bits<2> opc, bit V, RegisterOperand regtype,
-                     Operand indextype, string asm>
-    : BaseLoadStorePairPreIdxPNA<opc, V,
-                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
-                              (ins GPR64sp:$Rn, indextype:$offset), asm>,
-      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
-
-let mayStore = 0, mayLoad = 1 in
-class LoadPairPreIdxPA<bits<2> opc, bit V, RegisterOperand regtype,
-                     Operand indextype, string asm>
-    : BaseLoadStorePairPreIdxPA<opc, V,
-                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
-                              (ins GPR64sp:$Rn, indextype:$offset), asm>,
-      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
-
-let mayStore = 0, mayLoad = 1 in
-class LoadPairPreIdx2<bits<2> opc, bit V, RegisterOperand regtype,
-                     Operand indextype, string asm>
-    : BaseLoadStorePairPreIdx<opc, V, 0,
                               (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
                               (ins GPR64sp:$Rn, indextype:$offset), asm>,
       Sched<[WriteAdr, WriteLD, WriteLDHi]>;
@@ -4983,6 +4373,10 @@ class StorePairPreIdx<bits<2> opc, bit V, RegisterOperand regtype,
 } // hasSideEffects = 0
 
 // (post-indexed)
+class PNDLoadPairPostIdx<dag oops, dag iops, string asm>
+    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn], $offset", "$Rn = $wback,@earlyclobber $wback", []> {
+    let Inst{31-0} = 0b11111111111111111111111111111111;
+}
 
 class BaseLoadStorePairPostIdx<bits<2> opc, bit V, bit L, dag oops, dag iops,
                               string asm>
@@ -5004,78 +4398,18 @@ class BaseLoadStorePairPostIdx<bits<2> opc, bit V, bit L, dag oops, dag iops,
   let DecoderMethod = "DecodePairLdStInstruction";
 }
 
-class BaseLoadStorePairPostIdxPNA<bits<2> opc, bit L, dag oops, dag iops,
-                              string asm>
-    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn], $offset", "$Rn = $wback,@earlyclobber $wback", []> {
-  bits<5> Rt;
-  bits<5> Rt2;
-  bits<5> Rn;
-  bits<7> offset;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b00;
-  let Inst{28-27} = 0b01;
-  let Inst{26}    = L;
-  let Inst{25} = 0;
-  let Inst{24-23} = opc;
-  let Inst{22}    = L;
-  let Inst{21-15} = offset;
-  let Inst{14-10} = Rt2;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodePairLdStInstruction";
-}
-
-class BaseLoadStorePairPostIdxPA<bits<2> opc, bit L, dag oops, dag iops,
-                              string asm>
-    : I<oops, iops, asm, "\t$Rt, $Rt2, [$Rn], $offset", "$Rn = $wback,@earlyclobber $wback", []> {
-  bits<5> Rt;
-  bits<5> Rt2;
-  bits<5> Rn;
-  bits<7> offset;
-  let Inst{31} = 1;
-  let Inst{30-29} = 0b01; //PA LDP
-  let Inst{28-27} = 0b00;
-  let Inst{26-25} = 0b10;
-  let Inst{24-23} = opc;
-  let Inst{22}    = L;
-  let Inst{21-15} = offset;
-  let Inst{14-10} = Rt2;
-  let Inst{9-5}   = Rn;
-  let Inst{4-0}   = Rt;
-
-  let DecoderMethod = "DecodePairLdStInstruction";
-}
-
 let hasSideEffects = 0 in {
+let mayStore = 0, mayLoad = 1 in
+class LoadPairPostIdxPND<RegisterOperand regtype,
+                      Operand idxtype, string asm>
+    : PNDLoadPairPostIdx<
+                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
+                              (ins GPR64sp:$Rn, idxtype:$offset), asm>,
+      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
 let mayStore = 0, mayLoad = 1 in
 class LoadPairPostIdx<bits<2> opc, bit V, RegisterOperand regtype,
                       Operand idxtype, string asm>
     : BaseLoadStorePairPostIdx<opc, V, 1,
-                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
-                              (ins GPR64sp:$Rn, idxtype:$offset), asm>,
-      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
-
-let mayStore = 0, mayLoad = 1 in
-class LoadPairPostIdxPNA<bits<2> opc, bit V, RegisterOperand regtype,
-                      Operand idxtype, string asm>
-    : BaseLoadStorePairPostIdxPNA<opc, V,
-                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
-                              (ins GPR64sp:$Rn, idxtype:$offset), asm>,
-      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
-
-let mayStore = 0, mayLoad = 1 in
-class LoadPairPostIdxPA<bits<2> opc, bit V, RegisterOperand regtype,
-                      Operand idxtype, string asm>
-    : BaseLoadStorePairPostIdxPA<opc, V,
-                              (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
-                              (ins GPR64sp:$Rn, idxtype:$offset), asm>,
-      Sched<[WriteAdr, WriteLD, WriteLDHi]>;
-
-let mayStore = 0, mayLoad = 1 in
-class LoadPairPostIdx2<bits<2> opc, bit V, RegisterOperand regtype,
-                      Operand idxtype, string asm>
-    : BaseLoadStorePairPostIdx<opc, V, 0,
                               (outs GPR64sp:$wback, regtype:$Rt, regtype:$Rt2),
                               (ins GPR64sp:$Rn, idxtype:$offset), asm>,
       Sched<[WriteAdr, WriteLD, WriteLDHi]>;
