@@ -39,20 +39,6 @@ namespace Aarch64
     StaticInstPtr decodeDataProcImm(ExtMachInst machInst);
     StaticInstPtr decodeBranchExcSys(const Decoder &dec, ExtMachInst machInst);
     StaticInstPtr decodeLoadsStores(ExtMachInst machInst);
-    // PA stuff
-    StaticInstPtr decodePAIMMLoads(ExtMachInst machInst);
-    StaticInstPtr decodePAREGLoads(ExtMachInst machInst);
-    StaticInstPtr decodePAPRELoads(ExtMachInst machInst);
-    StaticInstPtr decodePAPOSTLoads(ExtMachInst machInst);
-    // LDP stuff
-    StaticInstPtr decodePNALDPLoads(ExtMachInst machInst);
-    StaticInstPtr decodePALDPLoads(ExtMachInst machInst);
-    //LDUR
-    StaticInstPtr decodePALDURLoads(ExtMachInst machInst);
-    // LDTR
-    StaticInstPtr decodePALDTRLoads(ExtMachInst machInst);
-
-
     StaticInstPtr decodeDataProcReg(ExtMachInst machInst);
 
     template <typename DecoderFeatures>
@@ -1234,10 +1220,8 @@ namespace Aarch64
     decodeLoadsStores(ExtMachInst machInst)
     {
         // bit 27,25=10
-        // from my understanding bit 27=1, bit 25=0 (above could be clearer)
         switch (bits(machInst, 29, 28)) {
           case 0x0:
-            // 26 is the V operand...
             if (bits(machInst, 26) == 0) {
                 if (bits(machInst, 24) != 0)
                     return new Unknown64(machInst);
@@ -1438,6 +1422,7 @@ namespace Aarch64
                     return new Unknown64(machInst);
                 }
             } else if (bits(machInst, 31)) {
+                return new Unknown64(machInst);
             } else {
                 return decodeNeonMem(machInst);
             }
@@ -1471,25 +1456,17 @@ namespace Aarch64
           case 0x2:
           {
             uint8_t opc = bits(machInst, 31, 30);
-            // this used to be >= (needed to remove for extra insts)
-            if (opc > 3)
+            if (opc >= 3)
                 return new Unknown64(machInst);
             uint32_t size = 0;
-            bool fp = bits(machInst, 26); //V
-            bool load = bits(machInst, 22); //L
+            bool fp = bits(machInst, 26);
+            bool load = bits(machInst, 22);
             if (fp) {
-                if (opc==3){
-                  // LDP FP128
-                  size = 4 << (opc-1);
-                }
-                else {
-                  size = 4 << opc;
-                }
-            }
-            else {
+                size = 4 << opc;
+            } else {
                 if ((opc == 1) && !load)
                     return new Unknown64(machInst);
-                size = (opc == 0 || opc == 1 || opc == 3) ? 4 : 8;
+                size = (opc == 0 || opc == 1) ? 4 : 8;
             }
             uint8_t type = bits(machInst, 24, 23);
             int64_t imm = sext<7>(bits(machInst, 21, 15)) * size;
@@ -1497,6 +1474,7 @@ namespace Aarch64
             RegIndex rn = (RegIndex)(uint8_t)bits(machInst, 9, 5);
             RegIndex rt = (RegIndex)(uint8_t)bits(machInst, 4, 0);
             RegIndex rt2 = (RegIndex)(uint8_t)bits(machInst, 14, 10);
+
             bool noAlloc = (type == 0);
             bool signExt = !noAlloc && !fp && opc == 1;
             PairMemOp::AddrMode mode;
@@ -1511,7 +1489,7 @@ namespace Aarch64
                 break;
               case 0x3:
                 mode = PairMemOp::AddrMd_PreIndex;
-                break;  
+                break;
               default:
                 return new Unknown64(machInst);
             }
@@ -1520,29 +1498,19 @@ namespace Aarch64
                     mnemonic = "ldnp";
                 else if (signExt)
                     mnemonic = "ldpsw";
-                // FP64 & i32 SBC (size is dealt with above)
-                else if (opc==3) {
-                    mnemonic = "S";
-                }
                 else
                     mnemonic = "ldp";
             } else {
                 if (noAlloc)
                     mnemonic = "stnp";
-                else if (opc==3) {
-                    mnemonic = "D";
-                    load = true;
-                }
                 else
                     mnemonic = "stp";
             }
+
             return new LdpStp(mnemonic, machInst, size, fp, load, noAlloc,
                     signExt, false, false, imm, mode, rn, rt, rt2);
           }
           // bit 29:27=111, 25=0
-          // This is where LDR is held (UNSIGNED IMMEDIATE)
-          //31,31=size 26=V (indicates FP)  23,22=opc (ref-man p576)
-          //looking at 31,30,26,23,22 bits as a 5bit value
           case 0x3:
           {
             uint8_t switchVal = (bits(machInst, 23, 22) << 0) |
@@ -1584,48 +1552,29 @@ namespace Aarch64
                     return new STRHFP64_IMM(machInst, rt, rnsp, imm12 << 1);
                   case 0x0d:
                     return new LDRHFP64_IMM(machInst, rt, rnsp, imm12 << 1);
-                  case 0x0e:
-                    return new LDRW64SBC_IMM(machInst, rt, rnsp, imm12 << 2);
-                  case 0x0f:
-                    return new LDRB64SBC_IMM(machInst, rt, rnsp, imm12);
                   case 0x10:
                     return new STRW64_IMM(machInst, rt, rnsp, imm12 << 2);
                   case 0x11:
                     return new LDRW64_IMM(machInst, rt, rnsp, imm12 << 2);
                   case 0x12:
                     return new LDRSW64_IMM(machInst, rt, rnsp, imm12 << 2);
-                  case 0x13:
-                    return new LDRSW64SBC_IMM(machInst, rt, rnsp, imm12 << 2);
                   case 0x14:
                     return new STRSFP64_IMM(machInst, rt, rnsp, imm12 << 2);
                   case 0x15:
                     return new LDRSFP64_IMM(machInst, rt, rnsp, imm12 << 2);
-                  case 0x16:
-                    return new BigFpMemImm("S", machInst, true,
-                                           rt, rnsp, imm12 << 4);
-                  case 0x17:
-                    return new LDRSFP64SBC_IMM(machInst, rt, rnsp, imm12 << 2);
                   case 0x18:
                     return new STRX64_IMM(machInst, rt, rnsp, imm12 << 3);
                   case 0x19:
                     return new LDRX64_IMM(machInst, rt, rnsp, imm12 << 3);
                   case 0x1a:
                     return new PRFM64_IMM(machInst, rt, rnsp, imm12 << 3);
-                  case 0x1b:
-                    return new LDRX64SBC_IMM(machInst, rt, rnsp, imm12 << 3);
                   case 0x1c:
                     return new STRDFP64_IMM(machInst, rt, rnsp, imm12 << 3);
                   case 0x1d:
                     return new LDRDFP64_IMM(machInst, rt, rnsp, imm12 << 3);
-                  case 0x1e:
-                    return new LDRDFP64SBC_IMM(machInst, rt, rnsp,
-                                                      imm12 << 3);;
-                  case 0x1f:
-                    return new LDRH64SBC_IMM(machInst, rt, rnsp, imm12 << 1);;
                   default:
                     return new Unknown64(machInst);
                 }
-            // REGISTER
             } else if (bits(machInst, 21) == 1) {
                 uint8_t group = bits(machInst, 11, 10);
                 switch (group) {
@@ -1656,7 +1605,6 @@ namespace Aarch64
                         }
                     }
                   case 0x1:
-
                   case 0x3:
                     {
                         RegIndex rt = (RegIndex)(uint32_t)
@@ -1685,8 +1633,6 @@ namespace Aarch64
                             GEM5_UNREACHABLE;
                         }
                     }
-
-                  // REG
                   case 0x2:
                     {
                         if (!bits(machInst, 14))
@@ -1722,10 +1668,10 @@ namespace Aarch64
                                                     type, 0);
                           case 0x6:
                             return new BigFpMemReg("str", machInst, false,
-                                              rt, rnsp, rm, type, s * 4);
+                                                   rt, rnsp, rm, type, s * 4);
                           case 0x7:
                             return new BigFpMemReg("ldr", machInst, true,
-                                              rt, rnsp, rm, type, s * 4);
+                                                   rt, rnsp, rm, type, s * 4);
                           case 0x08:
                             return new STRH64_REG(machInst, rt, rnsp, rm,
                                                   type, s);
@@ -1744,12 +1690,6 @@ namespace Aarch64
                           case 0x0d:
                             return new LDRHFP64_REG(machInst, rt, rnsp, rm,
                                                     type, s);
-                          case 0x0e:
-                            return new LDRW64SBC_REG(machInst, rt, rnsp, rm,
-                                                  type, s * 2);
-                          case 0x0f:
-                            return new LDRB64SBC_REG(machInst, rt, rnsp, rm,
-                                                  type, 0);
                           case 0x10:
                             return new STRW64_REG(machInst, rt, rnsp, rm,
                                                   type, s * 2);
@@ -1759,20 +1699,11 @@ namespace Aarch64
                           case 0x12:
                             return new LDRSW64_REG(machInst, rt, rnsp, rm,
                                                    type, s * 2);
-                          case 0x13:
-                            return new LDRSW64SBC_REG(machInst, rt, rnsp, rm,
-                                                   type, s * 2);
                           case 0x14:
                             return new STRSFP64_REG(machInst, rt, rnsp, rm,
                                                     type, s * 2);
                           case 0x15:
                             return new LDRSFP64_REG(machInst, rt, rnsp, rm,
-                                                    type, s * 2);
-                          case 0x16:
-                            return new BigFpMemReg("S", machInst,
-                                              true, rt, rnsp, rm, type, s * 4);
-                          case 0x17:
-                            return new LDRSFP64SBC_REG(machInst, rt, rnsp, rm,
                                                     type, s * 2);
                           case 0x18:
                             return new STRX64_REG(machInst, rt, rnsp, rm,
@@ -1783,21 +1714,12 @@ namespace Aarch64
                           case 0x1a:
                             return new PRFM64_REG(machInst, rt, rnsp, rm,
                                                   type, s * 3);
-                          case 0x1b:
-                            return new LDRX64SBC_REG(machInst, rt, rnsp, rm,
-                                                    type, s * 3);
                           case 0x1c:
                             return new STRDFP64_REG(machInst, rt, rnsp, rm,
                                                     type, s * 3);
                           case 0x1d:
                             return new LDRDFP64_REG(machInst, rt, rnsp, rm,
                                                     type, s * 3);
-                          case 0x1e:
-                            return new LDRDFP64SBC_REG(machInst, rt, rnsp, rm,
-                                                    type, s * 3);
-                          case 0x1f:
-                            return new LDRH64SBC_REG(machInst, rt, rnsp, rm,
-                                                  type, s);
                           default:
                             return new Unknown64(machInst);
 
@@ -1806,10 +1728,8 @@ namespace Aarch64
                   default:
                     return new Unknown64(machInst);
                 }
-            // LDUR
             } else {
                 // bit 29:27=111, 25:24=00, 21=0
-                // switchVal = 31,30,26,23,22
                 switch (bits(machInst, 11, 10)) {
                   case 0x0:
                   {
@@ -1850,49 +1770,31 @@ namespace Aarch64
                         return new STURHFP64_IMM(machInst, rt, rnsp, imm);
                       case 0x0d:
                         return new LDURHFP64_IMM(machInst, rt, rnsp, imm);
-                      case 0x0e:
-                        return new LDURW64SBC_IMM(machInst, rt, rnsp, imm);
-                      case 0x0f:
-                        return new LDURB64SBC_IMM(machInst, rt, rnsp, imm);
                       case 0x10:
                         return new STURW64_IMM(machInst, rt, rnsp, imm);
                       case 0x11:
                         return new LDURW64_IMM(machInst, rt, rnsp, imm);
                       case 0x12:
                         return new LDURSW64_IMM(machInst, rt, rnsp, imm);
-                      case 0x13:
-                        return new LDURSW64SBC_IMM(machInst, rt, rnsp, imm);
                       case 0x14:
                         return new STURSFP64_IMM(machInst, rt, rnsp, imm);
                       case 0x15:
                         return new LDURSFP64_IMM(machInst, rt, rnsp, imm);
-                      case 0x16:
-                        return new BigFpMemImm("S", machInst,
-                                              true, rt, rnsp, imm);
-                      case 0x17:
-                        return new LDURSFP64SBC_IMM(machInst, rt, rnsp, imm);
                       case 0x18:
                         return new STURX64_IMM(machInst, rt, rnsp, imm);
                       case 0x19:
                         return new LDURX64_IMM(machInst, rt, rnsp, imm);
                       case 0x1a:
                         return new PRFUM64_IMM(machInst, rt, rnsp, imm);
-                      case 0x1b:
-                        return new LDURX64SBC_IMM(machInst, rt, rnsp, imm);
                       case 0x1c:
                         return new STURDFP64_IMM(machInst, rt, rnsp, imm);
                       case 0x1d:
                         return new LDURDFP64_IMM(machInst, rt, rnsp, imm);
-                      case 0x1e:
-                        return new LDURDFP64SBC_IMM(machInst, rt, rnsp, imm);
-                      case 0x1f:
-                        return new LDURH64SBC_IMM(machInst, rt, rnsp, imm);
                       default:
                         return new Unknown64(machInst);
                     }
                   }
                   // bit 29:27=111, 25:24=00, 21=0, 11:10=01
-                  // POST
                   case 0x1:
                   {
                     RegIndex rt =
@@ -1932,41 +1834,24 @@ namespace Aarch64
                         return new STRHFP64_POST(machInst, rt, rnsp, imm);
                       case 0x0d:
                         return new LDRHFP64_POST(machInst, rt, rnsp, imm);
-                      case 0x0e:
-                        return new LDRW64SBC_POST(machInst, rt, rnsp, imm);
-                      case 0x0f:
-                        return new LDRB64SBC_POST(machInst, rt, rnsp, imm);
                       case 0x10:
                         return new STRW64_POST(machInst, rt, rnsp, imm);
                       case 0x11:
                         return new LDRW64_POST(machInst, rt, rnsp, imm);
                       case 0x12:
                         return new LDRSW64_POST(machInst, rt, rnsp, imm);
-                      case 0x13:
-                        return new LDRSW64SBC_POST(machInst, rt, rnsp, imm);
                       case 0x14:
                         return new STRSFP64_POST(machInst, rt, rnsp, imm);
                       case 0x15:
                         return new LDRSFP64_POST(machInst, rt, rnsp, imm);
-                      case 0x16:
-                        return new BigFpMemPost("S", machInst,
-                                               true, rt, rnsp, imm);
-                      case 0x17:
-                        return new LDRSFP64SBC_POST(machInst, rt, rnsp, imm);
                       case 0x18:
                         return new STRX64_POST(machInst, rt, rnsp, imm);
                       case 0x19:
                         return new LDRX64_POST(machInst, rt, rnsp, imm);
-                      case 0x1b:
-                        return new LDRX64SBC_POST(machInst, rt, rnsp, imm);
                       case 0x1c:
                         return new STRDFP64_POST(machInst, rt, rnsp, imm);
                       case 0x1d:
                         return new LDRDFP64_POST(machInst, rt, rnsp, imm);
-                      case 0x1e:
-                        return new LDRDFP64SBC_POST(machInst, rt, rnsp, imm);
-                      case 0x1f:
-                        return new LDRH64SBC_POST(machInst, rt, rnsp, imm);
                       default:
                         return new Unknown64(machInst);
                     }
@@ -1996,31 +1881,20 @@ namespace Aarch64
                         return new LDTRSHX64_IMM(machInst, rt, rnsp, imm);
                       case 0x0b:
                         return new LDTRSHW64_IMM(machInst, rt, rnsp, imm);
-                      case 0x0e:
-                        return new LDTRW64SBC_IMM(machInst, rt, rnsp, imm);
-                      case 0x0f:
-                        return new LDTRB64SBC_IMM(machInst, rt, rnsp, imm);
                       case 0x10:
                         return new STTRW64_IMM(machInst, rt, rnsp, imm);
                       case 0x11:
                         return new LDTRW64_IMM(machInst, rt, rnsp, imm);
                       case 0x12:
                         return new LDTRSW64_IMM(machInst, rt, rnsp, imm);
-                      case 0x13:
-                        return new LDTRSW64SBC_IMM(machInst, rt, rnsp, imm);
                       case 0x18:
                         return new STTRX64_IMM(machInst, rt, rnsp, imm);
                       case 0x19:
                         return new LDTRX64_IMM(machInst, rt, rnsp, imm);
-                      case 0x1b:
-                        return new LDTRX64SBC_IMM(machInst, rt, rnsp, imm); 
-                      case 0x1f:
-                        return new LDTRH64SBC_IMM(machInst, rt, rnsp, imm);
                       default:
                         return new Unknown64(machInst);
                     }
                   }
-                  // PRE
                   case 0x3:
                   {
                     RegIndex rt =
@@ -2060,41 +1934,24 @@ namespace Aarch64
                         return new STRHFP64_PRE(machInst, rt, rnsp, imm);
                       case 0x0d:
                         return new LDRHFP64_PRE(machInst, rt, rnsp, imm);
-                      case 0x0e:
-                        return new LDRW64SBC_PRE(machInst, rt, rnsp, imm);
-                      case 0x0f:
-                        return new LDRB64SBC_PRE(machInst, rt, rnsp, imm);
                       case 0x10:
                         return new STRW64_PRE(machInst, rt, rnsp, imm);
                       case 0x11:
                         return new LDRW64_PRE(machInst, rt, rnsp, imm);
                       case 0x12:
                         return new LDRSW64_PRE(machInst, rt, rnsp, imm);
-                      case 0x13:
-                        return new LDRSW64SBC_PRE(machInst, rt, rnsp, imm);
                       case 0x14:
                         return new STRSFP64_PRE(machInst, rt, rnsp, imm);
                       case 0x15:
                         return new LDRSFP64_PRE(machInst, rt, rnsp, imm);
-                      case 0x16:
-                        return new BigFpMemPre("S", machInst,
-                                              true, rt, rnsp, imm);
-                      case 0x17:
-                        return new LDRSFP64SBC_PRE(machInst, rt, rnsp, imm);
                       case 0x18:
                         return new STRX64_PRE(machInst, rt, rnsp, imm);
                       case 0x19:
                         return new LDRX64_PRE(machInst, rt, rnsp, imm);
-                      case 0x1b:
-                        return new LDRX64SBC_PRE(machInst, rt, rnsp, imm);
                       case 0x1c:
                         return new STRDFP64_PRE(machInst, rt, rnsp, imm);
                       case 0x1d:
                         return new LDRDFP64_PRE(machInst, rt, rnsp, imm);
-                      case 0x1e:
-                        return new LDRDFP64SBC_PRE(machInst, rt, rnsp, imm);
-                      case 0x1f:
-                        return new LDRH64SBC_PRE(machInst, rt, rnsp, imm);
                       default:
                         return new Unknown64(machInst);
                     }
@@ -2111,439 +1968,6 @@ namespace Aarch64
     }
 }
 }};
-
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePAIMMLoads(ExtMachInst machInst)
-    {
-      uint64_t imm12 = bits(machInst, 21, 10);
-      RegIndex rt = (RegIndex)(uint32_t)bits(machInst, 4, 0);
-      RegIndex rn = (RegIndex)(uint32_t)bits(machInst, 9, 5);
-      RegIndex rnsp = makeSP(rn);
-      uint8_t switchVal = (bits(machInst, 22) << 0) |
-                          (bits(machInst, 24, 23) << 1) |
-                          (bits(machInst, 31) << 3);
-
-      switch (switchVal) {
-          case 0x00:
-            return new LDRB64DA_IMM(machInst, rt, rnsp, imm12);
-          case 0x01:
-            return new LDRH64DA_IMM(machInst, rt, rnsp, imm12 << 1);
-          case 0x02:
-            return new LDRW64DA_IMM(machInst, rt, rnsp, imm12 << 2);
-          case 0x03:
-            return new LDRSW64DA_IMM(machInst, rt, rnsp, imm12 << 2);
-          case 0x04:
-            return new LDRSFP64DA_IMM(machInst, rt, rnsp, imm12 << 2);
-          case 0x05:
-            return new LDRX64DA_IMM(machInst, rt, rnsp, imm12 << 3);
-          case 0x06:
-            return new LDRDFP64DA_IMM(machInst, rt, rnsp, imm12 << 3);
-          case 0x07:
-            return new BigFpMemImm("D", machInst, true,
-                                           rt, rnsp, imm12 << 4);
-          case 0x08:
-            return new LDRSHW64SBC_IMM(machInst, rt, rnsp, imm12 << 1);
-          case 0x09:
-            return new LDRSHW64DA_IMM(machInst, rt, rnsp, imm12 << 1);
-          case 0x0a:
-            return new LDRSHX64SBC_IMM(machInst, rt, rnsp, imm12 << 1);
-          case 0x0b:
-            return new LDRSHX64DA_IMM(machInst, rt, rnsp, imm12 << 1);
-          case 0x0c:
-            return new LDRSBW64SBC_IMM(machInst, rt, rnsp, imm12);
-          case 0x0d:
-            return new LDRSBW64DA_IMM(machInst, rt, rnsp, imm12);
-          case 0x0e:
-            return new LDRSBX64SBC_IMM(machInst, rt, rnsp, imm12);
-          case 0x0f:
-            return new LDRSBX64DA_IMM(machInst, rt, rnsp, imm12);
-           default:
-                  return new Unknown64(machInst);
-        }
-
-
-    }
-}
-}};
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePAREGLoads(ExtMachInst machInst)
-    {
-      RegIndex rt = (RegIndex)(uint32_t)
-          bits(machInst, 4, 0);
-      RegIndex rn = (RegIndex)(uint32_t)
-          bits(machInst, 9, 5);
-      RegIndex rnsp = makeSP(rn);
-      RegIndex rm = (RegIndex)(uint32_t)
-          bits(machInst, 20, 16);
-      ArmExtendType type =
-          (ArmExtendType)(uint32_t)bits(machInst, 15, 13);
-      uint8_t s = bits(machInst, 12);
-
-      uint8_t switchVal = (bits(machInst, 22) << 0) |
-                          (bits(machInst, 24, 23) << 1) |
-                          (bits(machInst, 31) << 3);
-
-      switch (switchVal) {
-          case 0x00:
-            return new LDRB64DA_REG(machInst, rt, rnsp, rm,
-                                                    type, 0);
-          case 0x01:
-            return new LDRH64DA_REG(machInst, rt, rnsp, rm,
-                                                  type, s);
-          case 0x02:
-            return new LDRW64DA_REG(machInst, rt, rnsp, rm,
-                                                  type, s * 2);
-          case 0x03:
-            return new LDRSW64DA_REG(machInst, rt, rnsp, rm,
-                                                  type, s * 2);
-          case 0x04:
-            return new LDRSFP64DA_REG(machInst, rt, rnsp, rm,
-                                                    type, s * 2);
-          case 0x05:
-            return new LDRX64DA_REG(machInst, rt, rnsp, rm,
-                                                  type, s * 3);
-          case 0x06:
-            return new LDRDFP64DA_REG(machInst, rt, rnsp, rm,
-                                                    type, s * 3);
-          case 0x07:
-            return new BigFpMemReg("D", machInst,
-                                true, rt, rnsp, rm, type, s * 4);
-          case 0x08:
-            return new LDRSHW64SBC_REG(machInst, rt, rnsp, rm, type, s);
-          case 0x09:
-            return new LDRSHW64DA_REG(machInst, rt, rnsp, rm, type, s);
-          case 0x0a:
-            return new LDRSHX64SBC_REG(machInst, rt, rnsp, rm, type, s);
-          case 0x0b:
-            return new LDRSHX64DA_REG(machInst, rt, rnsp, rm, type, s);
-          case 0x0c:
-            return new LDRSBW64SBC_REG(machInst, rt, rnsp, rm, type, 0);
-          case 0x0d:
-            return new LDRSBW64DA_REG(machInst, rt, rnsp, rm, type, 0);
-          case 0x0e:
-            return new LDRSBX64SBC_REG(machInst, rt, rnsp, rm, type, 0);
-          case 0x0f:
-            return new LDRSBX64DA_REG(machInst, rt, rnsp, rm, type, 0);
-          default:
-                  return new Unknown64(machInst);
-        }
-    }
-}
-}};
-
-
-
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePAPOSTLoads(ExtMachInst machInst)
-    {
-      RegIndex rt = (RegIndex)(uint32_t)bits(machInst, 4, 0);
-      RegIndex rn = (RegIndex)(uint32_t)bits(machInst, 9, 5);
-      RegIndex rnsp = makeSP(rn);
-      uint64_t imm = sext<9>(bits(machInst, 20, 12));
-
-      uint8_t switchVal = (bits(machInst, 22) << 0) |
-                          (bits(machInst, 24, 23) << 1);
-
-      switch (switchVal) {
-          case 0x00:
-            return new LDRB64DA_POST(machInst, rt, rnsp, imm);
-          case 0x01:
-            return new LDRH64DA_POST(machInst, rt, rnsp, imm);
-          case 0x02:
-            return new LDRW64DA_POST(machInst, rt, rnsp, imm);
-          case 0x03:
-            return new LDRSW64DA_POST(machInst, rt, rnsp, imm);
-          case 0x04:
-            return new LDRSFP64DA_POST(machInst, rt, rnsp, imm);
-          case 0x05:
-            return new LDRX64DA_POST(machInst, rt, rnsp, imm);
-          case 0x06:
-            return new LDRDFP64DA_POST(machInst, rt, rnsp, imm);
-          case 0x07:
-            return new BigFpMemPost("D", machInst,
-                                               true, rt, rnsp, imm);
-          case 0x08:
-            return new LDRSHW64SBC_POST(machInst, rt, rnsp, imm);
-          case 0x09:
-            return new LDRSHW64DA_POST(machInst, rt, rnsp, imm);
-          case 0x0a:
-            return new LDRSHX64SBC_POST(machInst, rt, rnsp, imm);
-          case 0x0b:
-            return new LDRSHX64DA_POST(machInst, rt, rnsp, imm);
-          case 0x0c:
-            return new LDRSBW64SBC_POST(machInst, rt, rnsp, imm);
-          case 0x0d:
-            return new LDRSBW64DA_POST(machInst, rt, rnsp, imm);
-          case 0x0e:
-            return new LDRSBX64SBC_POST(machInst, rt, rnsp, imm);
-          case 0x0f:
-            return new LDRSBX64DA_POST(machInst, rt, rnsp, imm);
-          default:
-                  return new Unknown64(machInst);
-        }
-    }
-}
-}};
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePAPRELoads(ExtMachInst machInst)
-    {
-      RegIndex rt = (RegIndex)(uint32_t)bits(machInst, 4, 0);
-      RegIndex rn = (RegIndex)(uint32_t)bits(machInst, 9, 5);
-      RegIndex rnsp = makeSP(rn);
-      uint64_t imm = sext<9>(bits(machInst, 20, 12));
-
-      uint8_t switchVal = (bits(machInst, 22) << 0) |
-                          (bits(machInst, 24, 23) << 1);
-
-      switch (switchVal) {
-          case 0x00:
-            return new LDRB64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x01:
-            return new LDRH64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x02:
-            return new LDRW64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x03:
-            return new LDRSW64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x04:
-            return new LDRSFP64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x05:
-            return new LDRX64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x06:
-            return new LDRDFP64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x07:
-            return new BigFpMemPre("D", machInst,
-                                               true, rt, rnsp, imm);
-          case 0x08:
-            return new LDRSHW64SBC_PRE(machInst, rt, rnsp, imm);
-          case 0x09:
-            return new LDRSHW64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x0a:
-            return new LDRSHX64SBC_PRE(machInst, rt, rnsp, imm);
-          case 0x0b:
-            return new LDRSHX64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x0c:
-            return new LDRSBW64SBC_PRE(machInst, rt, rnsp, imm);
-          case 0x0d:
-            return new LDRSBW64DA_PRE(machInst, rt, rnsp, imm);
-          case 0x0e:
-            return new LDRSBX64SBC_PRE(machInst, rt, rnsp, imm);
-          case 0x0f:
-            return new LDRSBX64DA_PRE(machInst, rt, rnsp, imm);
-          default:
-                  return new Unknown64(machInst);
-        }
-    }
-}
-}};
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePNALDPLoads(ExtMachInst machInst)
-    {
-            // bool fp = bits(machInst, 26); //V
-            bool i64orfp64 = bits(machInst, 22); //L            
-            bool load = true;
-            uint32_t size = 8;
-            bool fp = false;
-            //0 = i64 and 1=fp128
-            if(i64orfp64){
-              fp = true; 
-            }
-            else{
-              fp = false; 
-            }
-            uint8_t type = bits(machInst, 24, 23);
-            int64_t imm = sext<7>(bits(machInst, 21, 15)) * size;
-
-            RegIndex rn = (RegIndex)(uint8_t)bits(machInst, 9, 5);
-            RegIndex rt = (RegIndex)(uint8_t)bits(machInst, 4, 0);
-            RegIndex rt2 = (RegIndex)(uint8_t)bits(machInst, 14, 10);
-            bool noAlloc = (type == 0);
-            // bool signExt = !noAlloc && !fp && opc == 1;
-            bool signExt = false;
-            PairMemOp::AddrMode mode;
-            const char *mnemonic = NULL;
-            mnemonic = "S";
-            switch (type) {
-              case 0x0:
-              case 0x2:
-                mode = PairMemOp::AddrMd_Offset;
-                break;
-              case 0x1:
-                mode = PairMemOp::AddrMd_PostIndex;
-                break;
-              case 0x3:
-                mode = PairMemOp::AddrMd_PreIndex;
-                break;  
-              default:
-                return new Unknown64(machInst);
-            }
-            
-
-            return new LdpStp(mnemonic, machInst, size, fp, load, noAlloc,
-                    signExt, false, false, imm, mode, rn, rt, rt2);
-    }
-}
-
-}};
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePALDPLoads(ExtMachInst machInst)
-    {
-            // bool fp = bits(machInst, 26); //V
-            bool i64orfp64 = bits(machInst, 22); //L            
-            bool load = true;
-            uint32_t size = 8;
-            bool fp = false;
-            //0 = i64 and 1=fp128
-            if(i64orfp64){
-              fp = true; 
-            }
-            else{
-              fp = false; 
-            }
-            uint8_t type = bits(machInst, 24, 23);
-            int64_t imm = sext<7>(bits(machInst, 21, 15)) * size;
-
-            RegIndex rn = (RegIndex)(uint8_t)bits(machInst, 9, 5);
-            RegIndex rt = (RegIndex)(uint8_t)bits(machInst, 4, 0);
-            RegIndex rt2 = (RegIndex)(uint8_t)bits(machInst, 14, 10);
-            bool noAlloc = (type == 0);
-            // bool signExt = !noAlloc && !fp && opc == 1;
-            bool signExt = false;
-            PairMemOp::AddrMode mode;
-            const char *mnemonic = NULL;
-            mnemonic = "D";
-            switch (type) {
-              case 0x0:
-                // no alloc not implemented at the moment
-              case 0x2:
-                mode = PairMemOp::AddrMd_Offset;
-                break;
-              case 0x1:
-                mode = PairMemOp::AddrMd_PostIndex;
-                break;
-              case 0x3:
-                mode = PairMemOp::AddrMd_PreIndex;
-                break;  
-              default:
-                return new Unknown64(machInst);
-            }
-            return new LdpStp(mnemonic, machInst, size, fp, load, noAlloc,
-                    signExt, false, false, imm, mode, rn, rt, rt2);
-    }
-}
-
-}};
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePALDURLoads(ExtMachInst machInst)
-    {
-      RegIndex rt = (RegIndex)(uint32_t)bits(machInst, 4, 0);
-      RegIndex rn = (RegIndex)(uint32_t)bits(machInst, 9, 5);
-      RegIndex rnsp = makeSP(rn);
-      uint64_t imm = sext<9>(bits(machInst, 20, 12));
-
-      uint8_t switchVal = (bits(machInst, 22) << 0) |
-                          (bits(machInst, 24, 23) << 1);  
-
-      switch (switchVal) {
-          case 0x00:
-            return new LDURB64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x01:
-            return new LDURH64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x02:
-            return new LDURW64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x03:
-            return new LDURSW64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x04:
-            return new LDURSFP64DA_IMM(machInst, rt, rnsp, imm);
-           case 0x05:
-            return new LDURX64DA_IMM(machInst, rt, rnsp, imm);
-           case 0x06:
-            return new LDURDFP64DA_IMM(machInst, rt, rnsp, imm);
-           case 0x07:
-            return new BigFpMemImm("D", machInst,
-                                              true, rt, rnsp, imm);
-           default:
-                  return new Unknown64(machInst);
-        }
-
-
-    }
-}
-}};
-
-output decoder {{
-namespace Aarch64
-{
-
-    StaticInstPtr
-    decodePALDTRLoads(ExtMachInst machInst)
-    {
-      RegIndex rt = (RegIndex)(uint32_t)bits(machInst, 4, 0);
-      RegIndex rn = (RegIndex)(uint32_t)bits(machInst, 9, 5);
-      RegIndex rnsp = makeSP(rn);
-      uint64_t imm = sext<9>(bits(machInst, 20, 12));
-
-      uint8_t switchVal = (bits(machInst, 22) << 0) |
-                          (bits(machInst, 24, 23) << 1);  
-
-      switch (switchVal) {
-          case 0x00:
-            return new LDTRB64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x01:
-            return new LDTRH64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x02:
-            return new LDTRW64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x03:
-            return new LDTRSW64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x04:
-          case 0x05:
-            return new LDTRX64DA_IMM(machInst, rt, rnsp, imm);
-          case 0x06:
-          case 0x07:
-           default:
-            return new Unknown64(machInst);
-        }
-
-
-    }
-}
-}};
-
-
 
 output decoder {{
 namespace Aarch64
@@ -3666,22 +3090,20 @@ def format Aarch64() {{
         using namespace Aarch64;
         if (bits(machInst, 27) == 0x0) {
             if (bits(machInst, 28) == 0x0) {
-              // 0011 0001 0000
                 if (bits(machInst, 26, 25) != 0x2) {
                     return new Unknown64(machInst);
                 }
-                // 0 xx 0010 (31:25) leaving bits 23 24 and 22 (inside the below functions)
-                switch (bits(machInst, 30, 29)) {
-                    case 0x0:
-                    return decodePAIMMLoads(machInst);
-                    case 0x1:
-                    return decodePAREGLoads(machInst);
-                    case 0x2:
-                    //return decodeSveInt(machInst);
-                    return decodePAPRELoads(machInst);
-                    case 0x3:
-                    //return decodeSveFp(machInst);
-                    return decodePAPOSTLoads(machInst);
+                if (bits(machInst, 31) == 0x0) {
+                    switch (bits(machInst, 30, 29)) {
+                      case 0x0:
+                      case 0x1:
+                      case 0x2:
+                        return decodeSveInt(machInst);
+                      case 0x3:
+                        return decodeSveFp(machInst);
+                    }
+                } else {
+                    return decodeSveMem(machInst);
                 }
             } else if (bits(machInst, 26) == 0)
                 // bit 28:26=100
@@ -3708,3 +3130,4 @@ def format Aarch64() {{
     }
     '''
 }};
+
