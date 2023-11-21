@@ -73,6 +73,28 @@
 #include "sim/full_system.hh"
 #include "sim/system.hh"
 
+std::vector<uint64_t> pnd_addresses;
+static void load_addresses(){
+    std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/linalg_pnd_addresses";
+
+    std::ifstream inputFile(filename);
+
+    if (!inputFile.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        exit(1);
+    }
+
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        std::istringstream iss(line);
+        uint64_t address;
+        if (iss >> address) {
+            pnd_addresses.push_back(address);
+        } else {
+            std::cerr << "Invalid input: " << line << std::endl;
+        }
+    }
+}
 namespace gem5
 {
 
@@ -147,6 +169,8 @@ Fetch::Fetch(CPU *_cpu, const BaseO3CPUParams &params)
 
     // Get the size of an instruction.
     instSize = decoder[0]->moreBytesSize();
+
+    load_addresses();
 }
 
 std::string Fetch::name() const { return cpu->name() + ".fetch"; }
@@ -1059,6 +1083,9 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu);
     instruction->setTid(tid);
 
+    if (staticInst->isLoad() &&  std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end())
+        instruction->setSpecFlag();
+
     instruction->setThreadState(cpu->thread[tid]);
 
     DPRINTF(Fetch, "[tid:%i] Instruction PC %s created [sn:%lli].\n",
@@ -1622,3 +1649,4 @@ Fetch::IcachePort::recvReqRetry()
 
 } // namespace o3
 } // namespace gem5
+

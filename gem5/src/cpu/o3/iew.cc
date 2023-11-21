@@ -1099,8 +1099,6 @@ IEW::dispatchInsts(ThreadID tid)
         // If the instruction queue is not full, then add the
         // instruction.
         if (add_to_iq) {
-                instQueue.dep_instruction = 0;
-            }
             // DPRINTF(flagcheck, "isSpecbCheck %x | isDefAlias %x\n | inst: %x",
             //             inst->isSpecbCheck(), inst->isDefAlias(),
             //             inst->getEMI());
@@ -1660,9 +1658,6 @@ IEW::checkMisprediction(const DynInstPtr& inst)
         if (inst->mispredicted()) {
             fetchRedirect[tid] = true;
 
-            DPRINTF(DefAlias, "[tid:%i] [sn:%llu] Execute: "
-                    "Branch mispredict detected.\n",
-                    tid, inst->seqNum);
             DPRINTF(IEW, "[tid:%i] [sn:%llu] Predicted target was PC: %s\n",
                     tid, inst->seqNum, inst->readPredTarg());
             DPRINTF(IEW, "[tid:%i] [sn:%llu] Execute: "

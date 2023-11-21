@@ -210,9 +210,6 @@ MemDepUnit::insertBarrierSN(const DynInstPtr &barr_inst)
 void
 MemDepUnit::insert(const DynInstPtr &inst)
 {
-    DPRINTF(flagcheck, "isSpecbCheck %x | isDefAlias %x\n | inst: %x\n",
-                        inst->isSpecbCheck(), inst->isDefAlias(),
-                        inst->getEMI());
     ThreadID tid = inst->threadNumber;
 
     MemDepEntryPtr inst_entry = std::make_shared<MemDepEntry>(inst);
@@ -289,33 +286,23 @@ MemDepUnit::insert(const DynInstPtr &inst)
 
                 moveToReady(inst_entry);
             }
-            if (inst->isSpecbCheck()){
-                DPRINTF(DefNotAlias, "DefNotAlias Instruction not "
-                "looking at dependency unit\n");
-            }
     } else {
         //KEY FOR INDICATING DEPENDANCY...
         // Otherwise make the instruction dependent on the store/barrier.
         DPRINTF(MemDepUnit, "Adding to dependency list\n");
         for ([[maybe_unused]] auto producing_store : producing_stores)
-            DPRINTF(DefAlias, "\tinst: %x [sn:%lli] "
-                    "is dependent on [sn:%lli].\n",
-                    inst->getEMI(), inst->seqNum, producing_store);
 
         if (inst->readyToIssue()) {
-            // DPRINTF(DefAlias, "Entered ready to issue...\n");
             inst_entry->regsReady = true;
         }
 
         // Clear the bit saying this instruction can issue.
         inst->clearCanIssue();
-        // DPRINTF(DefAlias, "Defalias added to memory [] deps...\n");
         // Add this instruction to the list of dependents.
         for (auto store_entry : store_entries)
             store_entry->dependInsts.push_back(inst_entry);
 
         inst_entry->memDeps = store_entries.size();
-        // DPRINTF(DefAlias, "Added to dependInsts\n");
         if (inst->isLoad()) {
             ++stats.conflictingLoads;
         } else {

@@ -1739,15 +1739,6 @@ LSQUnit::getDepStoreSeqNum(DynInstPtr load_inst)
                 store_eff_addr1 <= load_eff_addr2 &&
                 (load_inst->seqNum - it->instruction()->seqNum) < 5){
 
-                DPRINTF(DefAlias, "Found dependent in never alias case:"
-                " load inst [sn:%lli] @ PC %x | store inst [sn:%lli]"
-                " @ PC %x \n",
-                load_inst->seqNum, load_inst->pcState().instAddr(),
-                it->instruction()->seqNum,
-                it->instruction()->pcState().instAddr());
-
-                DPRINTF(DefAlias, "Physical addresses L: %x S: %x\n",
-                load_inst->effAddr, it->instruction()->effAddr);
                 // storeQueue.back()->seqNum
                 return it->instruction()->seqNum;
             }
