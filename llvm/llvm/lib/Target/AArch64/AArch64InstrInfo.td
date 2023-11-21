@@ -2549,7 +2549,6 @@ defm LDPWPNA : LoadPairOffset<0b11, 0, GPR32z, simm7s4, "ldppna">;
 defm LDPX : LoadPairOffset<0b10, 0, GPR64z, simm7s8, "ldp">;
 defm LDPXPNA : LoadPairOffsetPNA<0b10, 0, GPR64z, simm7s8, "ldppna">;
 defm LDPS : LoadPairOffset<0b00, 1, FPR32Op, simm7s4, "ldp">;
-//FIXME base class is fucked
 defm LDPSPNA : LoadPairOffsetPA<0b10, 0, FPR32Op, simm7s4, "ldppna">;
 defm LDPD : LoadPairOffset<0b01, 1, FPR64Op, simm7s8, "ldp">;
 defm LDPDPNA : LoadPairOffsetPNA<0b10, 1, FPR64Op, simm7s8, "ldppna">;
