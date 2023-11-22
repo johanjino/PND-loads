@@ -215,7 +215,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     }
     for (auto Store: all_stores){
         //For inner loops we can skip analysing simple stores also in the inner loop
-        if (false && current_loop->isInnermost()
+        if (was_LAI_analysed && current_loop->isInnermost()
             && LI.getLoopFor(Store->getParent()) == current_loop
             && Store->isSimple()) continue;
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;

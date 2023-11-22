@@ -647,6 +647,13 @@ void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
           NewOpcode = AArch64::LDRBBPNAroX; //LDRBBroX-No-Predict-Alias
         else continue;
         break;
+      default:
+        if (!MI.mayStore() && hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE)){
+          printf("found MI with hint but no match!\n");
+          MI.print(llvm::outs());
+          printf("\n");
+        }
+        continue;
     }
     MI.setDesc(TII->get(NewOpcode));
     NumOpcodesReplaced++;
