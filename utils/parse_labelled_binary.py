@@ -7,7 +7,7 @@ addresses = []
 
 r2 = r2pipe.open(label_binary)
 
-r2.cmd('aaf')
+r2.cmd('aaa')
 
 funcs = [i for i in r2.cmdj('isj') if i['type'] == 'FUNC']
 

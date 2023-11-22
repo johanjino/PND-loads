@@ -66,6 +66,7 @@ INITIALIZE_PASS(AArch64LoadAliasMetadataInsertion, "aarch64-load-alias-metadata"
                 AARCH64_LOAD_ALIAS_METADATA_NAME, false, false)
 
 bool hasHint(MachineInstr &MI, unsigned AddrSpace){
+  return false;
   for (auto MemOp: MI.memoperands()){
     const Value *ir_pointer = MemOp->getValue();
     if (ir_pointer == NULL)
@@ -647,6 +648,7 @@ void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
           NewOpcode = AArch64::LDRBBPNAroX; //LDRBBroX-No-Predict-Alias
         else continue;
         break;
+
       default:
         if (!MI.mayStore() && hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE)){
           printf("found MI with hint but no match!\n");
