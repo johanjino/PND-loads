@@ -2605,41 +2605,41 @@ def : Pat<(AArch64ldp (am_indexed7s64 GPR64sp:$Rn, simm7s8:$offset)),
 
 // Integer
 defm LDRBB : Load8RO<0b00, 0, 0b01, GPR32, "ldrb", i32, zextloadi8>;
-defm LDRBBPNA : LoadROPND<GPR32, "ldrbpna", i32, zextloadi8>;
+defm LDRBBPNA : Load8ROPND<GPR32, "ldrbpna", i32, zextloadi8>;
 defm LDRHH : Load16RO<0b01, 0, 0b01, GPR32, "ldrh", i32, zextloadi16>;
-defm LDRHHPNA : LoadROPND<GPR32, "ldrhpna", i32, zextloadi16>;
+defm LDRHHPNA : Load16ROPND<GPR32, "ldrhpna", i32, zextloadi16>;
 defm LDRW  : Load32RO<0b10, 0, 0b01, GPR32, "ldr", i32, load>;
-defm LDRWPNA  : LoadROPND<GPR32, "ldrpna", i32, load>;
+defm LDRWPNA  : Load32ROPND<GPR32, "ldrpna", i32, load>;
 defm LDRX  : Load64RO<0b11, 0, 0b01, GPR64, "ldr", i64, load>;
-defm LDRXPNA  : LoadROPND<GPR64, "ldrpna", i64, load>;
+defm LDRXPNA  : Load64ROPND<GPR64, "ldrpna", i64, load>;
 
 // Floating-point
 defm LDRB : Load8RO<0b00, 1, 0b01, FPR8Op,   "ldr", untyped, load>;
-defm LDRBPNA : LoadROPND<FPR8Op,   "ldrpna", untyped, load>;
+defm LDRBPNA : Load8ROPND<FPR8Op,   "ldrpna", untyped, load>;
 defm LDRH : Load16RO<0b01, 1, 0b01, FPR16Op,  "ldr", f16, load>;
-defm LDRHPNA : LoadROPND<FPR16Op,  "ldrpna", f16, load>;
+defm LDRHPNA : Load16ROPND<FPR16Op,  "ldrpna", f16, load>;
 defm LDRS : Load32RO<0b10, 1, 0b01, FPR32Op,  "ldr", f32, load>;
-defm LDRSPNA : LoadROPND< FPR32Op,  "ldrpna", f32, load>;
+defm LDRSPNA : Load32ROPND<FPR32Op,  "ldrpna", f32, load>;
 defm LDRD : Load64RO<0b11, 1, 0b01, FPR64Op,  "ldr", f64, load>;
-defm LDRDPNA : LoadROPND<FPR64Op,  "ldrpna", f64, load>;
+defm LDRDPNA : Load64ROPND<FPR64Op,  "ldrpna", f64, load>;
 defm LDRQ : Load128RO<0b00, 1, 0b11, FPR128Op, "ldr", f128, load>;
-defm LDRQPNA : LoadROPND<FPR128Op, "ldrpna", f128, load>;
+defm LDRQPNA : Load128ROPND<FPR128Op, "ldrpna", f128, load>;
 
 // Load sign-extended half-word
 defm LDRSHW : Load16RO<0b01, 0, 0b11, GPR32, "ldrsh", i32, sextloadi16>;
-defm LDRSHWPNA : LoadROPND<GPR32, "ldrshpna", i32, sextloadi16>;
+defm LDRSHWPNA : Load16ROPND<GPR32, "ldrshpna", i32, sextloadi16>;
 defm LDRSHX : Load16RO<0b01, 0, 0b10, GPR64, "ldrsh", i64, sextloadi16>;
-defm LDRSHXPNA : LoadROPND<GPR64, "ldrshpna", i64, sextloadi16>;
+defm LDRSHXPNA : Load16ROPND<GPR64, "ldrshpna", i64, sextloadi16>;
 
 // Load sign-extended byte
 defm LDRSBW : Load8RO<0b00, 0, 0b11, GPR32, "ldrsb", i32, sextloadi8>;
-defm LDRSBWPNA : LoadROPND<GPR32, "ldrsbpna", i32, sextloadi8>;
+defm LDRSBWPNA : Load8ROPND<GPR32, "ldrsbpna", i32, sextloadi8>;
 defm LDRSBX : Load8RO<0b00, 0, 0b10, GPR64, "ldrsb", i64, sextloadi8>;
-defm LDRSBXPNA : LoadROPND<GPR64, "ldrsbpna", i64, sextloadi8>;
+defm LDRSBXPNA : Load8ROPND<GPR64, "ldrsbpna", i64, sextloadi8>;
 
 // Load sign-extended word
 defm LDRSW  : Load32RO<0b10, 0, 0b10, GPR64, "ldrsw", i64, sextloadi32>;
-defm LDRSWPNA  : LoadROPND<GPR64, "ldrswpna", i64, sextloadi32>;
+defm LDRSWPNA  : Load32ROPND<GPR64, "ldrswpna", i64, sextloadi32>;
 
 // Pre-fetch.
 defm PRFM : PrefetchRO<0b11, 0, 0b10, "prfm">;

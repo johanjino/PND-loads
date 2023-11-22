@@ -3556,7 +3556,7 @@ class ROInstAlias<string asm, DAGOperand regtype, Instruction INST>
   : InstAlias<asm # "\t$Rt, [$Rn, $Rm]",
               (INST regtype:$Rt, GPR64sp:$Rn, GPR64:$Rm, 0, 0)>;
 
-multiclass LoadROPND<DAGOperand regtype, string asm, ValueType Ty, SDPatternOperator loadop> {
+multiclass Load8ROPND<DAGOperand regtype, string asm, ValueType Ty, SDPatternOperator loadop> {
   let AddedComplexity = 10 in
   def roW : PNDLoadRO<asm,
                  (outs regtype:$Rt),
@@ -3679,6 +3679,29 @@ multiclass Load16RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
   def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
 }
 
+multiclass Load16ROPND<DAGOperand regtype,
+                    string asm, ValueType Ty, SDPatternOperator loadop> {
+  let AddedComplexity = 10 in
+  def roW : PNDLoadRO<asm, (outs regtype:$Rt),
+                 (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend16:$extend),
+                 [(set (Ty regtype:$Rt),
+                       (loadop (ro_Windexed16 GPR64sp:$Rn, GPR32:$Rm,
+                                              ro_Wextend16:$extend)))]>,
+            Sched<[WriteLDIdx, ReadAdrBase]> {
+  }
+
+  let AddedComplexity = 10 in
+  def roX : PNDLoadRO<asm, (outs regtype:$Rt),
+                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend16:$extend),
+                 [(set (Ty regtype:$Rt),
+                       (loadop (ro_Xindexed16 GPR64sp:$Rn, GPR64:$Rm,
+                                             ro_Xextend16:$extend)))]>,
+            Sched<[WriteLDIdx, ReadAdrBase]> {
+  }
+
+  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
+}
+
 multiclass Store16RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                      string asm, ValueType Ty, SDPatternOperator storeop> {
   let AddedComplexity = 10 in
@@ -3746,6 +3769,29 @@ multiclass Load32RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                                               ro_Xextend32:$extend)))]>,
            Sched<[WriteLDIdx, ReadAdrBase]> {
     let Inst{13} = 0b1;
+  }
+
+  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
+}
+
+multiclass Load32ROPND<DAGOperand regtype,
+                    string asm, ValueType Ty, SDPatternOperator loadop> {
+  let AddedComplexity = 10 in
+  def roW : PNDLoadRO<asm, (outs regtype:$Rt),
+                 (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend32:$extend),
+                 [(set (Ty regtype:$Rt),
+                       (loadop (ro_Windexed32 GPR64sp:$Rn, GPR32:$Rm,
+                                              ro_Wextend32:$extend)))]>,
+           Sched<[WriteLDIdx, ReadAdrBase]> {
+  }
+
+  let AddedComplexity = 10 in
+  def roX : PNDLoadRO<asm, (outs regtype:$Rt),
+                 (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend32:$extend),
+                 [(set (Ty regtype:$Rt),
+                       (loadop (ro_Xindexed32 GPR64sp:$Rn, GPR64:$Rm,
+                                              ro_Xextend32:$extend)))]>,
+           Sched<[WriteLDIdx, ReadAdrBase]> {
   }
 
   def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
@@ -3823,6 +3869,29 @@ multiclass Load64RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
   def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
 }
 
+multiclass Load64ROPND<DAGOperand regtype,
+                    string asm, ValueType Ty, SDPatternOperator loadop> {
+  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
+  def roW : PNDLoadRO<asm, (outs regtype:$Rt),
+                (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend64:$extend),
+                [(set (Ty regtype:$Rt),
+                      (loadop (ro_Windexed64 GPR64sp:$Rn, GPR32:$Rm,
+                                             ro_Wextend64:$extend)))]>,
+           Sched<[WriteLDIdx, ReadAdrBase]> {
+  }
+
+  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
+  def roX : PNDLoadRO<asm, (outs regtype:$Rt),
+                (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend64:$extend),
+                 [(set (Ty regtype:$Rt),
+                       (loadop (ro_Xindexed64 GPR64sp:$Rn, GPR64:$Rm,
+                                              ro_Xextend64:$extend)))]>,
+           Sched<[WriteLDIdx, ReadAdrBase]> {
+  }
+
+  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
+}
+
 multiclass Store64RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                      string asm, ValueType Ty, SDPatternOperator storeop> {
   let AddedComplexity = 10, mayLoad = 0, mayStore = 1, hasSideEffects = 0 in
@@ -3890,6 +3959,29 @@ multiclass Load128RO<bits<2> sz, bit V, bits<2> opc, DAGOperand regtype,
                                                ro_Xextend128:$extend)))]>,
             Sched<[WriteLDIdx, ReadAdrBase]> {
     let Inst{13} = 0b1;
+  }
+
+  def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
+}
+
+multiclass Load128ROPND<DAGOperand regtype,
+                     string asm, ValueType Ty, SDPatternOperator loadop> {
+  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
+  def roW : PNDLoadRO<asm, (outs regtype:$Rt),
+                (ins GPR64sp:$Rn, GPR32:$Rm, ro_Wextend128:$extend),
+                 [(set (Ty regtype:$Rt),
+                       (loadop (ro_Windexed128 GPR64sp:$Rn, GPR32:$Rm,
+                                               ro_Wextend128:$extend)))]>,
+            Sched<[WriteLDIdx, ReadAdrBase]> {
+  }
+
+  let AddedComplexity = 10, mayLoad = 1, mayStore = 0, hasSideEffects = 0 in
+  def roX : PNDLoadRO<asm, (outs regtype:$Rt),
+                (ins GPR64sp:$Rn, GPR64:$Rm, ro_Xextend128:$extend),
+                 [(set (Ty regtype:$Rt),
+                       (loadop (ro_Xindexed128 GPR64sp:$Rn, GPR64:$Rm,
+                                               ro_Xextend128:$extend)))]>,
+            Sched<[WriteLDIdx, ReadAdrBase]> {
   }
 
   def : ROInstAlias<asm, regtype, !cast<Instruction>(NAME # "roX")>;
