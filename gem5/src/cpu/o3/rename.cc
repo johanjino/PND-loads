@@ -50,7 +50,6 @@
 #include "debug/Activity.hh"
 #include "debug/O3PipeView.hh"
 #include "debug/Rename.hh"
-#include "debug/RenameInstruction.hh"
 #include "params/BaseO3CPU.hh"
 
 namespace gem5
@@ -580,7 +579,7 @@ Rename::renameInsts(ThreadID tid)
     DPRINTF(Rename,
             "[tid:%i] "
             "%i insts pipelining from Rename | "
-            "%i insts dispatched to IQ last cycle | ",
+            "%i insts dispatched to IQ last cycle.\n",
             tid, instsInProgress[tid], fromIEW->iewInfo[tid].dispatched);
 
     // Handle serializing the next instruction if necessary.
@@ -606,9 +605,6 @@ Rename::renameInsts(ThreadID tid)
         //instruction, check LQ size and take into account the inflight loads
         //For store instruction, check SQ size and take into account the
         //inflight stores
-
-        DPRINTF(RenameInstruction,"Checking if the renaming is happening:"
-        "%x \n", inst->getEMI());
 
         if (inst->isLoad()) {
             if (calcFreeLQEntries(tid) <= 0) {
@@ -657,9 +653,6 @@ Rename::renameInsts(ThreadID tid)
                 "[tid:%i] "
                 "Processing instruction [sn:%llu] with PC %s.\n",
                 tid, inst->seqNum, inst->pcState());
-
-        // DPRINTF(Rename, "Is this the current instruction???: %s ",
-        // inst->disassemble(this_pc.instAddr()));
 
         // Check here to make sure there are enough destination registers
         // to rename to.  Otherwise block.

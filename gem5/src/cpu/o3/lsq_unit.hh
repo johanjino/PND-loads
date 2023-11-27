@@ -567,9 +567,6 @@ class LSQUnit
     /** Returns the sequence number of the head store instruction. */
     InstSeqNum getStoreHeadSeqNum();
 
-    /** Returns the sequence number of the tail store instruction. */
-    InstSeqNum getStoreTailSeqNum();
-
     /** Returns the sequence number of the dependent  store instruction. */
     InstSeqNum getDepStoreSeqNum(DynInstPtr load_inst);
 

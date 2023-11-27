@@ -55,7 +55,6 @@
 #include "debug/Fetch.hh"
 #include "debug/HtmCpu.hh"
 #include "debug/LSQ.hh"
-#include "debug/Random.hh"
 #include "debug/Writeback.hh"
 #include "params/BaseO3CPU.hh"
 
@@ -323,12 +322,6 @@ LSQ::getLoadHeadSeqNum(ThreadID tid)
     return thread.at(tid).getLoadHeadSeqNum();
 }
 
-DynInstPtr
-LSQ::getLoadHeadInst(ThreadID tid)
-{
-    return thread.at(tid).getLoadHeadInst();
-}
-
 int
 LSQ::getStoreHead(ThreadID tid)
 {
@@ -339,18 +332,6 @@ InstSeqNum
 LSQ::getStoreHeadSeqNum(ThreadID tid)
 {
     return thread.at(tid).getStoreHeadSeqNum();
-}
-
-InstSeqNum
-LSQ::getStoreTailSeqNum(ThreadID tid)
-{
-    return thread.at(tid).getStoreTailSeqNum();
-}
-
-InstSeqNum
-LSQ::getDepStoreSeqNum(ThreadID tid, DynInstPtr load_inst)
-{
-    return thread.at(tid).getDepStoreSeqNum(load_inst);
 }
 
 int LSQ::getCount(ThreadID tid) { return thread.at(tid).getCount(); }

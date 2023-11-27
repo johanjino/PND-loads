@@ -1364,7 +1364,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
     // only if they're at the head of the LSQ and are ready to commit
     // (at the head of the ROB too).
 
-    if ((request->mainReq()->isStrictlyOrdered()) &&
+    if (request->mainReq()->isStrictlyOrdered() &&
         (load_idx != loadQueue.head() || !load_inst->isAtCommit())) {
         // Tell IQ/mem dep unit that this instruction will need to be
         // rescheduled eventually

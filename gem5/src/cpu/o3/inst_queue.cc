@@ -591,7 +591,6 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
     addToProducers(new_inst);
 
     if (new_inst->isMemRef()) {
-        memDepUnit[new_inst->threadNumber].extra_dep = 0;
         memDepUnit[new_inst->threadNumber].insert(new_inst);
     } else {
         addIfReady(new_inst);

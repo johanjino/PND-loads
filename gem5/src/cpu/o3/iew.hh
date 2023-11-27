@@ -344,12 +344,6 @@ class IEW
     /** Scoreboard pointer. */
     Scoreboard* scoreboard;
 
-    /*Sequence number of dependent store (defAlias case)*/
-    InstSeqNum dep_store;
-
-    /*Instruction of head load which is a dependent load (defAlias case)*/
-    DynInstPtr dep_load;
-
   private:
     /** CPU pointer. */
     CPU *cpu;

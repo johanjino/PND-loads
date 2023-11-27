@@ -1098,12 +1098,8 @@ IEW::dispatchInsts(ThreadID tid)
 
         // If the instruction queue is not full, then add the
         // instruction.
-        if (add_to_iq) {
-            // DPRINTF(flagcheck, "isSpecbCheck %x | isDefAlias %x\n | inst: %x",
-            //             inst->isSpecbCheck(), inst->isDefAlias(),
-            //             inst->getEMI());
+        if (add_to_iq)
             instQueue.insert(inst);
-        }
 
         insts_to_dispatch.pop();
 
@@ -1361,13 +1357,9 @@ IEW::executeInsts()
 
                 DPRINTF(ViolationEvent, "LDSTQ detected a violation. "
                         "Violator PC: %s "
-                        "[sn:%lli], inst PC: %s [sn:%lli]. Addr is: %x |"
-                        " ViolatorAddress is: %x. "
-                        "Violator instruction: %x\n",
+                        "[sn:%lli], inst PC: %s [sn:%lli]. Addr is: %x |",
                         violator->pcState(), violator->seqNum,
-                        inst->pcState(), inst->seqNum, inst->physEffAddr,
-                        violator->physEffAddr,
-                        violator->getEMI());
+                        inst->pcState(), inst->seqNum, inst->physEffAddr);
 
                 fetchRedirect[tid] = true;
 

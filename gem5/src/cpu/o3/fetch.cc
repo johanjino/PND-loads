@@ -73,9 +73,9 @@
 #include "sim/full_system.hh"
 #include "sim/system.hh"
 
-std::vector<uint64_t> pnd_addresses;
+std::set<uint64_t> pnd_addresses;
 static void load_addresses(){
-    std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/linalg_pnd_addresses";
+    std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/nnet_pnd_addresses";
 
     std::ifstream inputFile(filename);
 
@@ -89,7 +89,7 @@ static void load_addresses(){
         std::istringstream iss(line);
         uint64_t address;
         if (iss >> address) {
-            pnd_addresses.push_back(address);
+            pnd_addresses.insert(address);
         } else {
             std::cerr << "Invalid input: " << line << std::endl;
         }
@@ -1083,8 +1083,13 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu);
     instruction->setTid(tid);
 
-    if (staticInst->isLoad() &&  std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end())
+    if (std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end()){
+        if (!inst->isLoad()) {
+            std::cout << "Attempting to mark non-load instruction!\n";
+            exit(1);
+        }
         instruction->setSpecFlag();
+    }
 
     instruction->setThreadState(cpu->thread[tid]);
 

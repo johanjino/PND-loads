@@ -164,14 +164,6 @@ class MemDepUnit
     /** Debugging function to dump the lists of instructions. */
     void dumpLists();
 
-    /* Sequence number of extra dependent to add for defAlias case
-    This should eb the sequence number of the tail instruction of
-    the store queue.
-    */
-    InstSeqNum extra_dep;
-
-    DynInstPtr extra_load_dep;
-
     CPU *cp;
 
     /** The thread id of this memory dependence unit. */
