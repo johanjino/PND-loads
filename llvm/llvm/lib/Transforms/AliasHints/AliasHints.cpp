@@ -12,9 +12,25 @@ PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
     Function &F = *LN.getParent();
     DependenceInfo DI = DependenceInfo(&F, &AR.AA, &AR.SE, &AR.LI);
 
+    markConstantAccesses(F, AR.AA);
+
     markLoads(LN, DI, AR);
 
     return PreservedAnalyses::all();
+}
+
+void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA){
+    std::vector<LoadInst *> constant_loads;
+    for (auto B: F){
+        for (Instruction *I = B->getFirstNonPHI(), *Term = B->getTerminator();
+            I != Term; I = I->getNextNonDebugInstruction()){
+            if (isa<LoadInst>(I)){
+                LoadInst *L = reinterpret_cast<LoadInst *>(I);
+                if (AA.pointsToConstantMemory(L->getPointerOperand()))
+                    constant_loads.push_back(L);
+            }
+    }
+    for (auto L: constant_loads) changeAddrSpace(L, PREDICT_NO_ALIAS_ADDRESS_SPACE);
 }
 
 void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR){
@@ -49,6 +65,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
         if (!Load->isSimple()) continue;
+        if (Load->getPointerAddressSpace() == PREDICT_NO_ALIAS_ADDRESS_SPACE) continue; //we already marked this when checking for constant memory
         Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
             PNDLoads.insert(Load);
@@ -70,7 +87,7 @@ bool isVariantAtAllLevels(Value *Ptr, Loop *ParentLoop, LoopInfo &LI, ScalarEvol
     Value *PreviousValue = nullptr;
     while ((L = L->getParentLoop())) {
         bool nest_level_is_variant = false;
-        for (; !nest_level_is_variant ; NextValue = getUnderlyingObject(NextValue, 1)){
+        for (; !nest_level_is_variant; NextValue = getUnderlyingObject(NextValue, 1)){
             //getUnderlyingObject is giving up on something that isn't a load so we're giving up too
             if (NextValue == PreviousValue) return false;
             PreviousValue = NextValue;
@@ -182,7 +199,7 @@ bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution 
     return false;
 }
 
-//FIXME: handle calls with modref and add TBAA
+//FIXME: handle calls, fall back to LAI when real dep is found, reeavl heuristics
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                                         SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
                                         AAResults &AA, LoopInfo &LI){
