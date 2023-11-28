@@ -12,8 +12,6 @@ PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
     Function &F = *LN.getParent();
     DependenceInfo DI = DependenceInfo(&F, &AR.AA, &AR.SE, &AR.LI);
 
-    markConstantAccesses(F, AR.AA);
-
     markLoads(LN, DI, AR);
 
     return PreservedAnalyses::all();
@@ -21,14 +19,16 @@ PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
 
 void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA){
     std::vector<LoadInst *> constant_loads;
-    for (auto B: F){
-        for (Instruction *I = B->getFirstNonPHI(), *Term = B->getTerminator();
+    for (Function::iterator b = F.begin(), be = F.end(); b != be; ++b){
+        BasicBlock &B = *b;
+        for (Instruction *I = B.getFirstNonPHI(), *Term = B.getTerminator();
             I != Term; I = I->getNextNonDebugInstruction()){
             if (isa<LoadInst>(I)){
                 LoadInst *L = reinterpret_cast<LoadInst *>(I);
                 if (AA.pointsToConstantMemory(L->getPointerOperand()))
                     constant_loads.push_back(L);
             }
+        }
     }
     for (auto L: constant_loads) changeAddrSpace(L, PREDICT_NO_ALIAS_ADDRESS_SPACE);
 }
@@ -61,6 +61,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs = findVersionedLoops(LN, AR.LI.GeneratedChecks, AR.LI, AR.DT);
 
     /* Iterate over all loads using our own method for finding labels */
+    markConstantAccesses(*LN.getParent(), AR.AA);
     AliasHint Hint;
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
@@ -122,8 +123,6 @@ static bool canComputePointerDiff(ScalarEvolution &SE,
 
     return SE.instructionCouldExistWitthOperands(A, B);
 }
-
-uint64_t CACHE_LINE_SIZE = 64;
 
 bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution &SE, AAResults &AA){
 
@@ -208,10 +207,13 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     Loop *current_loop = LI.getLoopFor(Load->getParent());
     std::map<Instruction *, MemoryDepChecker::Dependence::DepType> store_map;
     bool was_LAI_analysed = false;
-    if (current_loop->isInnermost() &&
-        MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
-        was_LAI_analysed = true;
-        store_map = MDC.QueryResults[Load];
+    if (current_loop->isInnermost()){
+        LoopAccessInfo *LAI = LAIInstances[current_loop];
+        MemoryDepChecker MDC = LAI->getDepChecker();
+        if (MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
+            was_LAI_analysed = true;
+            store_map = MDC.QueryResults[Load];
+        }
     }
     for (auto Store: all_stores){
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
@@ -229,7 +231,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
                 case MemoryDepChecker::Dependence::Forward:
                 case MemoryDepChecker::Dependence::ForwardButPreventsForwarding:
                     if (isVariantAtAllLevels(Load->getPointerOperand(), current_loop, LI, SE) &&
-                        isSeperateCacheLine(Load, Store, SE, AA))
+                        isSeparateCacheLine(Load, Store, SE, AA))
                         continue;
                     return AliasHint::Unchanged;
                 default:
@@ -248,16 +250,13 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
 }
 
 bool AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA){
-    Instruction *Source = Dep->getSrc();
     if (Dep->isConfused()) return true;
     if (Dep->isOrdered()){
-        StoreInst *Store = reinterpret_cast<StoreInst *>(Source);
         Loop *LoadLoop = LI.getLoopFor(Load->getParent());
         unsigned LoadDepth = LoadLoop->getLoopDepth();
-        unsigned StoreDepth = LI.getLoopFor(Store->getParent())->getLoopDepth();
         Dep->normalize(&SE);
-        if (Dep->isPeelable() && LoadLoop->isOutermost()) return false;
         unsigned Levels = Dep->getLevels();
+        if ((Dep->isPeelFirst(LoadDepth) || Dep->isPeelLast(LoadDepth)) && LoadLoop->isOutermost()) return false;
         const SCEV *scev_distance;
         if (Levels > 2){
             //does there exist a distance greater than one at a level greater than two nests above the dep?

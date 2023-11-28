@@ -1,23 +1,23 @@
-23326:18:49:38 Starting build
+23332:18:46:14 Starting build
   flags: -O3 -DNDEBUG -DHOST_EXAMPLE_CODE=1 -std=gnu99 -DHAVE_SYS_STAT_H=1 -DUSE_NATIVE_PTHREAD=1 -DGCC_INLINE_MACRO=1 -DNO_RESTRICT_QUALIFIER=0 -DEE_SIZEOF_LONG=8 -DEE_SIZEOF_PTR=8 -DEE_PTR_ALIGN=8 -DEE_SIZEOF_INT=4 -DEE_SIZEOF_LONG=8  
- 23326:18:49:38 mith
+ 23332:18:46:14 mith
   bench-flags: 
- 23326:18:49:39 cjpeg-rose7-preset
+ 23332:18:46:16 cjpeg-rose7-preset
   wld-flags: 
- 23326:18:49:40 core
+ 23332:18:46:17 core
   wld-flags: 
- 23326:18:49:40 linear_alg-mid-100x100-sp
+ 23332:18:46:17 linear_alg-mid-100x100-sp
   wld-flags: 
- 23326:18:49:41 loops-all-mid-10k-sp
+ 23332:18:46:18 loops-all-mid-10k-sp
   wld-flags: 
- 23326:18:49:43 nnet_test
+ 23332:18:46:20 nnet_test
   wld-flags: 
- 23326:18:49:43 parser-125k
+ 23332:18:46:21 parser-125k
   wld-flags: 
- 23326:18:49:44 radix2-big-64k
+ 23332:18:46:22 radix2-big-64k
   wld-flags: 
- 23326:18:49:44 sha-test
+ 23332:18:46:22 sha-test
   wld-flags: 
- 23326:18:49:45 zip-test
+ 23332:18:46:23 zip-test
   wld-flags: 
-23326:18:49:45 Starting Run
+23332:18:46:23 Starting Run

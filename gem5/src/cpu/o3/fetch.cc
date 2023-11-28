@@ -1084,7 +1084,7 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
     instruction->setTid(tid);
 
     if (std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end()){
-        if (!inst->isLoad()) {
+        if (!instruction->isLoad()) {
             std::cout << "Attempting to mark non-load instruction!\n";
             exit(1);
         }

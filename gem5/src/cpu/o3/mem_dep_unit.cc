@@ -242,8 +242,7 @@ MemDepUnit::insert(const DynInstPtr &inst)
         producing_stores.insert(std::end(producing_stores),
                                 std::begin(storeBarrierSNs),
                                 std::end(storeBarrierSNs));
-    } else if (inst->isNotAlias() ||
-                inst->isSpecbCheck()) {
+    } else if (inst->isSpecbCheck()) {
         DPRINTF(Speculate, "Definitely aliased instruction handling");
         //DO NOT CHECK STORE SET BECAUSE NOT NEEDED.
         ++stats.BypassStoreSetCheck;

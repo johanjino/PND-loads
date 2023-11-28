@@ -528,9 +528,6 @@ LSQUnit::checkViolations(typename LoadQueue::iterator& loadIt,
      */
     while (loadIt != loadQueue.end()) {
         DynInstPtr ld_inst = loadIt->instruction();
-        DPRINTF(LSQUnit, "Load instruction is: %x | eff: %x | [sn: %lli] |"
-                "isNotAlias %x \n", ld_inst->getEMI(), ld_inst->effAddrValid(),
-                ld_inst->seqNum, ld_inst->isNotAlias());
 
         // ADD condition to skip instruction checkign for NOT ALIASED CASE
         // and store executing....
@@ -596,10 +593,6 @@ LSQUnit::checkViolations(typename LoadQueue::iterator& loadIt,
 
                 memDepViolator = ld_inst;
 
-                DPRINTF(LSQUNITisnotLoadviolation, "LSQUNITisnotLoadviolation:"
-                "mem order violation here, | isLoad(): %x | instruction %x |"
-                "isNotAlias(): %x \n", inst->isLoad(), inst->getEMI(),
-                inst->isNotAlias());
                 ++stats.memOrderViolation;
 
                 return std::make_shared<GenericISA::M5PanicFault>(
@@ -1709,15 +1702,6 @@ LSQUnit::getStoreHeadSeqNum()
 {
     if (storeQueue.front().valid())
         return storeQueue.front().instruction()->seqNum;
-    else
-        return 0;
-}
-
-InstSeqNum
-LSQUnit::getStoreTailSeqNum()
-{
-    if (storeQueue.back().valid())
-        return storeQueue.back().instruction()->seqNum;
     else
         return 0;
 }

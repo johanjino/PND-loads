@@ -104,6 +104,7 @@ class LoopNest;
 
 #define PREDICT_ALIAS_ADDRESS_SPACE 420
 #define PREDICT_NO_ALIAS_ADDRESS_SPACE 69
+#define CACHE_LINE_SIZE 64
 
 typedef llvm::MemoryDepChecker::Dependence MemDep;
 
@@ -115,7 +116,6 @@ enum AliasHint{
 
 class AliasHintsPass : public PassInfoMixin<AliasHintsPass> {
 public:
-    uint64_t MINIMUM_DISTANCE = 4; //how many times store set sees a load-store pair that doesn't violate before evicting the store
     bool Debug = false;
     PreservedAnalyses run(LoopNest &LN, LoopAnalysisManager &AM,
                           LoopStandardAnalysisResults &AR, LPMUpdater &U);
@@ -127,6 +127,7 @@ public:
     void changeAddrSpace(LoadInst *Load, unsigned int Addrspace);
     SmallVector<std::pair<Loop *, Loop *>, 2> findVersionedLoops(LoopNest &LN, SmallVector<BasicBlock *, 1> GeneratedChecks, LoopInfo &LI, DominatorTree &DT);
     bool withinSameVersion(LoadInst *Load, Instruction *DepInst, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, LoopInfo &LI);
+    void markConstantAccesses(Function &F, AAResults &AA);
 };
 }
 #endif
