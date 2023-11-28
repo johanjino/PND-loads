@@ -2014,30 +2014,15 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
             if (*I1 > *I2)
               std::swap(A, B);
 
-            Instruction *Source = getMemoryInstructions()[A.second];
-            Instruction *Destination = getMemoryInstructions()[B.second];
-            if (isa<LoadInst>(Source) && QueryResults.find(Source) != QueryResults.end()){
-              QueryResults[Source].first = Dependence::NoDep;
-              QueryResults[Source].second = nullptr;
-            }
-            if (isa<LoadInst>(Destination) && QueryResults.find(Destination) != QueryResults.end()){
-              QueryResults[Destination].first = Dependence::NoDep;
-              QueryResults[Destination].second = nullptr;
-            }
-
             Dependence::DepType Type =
                 isDependent(*A.first, A.second, *B.first, B.second, Strides);
 
-            if (isa<LoadInst>(Source) &&
-                Type > QueryResults[Source].first){
-                QueryResults[Source].first = Type;
-                QueryResults[Source].second = Destination;
-            }
-            if (isa<LoadInst>(Destination) &&
-                Type > QueryResults[Destination].first){
-                QueryResults[Destination].first = Type;
-                QueryResults[Destination].second = Source;
-            }
+            Instruction *Source = getMemoryInstructions()[A.second];
+            Instruction *Destination = getMemoryInstructions()[B.second];
+            if (isa<LoadInst>(Source))
+              QueryResults[Source][Destination] = Type;
+            else if (isa<LoadInst>(Destination))
+              QueryResults[Destination][Source] = Type;
 
             if (Type == Dependence::SafeDistance ||
                 Type == Dependence::IndependentStride)

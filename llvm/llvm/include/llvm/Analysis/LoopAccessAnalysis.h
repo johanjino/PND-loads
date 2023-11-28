@@ -259,7 +259,7 @@ public:
     return {};
   }
 
-  std::map<Instruction*, std::pair<Dependence::DepType, Instruction *>> QueryResults;
+  std::map<Instruction *, std::map<Instruction *, Dependence::DepType>> QueryResults;
 
 private:
   /// A wrapper around ScalarEvolution, used to add runtime SCEV checks, and

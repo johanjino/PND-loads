@@ -199,7 +199,6 @@ bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution 
     return false;
 }
 
-//FIXME: handle calls, fall back to LAI when real dep is found, reeavl heuristics
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                                         SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
                                         AAResults &AA, LoopInfo &LI){
@@ -207,82 +206,58 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     llvm::raw_string_ostream operand_buffer(operand);
     std::unique_ptr<Dependence> Dep;
     Loop *current_loop = LI.getLoopFor(Load->getParent());
-    AliasHint Hint;
+    std::map<Instruction *, MemoryDepChecker::Dependence::DepType> store_map;
     bool was_LAI_analysed = false;
-    //For inner loops we can use the stronger loop access analysis
-    if (current_loop->isInnermost()){
-        LoopAccessInfo *LAI = LAIInstances[current_loop];
-        MemoryDepChecker MDC = LAI->getDepChecker();
-        if (MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
-            was_LAI_analysed = true;
-            MemoryDepChecker::Dependence::DepType Type = MDC.QueryResults[Load].first;
-            Instruction *Store = MDC.QueryResults[Load].second;
-            if (Type != MemoryDepChecker::Dependence::NoDep &&
-                Type != MemoryDepChecker::Dependence::Forward &&
-                Type != MemoryDepChecker::Dependence::ForwardButPreventsForwarding){
-                return AliasHint::Unchanged;
-            }
-            if ((Type == MemoryDepChecker::Dependence::Forward ||
-                Type == MemoryDepChecker::Dependence::ForwardButPreventsForwarding) &&
-                !isVariantAtAllLevels(Load->getPointerOperand(), LI.getLoopFor(Load->getParent()), LI, SE) &&
-                !isSeparateCacheLine(Load, Store, SE, AA)){
-                return AliasHint::Unchanged;
-            }
-        }
+    if (current_loop->isInnermost() &&
+        MDC.QueryResults.find(Load) != MDC.QueryResults.end()){
+        was_LAI_analysed = true;
+        store_map = MDC.QueryResults[Load];
     }
     for (auto Store: all_stores){
-        //For inner loops we can skip analysing simple stores also in the inner loop
-        if (was_LAI_analysed && current_loop->isInnermost()
-            && LI.getLoopFor(Store->getParent()) == current_loop
-            && Store->isSimple()) continue;
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
-        Hint = isProblematicDep(Load, Dep.get(), LI, SE, AA);
-        if (Hint != AliasHint::PredictNone) return AliasHint::Unchanged;
+        if (!isProblematicDep(Load, Dep.get(), LI, SE, AA)) continue;
+        if (was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
+            Store->isSimple() && store_map.find(Store) != store_map.end()){
+            MemoryDepChecker::Dependence::DepType Type = store_map[Store];
+            switch (Type){
+                case MemoryDepChecker::Dependence::NoDep:
+                case MemoryDepChecker::Dependence::IndependentStride:
+                //case MemoryDepChecker::Dependence::SafeDistance: //maybe need to do forward checks?
+                    continue;
+                case MemoryDepChecker::Dependence::Forward:
+                case MemoryDepChecker::Dependence::ForwardButPreventsForwarding:
+                    if (isVariantAtAllLevels(Load->getPointerOperand(), current_loop, LI, SE) &&
+                        isSeperateCacheLine(Load, Store, SE, AA))
+                        continue;
+                    return AliasHint::Unchanged;
+                default:
+                    return AliasHint::Unchanged;
+            }
+        }
     }
-    //FIXME: dep analysis doesn't handle calls!! need to use modref manually
     for (auto Call: all_calls){
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
-        Dep = DI.depends(Call, Load, true);
-        if (!Dep) continue;
-        Hint = isProblematicDep(Load, Dep.get(), LI, SE, AA);
-        if (Hint != AliasHint::PredictNone) return AliasHint::Unchanged; //going by heuristic that modref results often don't fit into the behavior we intend for Predict Alias, and will also often be unknown over approximations
+        ModRefInfo res = AA.getModRefInfo(Load, Call);
+        if (res == ModRefInfo::Mod || res == ModRefInfo::MustMod || res == ModRefInfo::ModRef ||
+            res == ModRefInfo::MustModRef)
+            return AliasHint::Unchanged;
     }
     return AliasHint::PredictNone;
 }
 
-AliasHint AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA){
+bool AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA){
     Instruction *Source = Dep->getSrc();
-    if (Dep->isConfused()) return AliasHint::Unchanged;
+    if (Dep->isConfused()) return true;
     if (Dep->isOrdered()){
-        //a call based dep is too unpredictable to make fine grained decisions on past the point of an ordered dep existing at all
-        if (isa<CallInst>(Source)) return AliasHint::Unchanged;
-        assert(isa<LoadInst>(Dep->getDst()) && "This function assumes loads are always placed at dep dst.\n");
-        assert(isa<StoreInst>(Source) && "This function only supports calls and stores.\n");
         StoreInst *Store = reinterpret_cast<StoreInst *>(Source);
-        unsigned LoadDepth = LI.getLoopFor(Load->getParent())->getLoopDepth();
+        Loop *LoadLoop = LI.getLoopFor(Load->getParent());
+        unsigned LoadDepth = LoadLoop->getLoopDepth();
         unsigned StoreDepth = LI.getLoopFor(Store->getParent())->getLoopDepth();
         Dep->normalize(&SE);
+        if (Dep->isPeelable() && LoadLoop->isOutermost()) return false;
         unsigned Levels = Dep->getLevels();
-        //if cross-loop dep we can reason about instruction distances. this assumes loops are generally large and small kernels.
-        //1. one nest apart - assume within same window
-        //2. two nests apart - a wrong guess either way here is very bad, leave unchanged
-        //2 b. in different sub-trees of the loop structure - e.g. load loop !contain store loop, assume not in window
-        //3. three or more - assume not within window
-        if (LoadDepth != StoreDepth){
-            int Diff = std::abs((int)LoadDepth - (int)StoreDepth);
-            if (Diff == 1) {
-                if (AA.alias(Load->getPointerOperand(), Store->getPointerOperand()) != AliasResult::MayAlias) return AliasHint::Predict;
-                return AliasHint::Unchanged;
-            }
-            if (Diff == 2){
-                if (Levels == std::min(LoadDepth, StoreDepth)) return AliasHint::Unchanged;
-                return AliasHint::PredictNone;
-            }
-            if (Diff > 2) return AliasHint::PredictNone;
-        }
-        //if within the same loop it is simpler to reason about dep distances
         const SCEV *scev_distance;
         if (Levels > 2){
             //does there exist a distance greater than one at a level greater than two nests above the dep?
@@ -291,15 +266,14 @@ AliasHint AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, Loop
                 scev_distance = Dep->getDistance(Level);
                 if (!scev_distance) continue;
                 distance = SE.getUnsignedRangeMin(scev_distance).getZExtValue();
-                if (Levels - Level > 2 && distance >= 1) return AliasHint::PredictNone;
-                if (distance >= 2) return AliasHint::PredictNone;
+                if (Levels - Level > 2 && distance >= 1) return false;
+                if (distance >= 2) return false;
             }
         }
-        if (AA.alias(Load->getPointerOperand(), Store->getPointerOperand()) != AliasResult::MayAlias) return AliasHint::Predict;
-        return AliasHint::Unchanged;
+        return true;
     }
     //dep is unordered
-    return AliasHint::PredictNone;
+    return false;
 }
 
 SmallVector<std::pair<Loop *, Loop *>, 2> AliasHintsPass::findVersionedLoops(LoopNest &LN, SmallVector<BasicBlock *, 1> GeneratedChecks, LoopInfo &LI, DominatorTree &DT){

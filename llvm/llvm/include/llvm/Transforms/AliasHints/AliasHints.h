@@ -120,7 +120,7 @@ public:
     PreservedAnalyses run(LoopNest &LN, LoopAnalysisManager &AM,
                           LoopStandardAnalysisResults &AR, LPMUpdater &U);
     void markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR);
-    AliasHint isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA);
+    bool isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA);
     AliasHint determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                             SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
                             AAResults &AA, LoopInfo &LI);
