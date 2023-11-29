@@ -75,7 +75,7 @@
 
 std::set<uint64_t> pnd_addresses;
 static void load_addresses(){
-    std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/nnet_pnd_addresses";
+    std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/coremark-pro/nnet_test_modref_pnd_addresses";
 
     std::ifstream inputFile(filename);
 
@@ -1083,11 +1083,8 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu);
     instruction->setTid(tid);
 
-    if (std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end()){
-        if (!instruction->isLoad()) {
-            std::cout << "Attempting to mark non-load instruction!\n";
-            exit(1);
-        }
+    if (std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end() &&
+        instruction->isLoad()){
         instruction->setSpecFlag();
     }
 

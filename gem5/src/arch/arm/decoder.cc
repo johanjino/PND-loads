@@ -43,7 +43,6 @@
 #include "arch/arm/isa.hh"
 #include "arch/arm/utility.hh"
 #include "base/trace.hh"
-#include "debug/ArmDecoder.hh"
 #include "debug/Decoder.hh"
 #include "sim/full_system.hh"
 
@@ -99,7 +98,7 @@ Decoder::process()
                           bits(data, 20) == 0);
         }
         consumeBytes(4);
-        DPRINTF(ArmDecoder, "Arm inst: %#x.\n", (uint64_t)emi);
+        DPRINTF(Decoder, "Arm inst: %#x.\n", (uint64_t)emi);
     } else {
         uint16_t word = (data >> (offset * 8));
         if (bigThumb) {

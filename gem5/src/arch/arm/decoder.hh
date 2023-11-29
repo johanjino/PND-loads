@@ -49,8 +49,7 @@
 #include "arch/generic/decoder.hh"
 #include "base/types.hh"
 #include "cpu/static_inst.hh"
-#include "debug/ArmDecoder.hh"
-#include "debug/Decoder.hh"
+#include "debug/Decode.hh"
 #include "enums/DecoderFlavor.hh"
 #include "params/ArmDecoder.hh"
 
@@ -130,7 +129,7 @@ class Decoder : public InstDecoder
     decode(ExtMachInst mach_inst, Addr addr)
     {
         StaticInstPtr si = defaultCache.decode(this, mach_inst, addr);
-        DPRINTF(Decoder, "ARMDecode: Decoded %s instruction: %#x\n",
+        DPRINTF(Decode, "Decode: Decoded %s instruction: %#x\n",
                 si->getName(), mach_inst);
         return si;
     }

@@ -76,13 +76,6 @@ def template MicroMemConstructor {{
                 setSrcRegIdx(_numSrcRegs++, destRegIdx(x));
             }
         }
-
-        if (mnemonic[0] == 'S') {
-            flags[IsSpecbCheck] = true;
-        }
-        else if (mnemonic[0] == 'D') {
-            flags[IsDefAlias] = true;
-        }
     }
 }};
 
@@ -120,13 +113,6 @@ def template MicroMemPairConstructor {{
             for (int x = 0; x < _numDestRegs; x++) {
                 setSrcRegIdx(_numSrcRegs++, destRegIdx(x));
             }
-        }
-
-        if (mnemonic[0] == 'S') {
-            flags[IsSpecbCheck] = true;
-        }
-        else if (mnemonic[0] == 'D') {
-            flags[IsDefAlias] = true;
         }
     }
 }};
@@ -494,12 +480,6 @@ def template MacroMemConstructor {{
             setSrcRegIdx(_numSrcRegs++, destRegIdx(x));
         }
     }
-    if (mnemonic[0] == 'S') {
-        flags[IsSpecbCheck] = true;
-    }
-    else if (mnemonic[0] == 'D') {
-        flags[IsDefAlias] = true;
-    }
 }
 
 }};
@@ -524,12 +504,6 @@ def template BigFpMemImmConstructor {{
 {
     %(set_reg_idx_arr)s;
     %(constructor)s;
-    if (mnemonic[0] == 'S') {
-        flags[IsSpecbCheck] = true;
-    }
-    else if (mnemonic[0] == 'D') {
-        flags[IsDefAlias] = true;
-    }
 }
 }};
 
@@ -556,13 +530,6 @@ def template BigFpMemRegConstructor {{
 {
     %(set_reg_idx_arr)s;
     %(constructor)s;
-    if (mnemonic[0] == 'S') {
-        flags[IsSpecbCheck] = true;
-    }
-    else if (mnemonic[0] == 'D') {
-        flags[IsDefAlias] = true;
-    }
-
 }
 }};
 
@@ -616,12 +583,6 @@ def template PairMemConstructor {{
 {
     %(set_reg_idx_arr)s;
     %(constructor)s;
-    if (mnemonic[0] == 'S') {
-        flags[IsSpecbCheck] = true;
-    }
-    else if (mnemonic[0] == 'D') {
-        flags[IsDefAlias] = true;
-    }
 }
 }};
 

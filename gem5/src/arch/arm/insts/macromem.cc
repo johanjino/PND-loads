@@ -356,20 +356,10 @@ PairMemOp::PairMemOp(const char *mnem, ExtMachInst machInst, OpClass __opClass,
     assert(uop == &microOps[numMicroops]);
     (*--uop)->setLastMicroop();
     microOps[0]->setFirstMicroop();
-    
 
     for (StaticInstPtr *curUop = microOps;
             !(*curUop)->isLastMicroop(); curUop++) {
         (*curUop)->setDelayedCommit();
-    }
-    // Adding the flags to the microOps
-    for(int i=0; i<numMicroops; i++){
-        if(mnem[0] == 'S'){
-            microOps[i]->setSpecbCheck();
-        }
-        else if (mnem[0] == 'D') {
-            microOps[i]->setDefAlias();
-        }
     }
 }
 
@@ -392,15 +382,6 @@ BigFpMemImmOp::BigFpMemImmOp(const char *mnem, ExtMachInst machInst,
     }
     (*uop)->setLastMicroop();
     microOps[0]->setFirstMicroop();
-    // Adding the flags to the microOps
-    for(int i=0; i<numMicroops; i++){
-        if(mnem[0] == 'S'){
-            microOps[i]->setSpecbCheck();
-        }
-        else if (mnem[0] == 'D') {
-            microOps[i]->setDefAlias();
-        }
-    }
 }
 
 BigFpMemPostOp::BigFpMemPostOp(const char *mnem, ExtMachInst machInst,
@@ -426,15 +407,6 @@ BigFpMemPostOp::BigFpMemPostOp(const char *mnem, ExtMachInst machInst,
     for (StaticInstPtr *curUop = microOps;
             !(*curUop)->isLastMicroop(); curUop++) {
         (*curUop)->setDelayedCommit();
-    }
-    // Adding the flags to the microOps
-    for(int i=0; i<numMicroops; i++){
-        if(mnem[0] == 'S'){
-            microOps[i]->setSpecbCheck();
-        }
-        else if (mnem[0] == 'D') {
-            microOps[i]->setDefAlias();
-        }
     }
 }
 
@@ -462,15 +434,6 @@ BigFpMemPreOp::BigFpMemPreOp(const char *mnem, ExtMachInst machInst,
             !(*curUop)->isLastMicroop(); curUop++) {
         (*curUop)->setDelayedCommit();
     }
-    // Adding the flags to the microOps
-    for(int i=0; i<numMicroops; i++){
-        if(mnem[0] == 'S'){
-            microOps[i]->setSpecbCheck();
-        }
-        else if (mnem[0] == 'D') {
-            microOps[i]->setDefAlias();
-        }
-    }
 }
 
 BigFpMemRegOp::BigFpMemRegOp(const char *mnem, ExtMachInst machInst,
@@ -497,15 +460,6 @@ BigFpMemRegOp::BigFpMemRegOp(const char *mnem, ExtMachInst machInst,
 
     (*uop)->setLastMicroop();
     microOps[0]->setFirstMicroop();
-    // Adding the flags to the microOps
-    for(int i=0; i<numMicroops; i++){
-        if(mnem[0] == 'S'){
-            microOps[i]->setSpecbCheck();
-        }
-        else if (mnem[0] == 'D') {
-            microOps[i]->setDefAlias();
-        }
-    }
 }
 
 BigFpMemLitOp::BigFpMemLitOp(const char *mnem, ExtMachInst machInst,
@@ -519,16 +473,6 @@ BigFpMemLitOp::BigFpMemLitOp(const char *mnem, ExtMachInst machInst,
     microOps[0] = new MicroLdFp16LitUop(machInst, dest, imm);
     microOps[0]->setLastMicroop();
     microOps[0]->setFirstMicroop();
-
-    // Adding the flags to the microOps
-    for(int i=0; i<numMicroops; i++){
-        if(mnem[0] == 'S'){
-            microOps[i]->setSpecbCheck();
-        }
-        else if (mnem[0] == 'D') {
-            microOps[i]->setDefAlias();
-        }
-    }
 }
 
 VldMultOp::VldMultOp(const char *mnem, ExtMachInst machInst, OpClass __opClass,

@@ -53,7 +53,6 @@
 #include "cpu/exec_context.hh"
 #include "cpu/static_inst.hh"
 #include "cpu/thread_context.hh"
-#include "debug/staticInstruction.hh"
 #include "sim/byteswap.hh"
 #include "sim/full_system.hh"
 
@@ -161,7 +160,6 @@ class ArmStaticInst : public StaticInst
             intWidth = 64;  // Force 64-bit width for ADR/ADRP
         else
             intWidth = (aarch64 && bits(machInst, 31)) ? 64 : 32;
-        DPRINTF(staticInstruction, "Here is the _machInst: %x\n", _machInst);
     }
 
     /// Print a register name for disassembly given the unique

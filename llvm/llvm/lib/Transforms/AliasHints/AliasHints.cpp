@@ -226,7 +226,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
             switch (Type){
                 case MemoryDepChecker::Dependence::NoDep:
                 case MemoryDepChecker::Dependence::IndependentStride:
-                //case MemoryDepChecker::Dependence::SafeDistance: //maybe need to do forward checks?
+                case MemoryDepChecker::Dependence::SafeDistance: //maybe need to do forward checks?
                     continue;
                 case MemoryDepChecker::Dependence::Forward:
                 case MemoryDepChecker::Dependence::ForwardButPreventsForwarding:
@@ -238,9 +238,15 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
                     return AliasHint::Unchanged;
             }
         }
+        else {
+            return AliasHint::Unchanged;
+        }
     }
     for (auto Call: all_calls){
-        if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
+        // if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
+        // Dep = DI.depends(Call, Load, true);
+        // if (!Dep) continue;
+        // return AliasHint::Unchanged;
         ModRefInfo res = AA.getModRefInfo(Load, Call);
         if (res == ModRefInfo::Mod || res == ModRefInfo::MustMod || res == ModRefInfo::ModRef ||
             res == ModRefInfo::MustModRef)

@@ -44,7 +44,6 @@
 #include "arch/arm/insts/pred_inst.hh"
 #include "arch/arm/pcstate.hh"
 #include "cpu/thread_context.hh"
-#include "debug/MemInstruction.hh"
 
 namespace gem5
 {
@@ -198,7 +197,7 @@ class Memory : public MightBeMicro
            RegIndex _dest, RegIndex _base, bool _add)
         : MightBeMicro(mnem, _machInst, __opClass),
           dest(_dest), base(_base), add(_add), uops(NULL)
-    { DPRINTF(MemInstruction, "Here I am where I do not like: %x", _machInst);}
+    {}
 
     virtual
     ~Memory()

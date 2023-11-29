@@ -355,13 +355,6 @@ class PredMacroOp : public PredOp
         // initialization of the micro-operations, since they are
         // all of variable length
         flags[IsMacroop] = true;
-        if (mnem[0] == 'S') {
-          flags[IsSpecbCheck] = true;
-        }
-        else if (mnem[0] == 'D') {
-          flags[IsDefAlias] = true;
-        }
-
     }
 
     ~PredMacroOp()

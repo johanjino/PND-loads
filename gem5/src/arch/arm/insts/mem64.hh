@@ -38,12 +38,10 @@
 #ifndef __ARCH_ARM_MEM64_HH__
 #define __ARCH_ARM_MEM64_HH__
 
-
 #include "arch/arm/insts/misc64.hh"
 #include "arch/arm/insts/static_inst.hh"
 #include "arch/arm/pcstate.hh"
 #include "cpu/thread_context.hh"
-#include "debug/MemInstruction.hh"
 
 namespace gem5
 {
@@ -132,8 +130,6 @@ class Memory64 : public MightBeMicro64
           dest(_dest), base(_base), uops(NULL), memAccessFlags(0)
     {
         baseIsSP = isSP(_base);
-        DPRINTF(MemInstruction, "Machine instruction before going to static: "
-        "%x\n", _machInst);
     }
 
     virtual

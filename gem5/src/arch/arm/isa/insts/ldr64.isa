@@ -65,6 +65,7 @@ let {{
             # Add memory request flags where necessary
             if self.user:
                 self.memFlags.append("userFlag")
+
             if self.flavor == "dprefetch":
                 self.memFlags.append("Request::PREFETCH")
                 self.instFlags = ['IsDataPrefetch']
@@ -77,20 +78,6 @@ let {{
                 self.instFlags = ['IsDataPrefetch']
             if self.micro:
                 self.instFlags.append("IsMicroop")
-            if (self.name == "ldr_def_alias" or self.name == "ldrb_def_alias" 
-            or self.name == "ldrh_def_alias" or self.name == "ldrsw_def_alias" 
-            or self.name == "ldur_def_alias" or self.name == "ldurb_def_alias"
-            or self.name == "ldurh_def_alias" or self.name == "ldursw_def_alias"
-            or self.name == "ldtrb_def_alias" or self.name == "ldtrh_def_alias" 
-            or self.name == "ldtrsw_def_alias" or self.name == "ldtr_def_alias"
-            or self.name == "ldrsh_def_alias" or self.name == "ldrsb_def_alias"):
-                self.instFlags.append("IsDefAlias")
-            if (self.name == "ldr_spec_check" or self.name == "ldrb_spec_check" or self.name == "ldrh_spec_check"
-                or self.name == "ldrsw_spec_check" or self.name == "ldurb_spec_check" or self.name == "ldur_spec_check" 
-                or self.name == "ldurh_spec_check" or self.name == "ldursw_spec_check" or self.name == "ldtrb_spec_check" 
-                or self.name == "ldtrh_spec_check" or self.name == "ldtr_spec_check" or self.name == "ldtrsw_spec_check"
-                or self.name == "ldrsh_spec_check" or self.name == "ldrsb_spec_check"):
-                self.instFlags.append("IsSpecbCheck")
 
             if self.flavor in ("acexp", "exp"):
                 # For exclusive pair ops alignment check is based on total size
@@ -421,63 +408,18 @@ let {{
     LoadImm64("ldrab", "LDRAB_REG", size=8, sign=False, flavor="authDB").emit()
 
     buildLoads64("ldrb", "LDRB64", size=1, sign=False)
-    buildLoads64("ldrb_spec_check", "LDRB64SBC", size=1, sign=False)
-    buildLoads64("ldrb_def_alias", "LDRB64DA", size=1, sign=False)
-
-
     buildLoads64("ldrsb", "LDRSBW64", size=1, sign=True)
-    buildLoads64("ldrsb_spec_check", "LDRSBW64SBC", size=1, sign=True)
-    buildLoads64("ldrsb_def_alias", "LDRSBW64DA", size=1, sign=True)
     buildLoads64("ldrsb", "LDRSBX64", size=1, sign=True, flavor="widen")
-    buildLoads64("ldrsb_spec_check", "LDRSBX64SBC", size=1, sign=True, flavor="widen")
-    buildLoads64("ldrsb_def_alias", "LDRSBX64DA", size=1, sign=True, flavor="widen")
-
-    
     buildLoads64("ldrh", "LDRH64", size=2, sign=False)
-    buildLoads64("ldrh_spec_check", "LDRH64SBC", size=2, sign=False)
-    buildLoads64("ldrh_def_alias", "LDRH64DA", size=2, sign=False)
-
-
     buildLoads64("ldrsh", "LDRSHW64", size=2, sign=True)
-    buildLoads64("ldrsh_spec_check", "LDRSHW64SBC", size=2, sign=True)
-    buildLoads64("ldrsh_def_alias", "LDRSHW64DA", size=2, sign=True)
     buildLoads64("ldrsh", "LDRSHX64", size=2, sign=True, flavor="widen")
-    buildLoads64("ldrsh_spec_check", "LDRSHX64SBC", size=2, sign=True, flavor="widen")
-    buildLoads64("ldrsh_def_alias", "LDRSHX64DA", size=2, sign=True, flavor="widen")
     buildLoads64("ldrsw", "LDRSW64", size=4, sign=True, flavor="widen")
-    buildLoads64("ldrsw_spec_check", "LDRSW64SBC", size=4, sign=True, flavor="widen")
-    buildLoads64("ldrsw_def_alias", "LDRSW64DA", size=4, sign=True, flavor="widen")
-
-
-
-    buildLoads64("ldr_standard", "LDRW64", size=4, sign=False)
-    buildLoads64("ldr_spec_check", "LDRW64SBC", size=4,
-                sign=False)
-    buildLoads64("ldr_def_alias", "LDRW64DA",
-                size=4, sign=False)
-
-    buildLoads64("ldr_standard", "LDRX64", size=8, sign=False)
-    buildLoads64("ldr_spec_check", "LDRX64SBC", size=8,
-                sign=False)
-    buildLoads64("ldr_def_alias", "LDRX64DA",
-                size=8, sign=False)
-
-
+    buildLoads64("ldr", "LDRW64", size=4, sign=False)
+    buildLoads64("ldr", "LDRX64", size=8, sign=False)
     buildLoads64("ldr", "LDRBFP64", size=1, sign=False, flavor="fp")
-
     buildLoads64("ldr", "LDRHFP64", size=2, sign=False, flavor="fp")
-
     buildLoads64("ldr", "LDRSFP64", size=4, sign=False, flavor="fp")
-    buildLoads64("ldr_spec_check", "LDRSFP64SBC", size=4, sign=False, flavor="fp")
-    buildLoads64("ldr_def_alias", "LDRSFP64DA", size=4, sign=False, flavor="fp")
-
-
-
-    buildLoads64("ldr_standard", "LDRDFP64", size=8, sign=False, flavor="fp")
-    buildLoads64("ldr_spec_check", "LDRDFP64SBC", size=8,
-                sign=False, flavor="fp")
-    buildLoads64("ldr_def_alias", "LDRDFP64DA",
-                size=8, sign=False, flavor="fp")
+    buildLoads64("ldr", "LDRDFP64", size=8, sign=False, flavor="fp")
 
     LoadImm64("prfm", "PRFM64_IMM", size=8, flavor="mprefetch").emit()
     LoadReg64("prfm", "PRFM64_REG", size=8, flavor="mprefetch").emit()
@@ -486,93 +428,39 @@ let {{
     LoadImm64("prfum", "PRFUM64_IMM", size=8, flavor="mprefetch").emit()
 
     LoadImm64("ldurb", "LDURB64_IMM", size=1, sign=False).emit()
-    LoadImm64("ldurb_spec_check", "LDURB64SBC_IMM", size=1, sign=False).emit()
-    LoadImm64("ldurb_def_alias", "LDURB64DA_IMM", size=1, sign=False).emit()
-
-
     LoadImm64("ldursb", "LDURSBW64_IMM", size=1, sign=True).emit()
-
     LoadImm64("ldursb", "LDURSBX64_IMM", size=1,
               sign=True, flavor="widen").emit()
-    
     LoadImm64("ldurh", "LDURH64_IMM", size=2, sign=False).emit()
-    LoadImm64("ldurh_spec_check", "LDURH64SBC_IMM", size=2, sign=False).emit()
-    LoadImm64("ldurh_def_alias", "LDURH64DA_IMM", size=2, sign=False).emit()
-
-
     LoadImm64("ldursh", "LDURSHW64_IMM", size=2, sign=True).emit()
     LoadImm64("ldursh", "LDURSHX64_IMM", size=2,
               sign=True, flavor="widen").emit()
     LoadImm64("ldursw", "LDURSW64_IMM", size=4,
               sign=True, flavor="widen").emit()
-    LoadImm64("ldursw_spec_check", "LDURSW64SBC_IMM", size=4,
-              sign=True, flavor="widen").emit()
-    LoadImm64("ldursw_def_alias", "LDURSW64DA_IMM", size=4,
-              sign=True, flavor="widen").emit()
-
-    LoadImm64("ldur_standard", "LDURW64_IMM", size=4, sign=False).emit()
-    LoadImm64("ldur_spec_check", "LDURW64SBC_IMM", size=4, sign=False).emit()
-    LoadImm64("ldur_def_alias", "LDURW64DA_IMM", size=4, sign=False).emit()
-
-
-    LoadImm64("ldur_standard", "LDURX64_IMM", size=8, sign=False).emit()
-    LoadImm64("ldur_spec_check", "LDURX64SBC_IMM", size=8, sign=False).emit()
-    LoadImm64("ldur_def_alias", "LDURX64DA_IMM", size=8, sign=False).emit()
-
+    LoadImm64("ldur", "LDURW64_IMM", size=4, sign=False).emit()
+    LoadImm64("ldur", "LDURX64_IMM", size=8, sign=False).emit()
     LoadImm64("ldur", "LDURBFP64_IMM", size=1, flavor="fp").emit()
-
     LoadImm64("ldur", "LDURHFP64_IMM", size=2, flavor="fp").emit()
     LoadImm64("ldur", "LDURSFP64_IMM", size=4, flavor="fp").emit()
-    LoadImm64("ldur_spec_check", "LDURSFP64SBC_IMM", size=4, flavor="fp").emit()
-    LoadImm64("ldur_def_alias", "LDURSFP64DA_IMM", size=4, flavor="fp").emit()
-
-
-    LoadImm64("ldur_standard", "LDURDFP64_IMM", size=8, flavor="fp").emit()
-    LoadImm64("ldur_spec_check", "LDURDFP64SBC_IMM", size=8,
-                                            flavor="fp").emit()
-    LoadImm64("ldur_def_alias", "LDURDFP64DA_IMM", size=8, flavor="fp").emit()
-
+    LoadImm64("ldur", "LDURDFP64_IMM", size=8, flavor="fp").emit()
 
     LoadImm64("ldtrb", "LDTRB64_IMM", size=1,
               sign=False, user=True).emit()
-    LoadImm64("ldtrb_spec_check", "LDTRB64SBC_IMM", size=1,
-              sign=False, user=True).emit()
-    LoadImm64("ldtrb_def_alias", "LDTRB64DA_IMM", size=1,
-              sign=False, user=True).emit()
-
     LoadImm64("ldtrsb", "LDTRSBW64_IMM", size=1,
               sign=True, user=True).emit()
     LoadImm64("ldtrsb", "LDTRSBX64_IMM", size=1,
               sign=True, user=True, flavor="widen").emit()
     LoadImm64("ldtrh", "LDTRH64_IMM", size=2,
               sign=False, user=True).emit()
-    LoadImm64("ldtrh_spec_check", "LDTRH64SBC_IMM", size=2,
-              sign=False, user=True).emit()
-    LoadImm64("ldtrh_def_alias", "LDTRH64DA_IMM", size=2,
-              sign=False, user=True).emit()
-
     LoadImm64("ldtrsh", "LDTRSHW64_IMM", size=2,
               sign=True, user=True).emit()
     LoadImm64("ldtrsh", "LDTRSHX64_IMM", size=2,
               sign=True, user=True, flavor="widen").emit()
     LoadImm64("ldtrsw", "LDTRSW64_IMM", size=4,
               sign=True, user=True, flavor="widen").emit()
-    LoadImm64("ldtrsw_spec_check", "LDTRSW64SBC_IMM", size=4,
-              sign=True, user=True, flavor="widen").emit()
-    LoadImm64("ldtrsw_def_alias", "LDTRSW64DA_IMM", size=4,
-              sign=True, user=True, flavor="widen").emit()
-
     LoadImm64("ldtr", "LDTRW64_IMM", size=4,
               sign=False, user=True).emit()
-    LoadImm64("ldtr_spec_check", "LDTRW64SBC_IMM", size=4,
-              sign=False, user=True).emit()
-    LoadImm64("ldtr_def_alias", "LDTRW64DA_IMM", size=4,
-              sign=False, user=True).emit()
     LoadImm64("ldtr", "LDTRX64_IMM", size=8,
-              sign=False, user=True).emit()
-    LoadImm64("ldtr_spec_check", "LDTRX64SBC_IMM", size=8,
-              sign=False, user=True).emit()
-    LoadImm64("ldtr_def_alias", "LDTRX64DA_IMM", size=8,
               sign=False, user=True).emit()
 
     LoadLit64("ldrsw", "LDRSWL64_LIT", size=4, sign=True, \

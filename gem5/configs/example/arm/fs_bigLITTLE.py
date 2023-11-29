@@ -57,7 +57,7 @@ from devices import AtomicCluster, KvmCluster, FastmodelCluster
 
 default_disk = 'aarch64-ubuntu-trusty-headless.img'
 
-default_mem_size= "2GB"
+default_mem_size= "8GB"
 
 def _to_ticks(value):
     """Helper function to convert a latency from string format to Ticks"""
