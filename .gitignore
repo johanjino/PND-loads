@@ -2,6 +2,7 @@
 *.pyc
 *.s
 utils/venv
+fs/
 benchmarks/forwarding_micro
 benchmarks/coremark-pro/builds*
 gem5/src/cpu/o3/BaseO3CPU.py

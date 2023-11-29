@@ -75,7 +75,7 @@
 
 std::set<uint64_t> pnd_addresses;
 static void load_addresses(){
-    std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/coremark-pro/nnet_test_modref_pnd_addresses";
+    std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/nnet_test_pnd_addresses";
 
     std::ifstream inputFile(filename);
 
