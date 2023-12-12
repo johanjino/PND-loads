@@ -64,6 +64,9 @@
 #include "debug/ViolationEvent.hh"
 #include "debug/flagcheck.hh"
 #include "params/BaseO3CPU.hh"
+#include "base/types.hh"
+
+extern std::map<uint64_t, uint8_t> pnd_violation_count;
 
 namespace gem5
 {
@@ -1373,7 +1376,10 @@ IEW::executeInsts()
                 */
                 if (violator->isSpecbCheck()){
                     DPRINTF(Speculate, "Speculate instruction handling");
-                    //do nothing....
+                    //COMPILER ORACLE
+                    pnd_violation_count[violator->pcState().instAddr()] += 1;
+                    if (pnd_violation_count[violator->pcState().instAddr()] > 2)
+                        violator->unsetSpecFlag();
                     ++iewStats.bypassStoreSetViolationAddition;
                 }
                 else{

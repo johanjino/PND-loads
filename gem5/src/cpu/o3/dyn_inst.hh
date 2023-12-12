@@ -587,6 +587,7 @@ class DynInst : public ExecContext, public RefCounted
      //added flags
     bool isSpecbCheck() const { return staticInst->isSpecbCheck(); }
     void setSpecFlag() { staticInst->setSpecbCheck(); }
+    void unsetSpecFlag() { staticInst->unsetSpecbCheck(); }
     void setDefAliasFlag() { return; }
 
     uint64_t

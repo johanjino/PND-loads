@@ -1,6 +1,7 @@
 *.ll
 *.pyc
 *.s
+gem5-oracle
 utils/venv
 fs/
 benchmarks/forwarding_micro

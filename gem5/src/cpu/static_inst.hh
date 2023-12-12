@@ -201,6 +201,7 @@ class StaticInst : public RefCounted, public StaticInstFlags
     bool isNotAlias() const { return flags[IsNotAlias]; }
     // Rohan Added
     void setSpecbCheck() { flags[IsSpecbCheck] = true; }
+    void unsetSpecbCheck() { flags[IsSpecbCheck] = false; }
     void setDefAlias() { flags[IsDefAlias] = true; }
 
     bool

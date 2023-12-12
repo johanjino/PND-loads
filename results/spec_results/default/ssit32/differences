@@ -1,0 +1,168 @@
+x264.2:
+	Lookup Reduction: 22.12933296269406
+	numInsts: 0.1746169983007271
+	baseUsingStoreSetCheck: -21.99335754135678
+	SSITCollisions: -17.423164072823667
+	LFSTInvalidations: 5.392724373486481
+	memOrderViolationEvents: 82.32363515095511
+	cyclesStoreQueueAccessed: -17.061315427978897
+	numStoresSearched: -23.595538303484723
+	loadToUse::mean: 2.525419128456792
+	loadToUse::stdev: 3.0380602889815376
+	CPI: -0.9805114383518436
+perlbench.0:
+	Lookup Reduction: 0.523417298432495
+	numInsts: 0.0025653368689381
+	baseUsingStoreSetCheck: -0.520865388980481
+	SSITCollisions: -0.33326894381581973
+	LFSTInvalidations: 0.15000271660688877
+	memOrderViolationEvents: 0.367470751362476
+	cyclesStoreQueueAccessed: -0.5108430195530836
+	numStoresSearched: -0.04051452113897576
+	loadToUse::mean: 0.009844790533407689
+	loadToUse::stdev: -0.031964207907471134
+	CPI: 0.0078839974423884
+xz.1:
+	Lookup Reduction: 5.408685083865583
+	numInsts: 0.0011894067340472861
+	baseUsingStoreSetCheck: -5.407560008396152
+	SSITCollisions: -2.035307578104505
+	LFSTInvalidations: 0.2116807252858803
+	memOrderViolationEvents: 1.0036444553242037
+	cyclesStoreQueueAccessed: -6.283672580505052
+	numStoresSearched: -5.263038574594025
+	loadToUse::mean: 0.08785208277310647
+	loadToUse::stdev: 0.41903407463109016
+	CPI: 0.001535064525709876
+xalancbmk.0:
+	Lookup Reduction: 54.616363647161506
+	numInsts: -0.006389147762032039
+	baseUsingStoreSetCheck: -54.61926327474787
+	SSITCollisions: -43.356388002053095
+	LFSTInvalidations: -0.3390743890342397
+	memOrderViolationEvents: 5.432435094382207
+	cyclesStoreQueueAccessed: -50.272367866913704
+	numStoresSearched: -12.83140229504248
+	loadToUse::mean: -0.005328841859869988
+	loadToUse::stdev: -0.02342484604111137
+	CPI: -0.001981767404839797
+leela.0:
+	Lookup Reduction: 17.391291828114866
+	numInsts: -1.3001759819123977
+	baseUsingStoreSetCheck: -18.46535041073382
+	SSITCollisions: -23.228655090441013
+	LFSTInvalidations: 18.85295990742735
+	memOrderViolationEvents: 219.0847821713931
+	cyclesStoreQueueAccessed: -13.22218052020006
+	numStoresSearched: -12.396513731640809
+	loadToUse::mean: 2.8726337708794296
+	loadToUse::stdev: 3.506064041393722
+	CPI: -0.7517964473817055
+x264.1:
+	Lookup Reduction: 22.17971979797106
+	numInsts: 0.19447610778827634
+	baseUsingStoreSetCheck: -22.028377945964223
+	SSITCollisions: -18.093763903592578
+	LFSTInvalidations: 4.8942998466853345
+	memOrderViolationEvents: 109.4210073642262
+	cyclesStoreQueueAccessed: -17.53913829358931
+	numStoresSearched: -24.880345487193605
+	loadToUse::mean: 2.045802007118444
+	loadToUse::stdev: 1.967227022870157
+	CPI: -0.785316233944542
+nab.0:
+	Lookup Reduction: 0.0035136034723693157
+	numInsts: 0.004283740981632247
+	baseUsingStoreSetCheck: 0.0007699869955927658
+	SSITCollisions: -0.23724348109301144
+	LFSTInvalidations: -0.22184212813815438
+	memOrderViolationEvents: -0.28974739225215607
+	cyclesStoreQueueAccessed: -0.009738532413296898
+	numStoresSearched: 0.06999146969717114
+	loadToUse::mean: -0.05701441094332945
+	loadToUse::stdev: -0.11508235900770784
+	CPI: -0.061057685659139625
+xz.0:
+	Lookup Reduction: 4.964753207770032
+	numInsts: 0.41741843439612875
+	baseUsingStoreSetCheck: -4.568058568485414
+	SSITCollisions: -4.869895997540207
+	LFSTInvalidations: 0.503771878309969
+	memOrderViolationEvents: 266.31103492253476
+	cyclesStoreQueueAccessed: -6.808371033315809
+	numStoresSearched: -9.425857022150511
+	loadToUse::mean: 0.5291305134074149
+	loadToUse::stdev: 2.265345794320627
+	CPI: 0.027432062694644287
+perlbench.1:
+	Lookup Reduction: 0.39013787181027254
+	numInsts: -0.013808324265519409
+	baseUsingStoreSetCheck: -0.4038923245733547
+	SSITCollisions: -0.6114946884889646
+	LFSTInvalidations: -0.5220809526653528
+	memOrderViolationEvents: -0.29657777898023613
+	cyclesStoreQueueAccessed: -0.39614411104506064
+	numStoresSearched: -0.21635866737032874
+	loadToUse::mean: 0.028450401277704433
+	loadToUse::stdev: 0.03636248613068195
+	CPI: 0.029928619512335948
+lbm.0:
+	Lookup Reduction: 2.503167390094033
+	numInsts: 0.0
+	baseUsingStoreSetCheck: -2.503167390094043
+	SSITCollisions: 0.0
+	LFSTInvalidations: 0.0
+	memOrderViolationEvents: 0.0
+	cyclesStoreQueueAccessed: -0.8074007899506944
+	numStoresSearched: -3.8377235055812795
+	loadToUse::mean: 0.0
+	loadToUse::stdev: 0.0
+	CPI: 0.0
+deepsjeng.0:
+	Lookup Reduction: 2.591103770258276
+	numInsts: 0.003240626196741799
+	baseUsingStoreSetCheck: -2.587947112049107
+	SSITCollisions: -1.8496183581857346
+	LFSTInvalidations: 0.08778784791305311
+	memOrderViolationEvents: 12.908824967374011
+	cyclesStoreQueueAccessed: -3.767048138069868
+	numStoresSearched: -0.9896742101299613
+	loadToUse::mean: -0.021288917077007686
+	loadToUse::stdev: -0.008936754979914177
+	CPI: 0.037473964414283856
+x264.0:
+	Lookup Reduction: 16.986282837912693
+	numInsts: 0.23324934399907965
+	baseUsingStoreSetCheck: -16.792653887202864
+	SSITCollisions: -16.11996547378502
+	LFSTInvalidations: -3.1812345498350063
+	memOrderViolationEvents: 112.01361467725629
+	cyclesStoreQueueAccessed: -14.03981233675694
+	numStoresSearched: -16.929431055887544
+	loadToUse::mean: 2.5614945756829854
+	loadToUse::stdev: 3.2070150062862646
+	CPI: -0.7542657184713576
+perlbench.2:
+	Lookup Reduction: 0.25994253519723626
+	numInsts: 0.0031434220173694218
+	baseUsingStoreSetCheck: -0.2568072842707438
+	SSITCollisions: -0.032393829973237497
+	LFSTInvalidations: -0.26355475091492403
+	memOrderViolationEvents: 0.26073300850746806
+	cyclesStoreQueueAccessed: -0.23381448551133632
+	numStoresSearched: -0.2425657193753891
+	loadToUse::mean: 0.03587625918442195
+	loadToUse::stdev: 0.3399323781012309
+	CPI: 0.044444659775816915
+mcf.0:
+	Lookup Reduction: 3.6705170487166163
+	numInsts: -0.5484321274004827
+	baseUsingStoreSetCheck: -4.198818881380209
+	SSITCollisions: -1.8493251624234608
+	LFSTInvalidations: -0.11391336211931241
+	memOrderViolationEvents: 14.761067121237586
+	cyclesStoreQueueAccessed: -2.040657220830099
+	numStoresSearched: -4.702105471414771
+	loadToUse::mean: -0.07027207912274284
+	loadToUse::stdev: -0.44949691586316004
+	CPI: 0.46908639506110084

@@ -73,6 +73,7 @@
 #include "sim/full_system.hh"
 #include "sim/system.hh"
 
+std::map<uint64_t, uint8_t> pnd_violation_count;
 std::set<uint64_t> pnd_addresses;
 static void load_addresses(){
     std::string filename = "/home/muke/Programming/PND-Loads/benchmarks/nnet_test_pnd_addresses";
@@ -95,6 +96,7 @@ static void load_addresses(){
         }
     }
 }
+
 namespace gem5
 {
 
@@ -1084,7 +1086,8 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
     instruction->setTid(tid);
 
     if (std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end() &&
-        instruction->isLoad()){
+        instruction->isLoad() && (pnd_violation_count.find(this_pc.instAddr()) == pnd_violation_count.end() ||
+        pnd_violation_count[this_pc.instAddr()] <= 2)){
         instruction->setSpecFlag();
     }
 

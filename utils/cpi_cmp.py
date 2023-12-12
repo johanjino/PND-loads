@@ -3,8 +3,8 @@ import os
 stats = {"CPI", "numStoresSearched",
           "SSITCollisions",
           "memOrderViolationEvents",
-          "LFSTInvalidations", #"mistakenReschedules", "cyclesStoreQueueAccessed",
-         "loadToUse::mean", "loadToUse::stdev"}
+          "LFSTInvalidations", "cyclesStoreQueueAccessed",
+         "loadToUse::mean", "loadToUse::stdev", "BypassStoreSetCheck", "baseUsingStoreSetCheck", "numInsts"}
 
 def get_values(results):
     values = {}
@@ -12,8 +12,11 @@ def get_values(results):
     for line in results:
         fields = line.split()
         name = ''.join(fields[:-1])
+        if len(name.split('.')) == 2 and "thread_0" not in name:
+            name = name.split('.')[1]
         value = fields[-1]
         if name in stats:
+            if float(value) == 0: continue
             values[name] = float(value)
     return values
 
@@ -34,8 +37,18 @@ for f in os.listdir(os.getcwd()):
     base = get_values(base_results)
     pna = get_values(pna_results)
 
+    pna_lookups_per_kinst = (pna['baseUsingStoreSetCheck'] / pna['numInsts']) * 1000
+    base_lookups_per_kinst = (base['baseUsingStoreSetCheck'] / base['numInsts']) * 1000
+    # pna_cycles_sq_accessed_per_inst = pna['cyclesStoreQueueAccessed'] / pna['numInsts']
+    # base_cycles_sq_accessed_per_inst = base['cyclesStoreQueueAccessed'] / pna['numInsts']
     differences.write(benchmark+number+":\n")
+    differences.write("\tBase Lookups: "+str(base_lookups_per_kinst)+"\n")
+    differences.write("\tPND Lookups: "+str(pna_lookups_per_kinst)+"\n")
+    #differences.write("\tLookup Reduction: "+str(-(pna_lookups_per_kinst - base_lookups_per_kinst)/base_lookups_per_kinst * 100)+"\n")
+    # differences.write("\tCycles SQ Accessed Per Inst PND: "+str(pna_cycles_sq_accessed_per_inst)+"\n")
+    # differences.write("\tCycles SQ Accessed Per Inst Base: "+str(base_cycles_sq_accessed_per_inst)+"\n")
     for field in base:
+        if field == "Lookupreduction": continue
         base_value = base[field]
         pna_value = pna[field]
         difference = ((pna_value - base_value) / base_value) * 100
