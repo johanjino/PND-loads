@@ -38,3 +38,6 @@ for bench in benches:
             p.wait()
             subprocess.Popen("cp results.txt "+results_dir+"/"+name+"_base."+f.split(".")[1]+".txt", shell=True)
             os.chdir("..")
+
+os.chdir(results_dir)
+subprocess.Popen("python3 ~/PND-Loads/utils/cpi_cmp.py")
