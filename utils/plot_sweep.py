@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 import sys
+import math
 
 results_dir = sys.argv[1]
 benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "mcf.0", "lbm.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "nab.0", "xz.0", "xz.1"]
@@ -38,13 +39,31 @@ def plot_benchmark(benchmark, results_map, label, title):
     ax.set_title(title)
     ax.legend()
     plt.show()
-    plt.savefig(results_dir+"/"+benchmark+".png")
+    #plt.savefig(results_dir+"/"+benchmark+".png")
+
+def plot_average(results_map, label, title):
+    fig, ax = plt.subplots()
+
+    average_map = {param:{ssit:1 for ssit in SSIT_range} for param in results_map}
+    for bench in results_map:
+        for param in results_map[bench]:
+            for ssit in SSIT_range:
+                average_map[param][ssit] *= results_map[bench][param][ssit]
+    for param in average_map:
+        for ssit in average_map[param]:
+            average_map[param][ssit] = math.pow(average_map[param][ssit], 1.0 / len(benchmark_names))
+
+    plot_benchmark("Average", average_map, label, title)
+
+        
 
 parse_results(results_dir+"/lfst_ssit_search")
 parse_results(results_dir+"/clear_period_ssit_search")
 
 benchmark = benchmark_names[0]
-plot_benchmark(benchmark, lfst_map[benchmark], "LFST", benchmark+": SSIT vs CPI Over LFST (Clear Period Ratio = 244)")
+plot_benchmark(benchmark, lfst_map[benchmark], "LFST", benchmark+": SSIT vs CPI Difference Over LFST (Clear Period Ratio = 244)")
 # for benchmark in benchmark_names:
-#     plot_benchmark(benchmark, lfst_map[benchmark], "LFST", benchmark+": SSIT vs CPI Over LFST (Clear Period Ratio = 244)")
-#     plot_benchmark(benchmark, lfst_map[benchmark], "Clear Period Ratio", benchmark+": SSIT vs CPI Over Clear Period Ratio (LFST = SSIT)")
+#     plot_benchmark(benchmark, lfst_map[benchmark], "LFST", benchmark+": SSIT vs CPI Difference Over LFST (Clear Period Ratio = 244)")
+#     plot_benchmark(benchmark, lfst_map[benchmark], "Clear Period Ratio", benchmark+": SSIT vs CPI Difference Over Clear Period Ratio (LFST = SSIT)")
+# plot_average(lfst_map, "LFST", "Average CPI Difference Across Spec As LFST/SSIT Vary")
+# plot_average(clear_map, "Clear Period Ratio", "Average CPI Difference Across Spec As Clear Period Ratio/SSIT Vary")
