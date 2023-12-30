@@ -7,7 +7,6 @@ cpu_config = gem5+"src/cpu/o3/BaseO3CPU.py"
 SSIT_range = [32, 128, 352, 567, 800, 1024]
 LFST_range = [32, 128, 1024]
 clear_period_ratio_range = [122, 244, 488, 976]
-standard_lfst_size = 128
 standard_clear_period_ratio = 244
 
 def update_config(sed_command):
@@ -38,7 +37,8 @@ for lfst_size in LFST_range:
 results_base_dir = "~/spec_results/clear_period_ssit_search/"
 for clear_period_ratio in clear_period_ratio_range:
     for ssit_size in SSIT_range:
-        lfst_sed = r"sed -i 's/\(LFSTSize = Param.Unsigned(\)\([0-9]\+\)\(, \".*\"\)/\1"+str(standard_lfst_size)+r"\3/' "
+        lfst_size = ssit_size
+        lfst_sed = r"sed -i 's/\(LFSTSize = Param.Unsigned(\)\([0-9]\+\)\(, \".*\"\)/\1"+str(lfst_size)+r"\3/' "
         update_config(lfst_sed)
         ssit_sed = r"sed -i 's/\(SSITSize = Param.Unsigned(\)\([0-9]\+\)\(, \".*\"\)/\1"+str(ssit_size)+r"\3/' "
         update_config(ssit_sed)
@@ -50,7 +50,7 @@ for clear_period_ratio in clear_period_ratio_range:
         os.chdir("~/PND-Loads/utils")
         run = Popen("python3 run_all_chkpts.py", shell=True)
         Popen.wait(run)
-        results_dir = "_".join([str(i) for i in [ssit_size, standard_lfst_size, clear_period_ratio]])
+        results_dir = "_".join([str(i) for i in [ssit_size, lfst_size, clear_period_ratio]])
         os.makedirs(results_base_dir+results_dir, exist_ok=True)
         os.chdir("~/PND-Loads/utils")
         aggregate = Popen("python3 aggregate_all_stats.py " + results_base_dir+results_dir, shell=True)
