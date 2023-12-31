@@ -277,6 +277,7 @@ class MemDepUnit
      */
     //The Storeset object...
     StoreSet depPred;
+	//StoreVector depPred;
 
     /** Sequence numbers of outstanding load barriers. */
     std::unordered_set<InstSeqNum> loadBarrierSNs;

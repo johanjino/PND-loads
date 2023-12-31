@@ -53,7 +53,7 @@ namespace gem5
 namespace o3
 {
 
-StoreVector::StoreVector(uint64_t clear_period, int _SVT_size, MemDepUnit *mem_dep)
+StoreVector::StoreVector(uint64_t clear_period, int _SVT_size, int _LFST_size, MemDepUnit *mem_dep)
     : clearPeriod(clear_period), SVTSize(_SVT_size)
 {
 
@@ -80,7 +80,7 @@ StoreVector::~StoreVector()
 }
 
 void
-StoreVector::init(uint64_t clear_period, int _SVT_size, MemDepUnit *mem_dep)
+StoreVector::init(uint64_t clear_period, int _SVT_size, int _LFST_Size, MemDepUnit *mem_dep)
 {
     SVTSize = _SVT_size;
     clearPeriod = clear_period;

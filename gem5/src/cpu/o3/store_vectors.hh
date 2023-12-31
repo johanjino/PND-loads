@@ -83,13 +83,13 @@ class StoreVector
     StoreVector() { };
 
     /** Creates store vector predictor with given table sizes. */
-    StoreVector(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit *mem_dep);
+    StoreVector(uint64_t clear_period, int SVT_size, int LFST_size, MemDepUnit *mem_dep);
 
     /** Default destructor. */
     ~StoreVector();
 
     /** Initializes the store vector predictor with the given table sizes. */
-    void init(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit *mem_dep);
+    void init(uint64_t clear_period, int SVT_size, int LFST_size, MemDepUnit *mem_dep);
 
     /** Records a memory ordering violation between the younger load
      * and the older store. */
