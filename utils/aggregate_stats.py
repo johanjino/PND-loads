@@ -8,23 +8,14 @@ def aggregate_values(field_names):
 
     broken_chkpts = []
 
-    # Iterate through each .out directory
-    if "only_pna" in os.getcwd():
-        pna = ' PNA'
-        broken_file = open("broken_original", "w")
-    else:
-        pna = 'base'
-        if os.path.exists("./broken_original"):
-            broken_chkpts = [i.strip().split(",")[0] for i in open("broken").readlines()[1:-1]]
-        else:
-            broken_chkpts = []
-    print("Benchmark: ", os.getcwd().split("/")[-1]+pna)
+    print("Benchmark: ", os.getcwd().split("/")[-1])
     for dirname in os.listdir("."):
         if os.path.isdir(dirname) and dirname[0].isdigit() and dirname.split('.')[1] == 'out':
             stats_file = os.path.join(dirname, "stats.txt")
             chkpt_number = int(dirname.split('.')[0])
             #if chkpt_number in broken_chkpts: continue
-            for cpt in os.listdir("."):
+            cpt_dir = "../"+os.getcwd().split("/")[-1].split('_')[0]
+            for cpt in os.listdir(cpt_dir):
                 if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == (chkpt_number-1):
                     weight = float(cpt.split('_')[5])
             begin_marker = 0
@@ -33,7 +24,6 @@ def aggregate_values(field_names):
                 lines = stats.readlines()
                 if len(lines) == 0:
                     print("Checkpoint " + str(chkpt_number) + " has empty stats file")
-                    broken_chkpts.append((chkpt_number, weight))
                 for line in lines:
                     if len(line.strip().split()) == 0: continue
                     if '----' in line:
@@ -53,15 +43,6 @@ def aggregate_values(field_names):
                         exit(1)
                     print("Checkpoint "+str(chkpt_number)+" only has warmup")
 
-    if len(broken_chkpts) > 0 and pna == ' PNA':
-        broken_file.write(os.getcwd().split("/")[-1]+'\n')
-        total_weight = 0
-        for n, w in broken_chkpts:
-            broken_file.write(str(n)+","+str(w)+"\n")
-            total_weight += w
-        broken_file.write("Total missing weight: "+str(total_weight*100)+"%\n")
-        broken_file.close()
-
     for field_name in field_names_to_average:
         values = field_names_to_average[field_name]
         aggregated_values[field_name] = sum(values) / len(values)
@@ -70,14 +51,24 @@ def aggregate_values(field_names):
 
 def write_results(results_file, aggregated_values):
     seen_fields = set()
+    cpu_fields = {}
     with open(results_file, "w") as file:
         for field_name, value in aggregated_values.items():
-            name = '.'.join(field_name.split(".")[2:])
+            if '.' in field_name:
+                name = '.'.join(field_name.split(".")[2:])
+                if 'cpu' in field_name and 'switch_cpu' not in field_name:
+                    cpu_fields[name] = value
+                    continue
+            else: name = field_name
             if name not in seen_fields:
+                if 'switch_cpu' in field_name and name in cpu_fields:
+                    del cpu_fields[name]
                 file.write(f"{name} {value}\n")
                 seen_fields.add(name)
             elif value != 0:
                 print("Field "+(field_name)+" has duplicate but doesn't have a value of 0")
+        for name, value in cpu_fields.items():
+            file.write(f"{name} {value}\n")
 
 field_names_to_aggregate = ["system.switch_cpus.StoreSet__0.BypassStoreSetCheck",
                             "system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck",
@@ -104,7 +95,7 @@ aggregated_values = aggregate_values(field_names_to_aggregate)
 
 aggregated_values["Adjusted Mem Order Violation Events"] = aggregated_values.get("system.switch_cpus.iew.memOrderViolationEvents") - aggregated_values.get("system.switch_cpus.iew.notExactPhysicalAddrViolation")
 aggregated_values["Non-PND Violations"] = aggregated_values.get("Adjusted Mem Order Violation Events") - aggregated_values.get("system.switch_cpus.iew.bypassStoreSetViolationAddition")
-aggregated_values["CPI"] = aggregated_values.get("system.switch_cpus.numCycles") / aggregated_values.get("system.switch_cpus.numInsts")
+aggregated_values["CPI"] = aggregated_values.get("system.switch_cpus.numCycles") / aggregated_values.get("system.switch_cpus.commit.instsCommitted")
 aggregated_values["Lookup reduction"] = aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck") / (aggregated_values.get("system.switch_cpus.StoreSet__0.baseUsingStoreSetCheck") + aggregated_values.get("system.switch_cpus.StoreSet__0.BypassStoreSetCheck"))
 
 # Write the results to the output file

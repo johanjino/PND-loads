@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import os
+from subprocess import Popen
 import sys
 import math
 
@@ -13,8 +14,11 @@ clear_map = {bench: {clear:{ssit:None for ssit in SSIT_range} for clear in clear
 
 def parse_results(results_dir):
     for d in os.listdir(results_dir):
+        if 'png' in d: continue
+        os.chdir(results_dir+"/"+d)
+        Popen.wait(Popen("python3 ~/PND-Loads/utils/cpi_cmp.py", shell=True))
         ssit_size, lfst_size, clear_period = [int(i) for i in d.split('_')]
-        results = open(d+"/differences").readlines()
+        results = open(results_dir+"/"+d+"/differences").readlines()
         current_benchmark = None
         for line in results:
             if line.strip()[:-1] in benchmark_names:
@@ -25,7 +29,7 @@ def parse_results(results_dir):
                 elif results_dir.split("/")[-1] == "clear_period_ssit_search":
                     clear_map[current_benchmark][clear_period][ssit_size] = float(line.strip().split(":")[1])
 
-def plot_benchmark(benchmark, results_map, label, title):
+def plot_benchmark(benchmark, results_map, results_dir, label, title):
     fig, ax = plt.subplots()
 
     for param in results_map.keys():
@@ -38,32 +42,29 @@ def plot_benchmark(benchmark, results_map, label, title):
     ax.set_ylabel('CPI')
     ax.set_title(title)
     ax.legend()
-    plt.show()
-    #plt.savefig(results_dir+"/"+benchmark+".png")
+    plt.savefig(results_dir+"/"+benchmark+".png", dpi=1200)
 
 def plot_average(results_map, label, title):
     fig, ax = plt.subplots()
 
-    average_map = {param:{ssit:1 for ssit in SSIT_range} for param in results_map}
+    average_map = {lfst:{ssit:1 for ssit in SSIT_range} for lfst in LFST_range}
     for bench in results_map:
         for param in results_map[bench]:
             for ssit in SSIT_range:
-                average_map[param][ssit] *= results_map[bench][param][ssit]
+                average_map[param][ssit] += results_map[bench][param][ssit]
     for param in average_map:
         for ssit in average_map[param]:
-            average_map[param][ssit] = math.pow(average_map[param][ssit], 1.0 / len(benchmark_names))
+            average_map[param][ssit] = average_map[param][ssit] / len(benchmark_names)
 
-    plot_benchmark("Average", average_map, label, title)
-
-        
+    plot_benchmark("average", average_map, results_dir+"/lfst_ssit_search", label, title)
 
 parse_results(results_dir+"/lfst_ssit_search")
-parse_results(results_dir+"/clear_period_ssit_search")
+#parse_results(results_dir+"/clear_period_ssit_search")
 
-benchmark = benchmark_names[0]
-plot_benchmark(benchmark, lfst_map[benchmark], "LFST", benchmark+": SSIT vs CPI Difference Over LFST (Clear Period Ratio = 244)")
-# for benchmark in benchmark_names:
-#     plot_benchmark(benchmark, lfst_map[benchmark], "LFST", benchmark+": SSIT vs CPI Difference Over LFST (Clear Period Ratio = 244)")
-#     plot_benchmark(benchmark, lfst_map[benchmark], "Clear Period Ratio", benchmark+": SSIT vs CPI Difference Over Clear Period Ratio (LFST = SSIT)")
-# plot_average(lfst_map, "LFST", "Average CPI Difference Across Spec As LFST/SSIT Vary")
+#benchmark = "x264.2"
+#plot_benchmark(benchmark, lfst_map[benchmark], "LFST", benchmark+": SSIT vs CPI Difference Over LFST (Clear Period Ratio = 244)")
+for benchmark in benchmark_names:
+    plot_benchmark(benchmark, lfst_map[benchmark], results_dir+"/lfst_ssit_search", "LFST", benchmark+": SSIT vs CPI Difference Over LFST (Clear Period Ratio = 244)")
+    #plot_benchmark(benchmark, lfst_map[benchmark], results_dir+"/clear_period_ssit_search", "Clear Period Ratio", benchmark+": SSIT vs CPI Difference Over Clear Period Ratio (LFST = SSIT)")
+plot_average(lfst_map, "LFST", "Average CPI Difference Across Spec As LFST/SSIT Vary")
 # plot_average(clear_map, "Clear Period Ratio", "Average CPI Difference Across Spec As Clear Period Ratio/SSIT Vary")

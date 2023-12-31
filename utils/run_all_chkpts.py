@@ -13,14 +13,9 @@ for bench in benches:
     except FileNotFoundError:
         os.chdir(spec_dir+bench+"/run/only_pna/run_peak_refspeed_mytest-64.0001")
 
-    processes.append(subprocess.Popen("python3 ~/PND-Loads/utils/spec_automation.py", shell=True))
+    processes.append(subprocess.Popen("python3 ~/PND-Loads/utils/spec_automation.py pnd", shell=True))
 
-    try:
-        os.chdir(spec_dir+bench+"/run/run_peak_refspeed_mytest-64.0000")
-    except FileNotFoundError:
-        os.chdir(spec_dir+bench+"/run/run_peak_refspeed_mytest-64.0001")
-
-    processes.append(subprocess.Popen("python3 ~/PND-Loads/utils/spec_automation.py", shell=True))
+    processes.append(subprocess.Popen("python3 ~/PND-Loads/utils/spec_automation.py base", shell=True))
 
 for p in processes:
     p.wait()
