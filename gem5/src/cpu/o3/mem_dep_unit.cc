@@ -251,6 +251,7 @@ MemDepUnit::insert(const DynInstPtr &inst)
         // DPRINTF(DefNotAlias, "Checking storeset:\n");
         InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
         if (dep != 0){
+			assert(inst->seqNum > dep);
             producing_stores.push_back(dep);
             // DPRINTF(DefNotAlias, "Pushed back to producing stores...\n");
         }
