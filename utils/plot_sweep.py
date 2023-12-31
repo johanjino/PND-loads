@@ -2,6 +2,7 @@ from typing import DefaultDict
 import matplotlib.pyplot as plt
 import os
 from subprocess import Popen
+from matplotlib.lines import Line2D
 import sys
 import math
 
@@ -45,18 +46,22 @@ def parse_results(results_dir):
 def plot_benchmark(benchmark, results_map, results_dir, label, title):
     fig, ax = plt.subplots()
 
+    lines = []
+
     for param in results_map.keys():
         ssits = list(results_map[param].keys())
         for ssit in ssits:
             if results_map[param][ssit].base_cpi is None or results_map[param][ssit].pnd_cpi is None: print("a ssit value was not populated!"); exit(1)
         base_cpis = [results_map[param][ssit].base_cpi for ssit in ssits]
         pnd_cpis = [results_map[param][ssit].pnd_cpi for ssit in ssits]
-        ax.plot(ssits, base_cpis, label=f'{label}={param}', marker='+')
-        ax.plot(ssits, pnd_cpis, label=f'{label}={param}', marker='+')
+        line, = ax.plot(ssits, base_cpis, label=f'{label}={param}', marker='+', alpha=0.7)
+        ax.plot(ssits, pnd_cpis, label=f'{label}={param}', marker='o', color=line.get_color(), linestyle='--')
+        lines.append(line)
+    legends = [Line2D([0], [0], color=line.get_color(), lw=2, label=line.get_label()) for line in lines]
     ax.set_xlabel('SSIT Size')
     ax.set_ylabel('CPI')
     ax.set_title(title)
-    ax.legend()
+    ax.legend(handles=legends)
     plt.savefig(results_dir+"/"+benchmark+".png", dpi=1200)
 
 def plot_average(results_map, label, title):

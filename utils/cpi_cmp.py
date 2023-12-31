@@ -38,8 +38,8 @@ for f in os.listdir(os.getcwd()):
 
     differences.write(benchmark+number+":\n")
     differences.write("\tLookup Reduction: "+str(pna['Lookupreduction'] * 100)+"\n")
-    differences.write("\tBase CPI: "+str(base['totalCpi'])+"\n")
-    differences.write("\tPND CPI: "+str(pna['totalCpi'])+"\n")
+    differences.write("\tBase CPI: "+str(base['CPI'])+"\n")
+    differences.write("\tPND CPI: "+str(pna['CPI'])+"\n")
     for field in base:
         if field == 'Lookupreduction': continue
         base_value = base[field]
