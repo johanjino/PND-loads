@@ -677,6 +677,9 @@ struct AAMDNodes {
   /// The tag specifying the noalias scope.
   MDNode *NoAlias = nullptr;
 
+  /// The tag specifying the PND hint.
+  MDNode *PND = nullptr;
+
   // Shift tbaa Metadata node to start off bytes later
   static MDNode *shiftTBAA(MDNode *M, size_t off);
 
@@ -698,6 +701,7 @@ struct AAMDNodes {
     Result.TBAAStruct = Other.TBAAStruct == TBAAStruct ? TBAAStruct : nullptr;
     Result.Scope = Other.Scope == Scope ? Scope : nullptr;
     Result.NoAlias = Other.NoAlias == NoAlias ? NoAlias : nullptr;
+    Result.PND = PND && Other.PND ? PND : nullptr;
     return Result;
   }
 
@@ -710,6 +714,7 @@ struct AAMDNodes {
         TBAAStruct ? shiftTBAAStruct(TBAAStruct, Offset) : nullptr;
     Result.Scope = Scope;
     Result.NoAlias = NoAlias;
+    Result.PND = PND;
     return Result;
   }
 
@@ -725,6 +730,7 @@ struct AAMDNodes {
     Result.TBAAStruct = TBAAStruct;
     Result.Scope = Scope;
     Result.NoAlias = NoAlias;
+    Result.PND = PND;
     return Result;
   }
 
@@ -1278,6 +1284,8 @@ private:
 public:
   using op_iterator = const MDOperand *;
   using op_range = iterator_range<op_iterator>;
+
+  bool PND = false;
 
   op_iterator op_begin() const {
     return const_cast<MDNode *>(this)->mutable_begin();

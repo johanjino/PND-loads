@@ -93,6 +93,7 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/Scalar/LoopPassManager.h"
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
+#include "llvm/IR/Metadata.h"
 #include <cstdint>
 #include <memory>
 
@@ -101,6 +102,7 @@ using namespace llvm;
 namespace llvm{
 class LPMUpdater;
 class LoopNest;
+class AAMDNodes;
 
 #define PREDICT_ALIAS_ADDRESS_SPACE 420
 #define PREDICT_NO_ALIAS_ADDRESS_SPACE 69
@@ -119,7 +121,7 @@ public:
     bool Debug = false;
     PreservedAnalyses run(LoopNest &LN, LoopAnalysisManager &AM,
                           LoopStandardAnalysisResults &AR, LPMUpdater &U);
-    void markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR);
+    void markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR, LLVMContext &Ctx);
     bool isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA);
     AliasHint determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                             SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
@@ -127,7 +129,7 @@ public:
     void changeAddrSpace(LoadInst *Load, unsigned int Addrspace);
     SmallVector<std::pair<Loop *, Loop *>, 2> findVersionedLoops(LoopNest &LN, SmallVector<BasicBlock *, 1> GeneratedChecks, LoopInfo &LI, DominatorTree &DT);
     bool withinSameVersion(LoadInst *Load, Instruction *DepInst, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, LoopInfo &LI);
-    void markConstantAccesses(Function &F, AAResults &AA);
+    void markConstantAccesses(Function &F, AAResults &AA, LLVMContext &Ctx);
 };
 }
 #endif

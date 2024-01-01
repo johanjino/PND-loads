@@ -1377,9 +1377,11 @@ IEW::executeInsts()
                 if (violator->isSpecbCheck()){
                     DPRINTF(Speculate, "Speculate instruction handling");
                     //COMPILER ORACLE
+					/*
                     pnd_violation_count[violator->pcState().instAddr()] += 1;
                     if (pnd_violation_count[violator->pcState().instAddr()] > 2)
                         violator->unsetSpecFlag();
+					*/
                     ++iewStats.bypassStoreSetViolationAddition;
                 }
                 else{

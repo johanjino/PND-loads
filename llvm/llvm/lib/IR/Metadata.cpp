@@ -1464,6 +1464,7 @@ AAMDNodes Instruction::getAAMetadata() const {
   Result.TBAAStruct = getMetadata(LLVMContext::MD_tbaa_struct);
   Result.Scope = getMetadata(LLVMContext::MD_alias_scope);
   Result.NoAlias = getMetadata(LLVMContext::MD_noalias);
+  Result.PND = getMetadata(LLVMContext::MD_pnd);
   return Result;
 }
 
@@ -1472,6 +1473,7 @@ void Instruction::setAAMetadata(const AAMDNodes &N) {
   setMetadata(LLVMContext::MD_tbaa_struct, N.TBAAStruct);
   setMetadata(LLVMContext::MD_alias_scope, N.Scope);
   setMetadata(LLVMContext::MD_noalias, N.NoAlias);
+  setMetadata(LLVMContext::MD_pnd, N.PND);
 }
 
 MDNode *Instruction::getMetadataImpl(unsigned KindID) const {

@@ -10,14 +10,15 @@
 PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
                                       LoopStandardAnalysisResults &AR, LPMUpdater &U){
     Function &F = *LN.getParent();
+    LLVMContext &Ctx = F.getContext();
     DependenceInfo DI = DependenceInfo(&F, &AR.AA, &AR.SE, &AR.LI);
 
-    markLoads(LN, DI, AR);
+    markLoads(LN, DI, AR, Ctx);
 
     return PreservedAnalyses::all();
 }
 
-void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA){
+void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA, LLVMContext &Ctx){
     std::vector<LoadInst *> constant_loads;
     for (Function::iterator b = F.begin(), be = F.end(); b != be; ++b){
         BasicBlock &B = *b;
@@ -30,10 +31,16 @@ void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA){
             }
         }
     }
-    for (auto L: constant_loads) changeAddrSpace(L, PREDICT_NO_ALIAS_ADDRESS_SPACE);
+
+    for (auto L: constant_loads)    {
+        AAMDNodes AAInfo = L->getAAMetadata();
+        AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
+        L->setAAMetadata(AAInfo);
+    }
+    //for (auto L: constant_loads) changeAddrSpace(L, PREDICT_NO_ALIAS_ADDRESS_SPACE);
 }
 
-void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR){
+void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR, LLVMContext &Ctx){
     SmallVector<LoadInst *> all_loads;
     SmallVector<StoreInst *> all_stores;
     SmallVector<CallInst *> all_calls;
@@ -61,7 +68,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs = findVersionedLoops(LN, AR.LI.GeneratedChecks, AR.LI, AR.DT);
 
     /* Iterate over all loads using our own method for finding labels */
-    markConstantAccesses(*LN.getParent(), AR.AA);
+    markConstantAccesses(*LN.getParent(), AR.AA, Ctx);
     AliasHint Hint;
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
@@ -73,7 +80,10 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     }
 
     for (auto Load: PNDLoads){
-        changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
+        AAMDNodes AAInfo = Load->getAAMetadata();
+        AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
+        Load->setAAMetadata(AAInfo);
+        //changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
     }
 
     for (auto LAI: LAIInstances){

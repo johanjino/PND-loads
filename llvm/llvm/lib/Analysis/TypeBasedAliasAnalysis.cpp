@@ -527,9 +527,11 @@ static const MDNode *getLeastCommonType(const MDNode *A, const MDNode *B) {
 AAMDNodes AAMDNodes::merge(const AAMDNodes &Other) const {
   AAMDNodes Result;
   Result.TBAA = MDNode::getMostGenericTBAA(TBAA, Other.TBAA);
+  //if (TBAA->PND || Other.TBAA->PND) Result.TBAA->PND = true;
   Result.TBAAStruct = nullptr;
   Result.Scope = MDNode::getMostGenericAliasScope(Scope, Other.Scope);
   Result.NoAlias = MDNode::intersect(NoAlias, Other.NoAlias);
+  Result.PND = PND && Other.PND ? PND : nullptr;
   return Result;
 }
 
@@ -538,6 +540,7 @@ AAMDNodes AAMDNodes::concat(const AAMDNodes &Other) const {
   Result.TBAA = Result.TBAAStruct = nullptr;
   Result.Scope = MDNode::getMostGenericAliasScope(Scope, Other.Scope);
   Result.NoAlias = MDNode::intersect(NoAlias, Other.NoAlias);
+  Result.PND = PND && Other.PND ? PND : nullptr;
   return Result;
 }
 
