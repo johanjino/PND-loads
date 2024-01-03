@@ -68,14 +68,13 @@ def plot_benchmark(benchmark, results_map, results_dir, label, title):
     legends = [Line2D([0], [0], color=line.get_color(), lw=2, label=line.get_label()) for line in lines]
     abs_ax.set_xlabel('SSIT Size')
     abs_ax.set_ylabel('CPI')
-    abs_ax.set_title(title+ "Absolute CPI")
+    abs_ax.set_title(title+ " - Absolute CPI")
     abs_ax.legend(handles=legends)
     diff_ax.set_xlabel('SSIT Size')
     diff_ax.set_ylabel('CPI % Diff')
     diff_ax.set_title(title+" - % Diff CPI")
-    diff_ax.legend()
     plt.tight_layout()
-    plt.savefig(results_dir+"/"+benchmark+".png", dpi=800)
+    plt.savefig(results_dir+"/"+benchmark+".png", dpi=1200)
 
 def plot_average(results_map, param_range, results_dir, label, title):
     average_map = {param:{ssit:CPIValues(1,1,0) for ssit in SSIT_range} for param in param_range}
@@ -84,7 +83,7 @@ def plot_average(results_map, param_range, results_dir, label, title):
             for ssit in SSIT_range:
                 average_map[param][ssit].base_cpi *= results_map[bench][param][ssit].base_cpi*weights.get(bench, 1)
                 average_map[param][ssit].pnd_cpi *= results_map[bench][param][ssit].pnd_cpi*weights.get(bench, 1)
-                average_map[param][ssit].pnd_cpi += results_map[bench][param][ssit].diff*weights.get(bench, 1)
+                average_map[param][ssit].diff += results_map[bench][param][ssit].diff*weights.get(bench, 1)
     for param in average_map:
         for ssit in average_map[param]:
             #len(benchmark_names) - 5 because we want to treat different runs of the same workload as one data point
