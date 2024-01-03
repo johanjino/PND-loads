@@ -3,15 +3,18 @@ import os
 
 home = "/work/home_moved/l50031074"
 gem5 = home+"/PND-Loads-old/gem5/"
-cpu_config = gem5+"src/cpu/o3/BaseO3CPU.py"
+gem5_base = home+"/PND-Loads-old/gem5-base/"
+cpu_config = "src/cpu/o3/BaseO3CPU.py"
 
-SSIT_range = [32, 128, 352, 567, 800, 1024]
+SSIT_range = [32, 128, 256, 512, 1024]
 LFST_range = [32, 128, 512, 1024]
 clear_period_ratio_range = [122, 244, 488, 976]
 standard_clear_period_ratio = 244
 
 def update_config(sed_command):
-    p = Popen(sed_command + cpu_config, shell=True)
+    p = Popen(sed_command + gem5+cpu_config, shell=True)
+    Popen.wait(p)
+    p = Popen(sed_command + gem5_base+cpu_config, shell=True)
     Popen.wait(p)
 
 results_base_dir = home+"/spec_results/lfst_ssit_search/"
@@ -23,9 +26,12 @@ for lfst_size in LFST_range:
         update_config(ssit_sed)
         clear_period_sed = r"sed -i 's/\(store_set_clear_period = Param.Unsigned(\)\([0-9]\+\)\(,.*\)/\1"+str(ssit_size*standard_clear_period_ratio)+r"\3/' "
         update_config(clear_period_sed)
+        os.chdir(gem5_base)
+        build_base = Popen("scons build/ARM/gem5.fast -j 100", shell=True)
+        Popen.wait(build_base)
         os.chdir(gem5)
-        build = Popen("scons build/ARM/gem5.fast -j 100", shell=True)
-        Popen.wait(build)
+        build_pnd = Popen("scons build/ARM/gem5.fast -j 100", shell=True)
+        Popen.wait(build_pnd)
         os.chdir(home+"/PND-Loads/utils")
         run = Popen("python3 run_all_chkpts.py", shell=True)
         Popen.wait(run)
@@ -45,9 +51,12 @@ for clear_period_ratio in clear_period_ratio_range:
         update_config(ssit_sed)
         clear_period_sed = r"sed -i 's/\(store_set_clear_period = Param.Unsigned(\)\([0-9]\+\)\(,.*\)/\1"+str(ssit_size*clear_period_ratio)+r"\3/' "
         update_config(clear_period_sed)
+        os.chdir(gem5_base)
+        build_base = Popen("scons build/ARM/gem5.fast -j 100", shell=True)
+        Popen.wait(build_base)
         os.chdir(gem5)
-        build = Popen("scons build/ARM/gem5.fast -j 100", shell=True)
-        Popen.wait(build)
+        build_pnd = Popen("scons build/ARM/gem5.fast -j 100", shell=True)
+        Popen.wait(build_pnd)
         os.chdir(home+"/PND-Loads/utils")
         run = Popen("python3 run_all_chkpts.py", shell=True)
         Popen.wait(run)
