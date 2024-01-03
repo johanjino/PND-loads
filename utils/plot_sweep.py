@@ -48,8 +48,9 @@ def parse_results(results_dir):
                 result.diff = float(line.strip().split(":")[1])
 
 def plot_benchmark(benchmark, results_map, results_dir, label, title):
-    _, abs_ax = plt.subplots(1,1)
-    _, diff_ax = plt.subplots(1,1)
+    _, ax = plt.subplots(2,1,figsize=(10,8))
+    abs_ax = ax[0]
+    diff_ax = ax[1]
 
     lines = []
 
@@ -76,6 +77,7 @@ def plot_benchmark(benchmark, results_map, results_dir, label, title):
     diff_ax.set_ylabel('CPI % Diff')
     diff_ax.set_title(title+" - % Diff CPI")
     diff_ax.legend()
+    plt.tight_layout()
     plt.savefig(results_dir+"/"+benchmark+"-diff.png", dpi=800)
 
 def plot_average(results_map, param_range, results_dir, label, title):
