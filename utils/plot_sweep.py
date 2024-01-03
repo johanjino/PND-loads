@@ -48,8 +48,8 @@ def parse_results(results_dir):
                 result.diff = float(line.strip().split(":")[1])
 
 def plot_benchmark(benchmark, results_map, results_dir, label, title):
-    _, abs_ax = plt.subplots()
-    _, diff_ax = plt.subplots()
+    _, abs_ax = plt.subplots(1,1)
+    _, diff_ax = plt.subplots(1,1)
 
     lines = []
 
@@ -59,21 +59,24 @@ def plot_benchmark(benchmark, results_map, results_dir, label, title):
             if results_map[param][ssit].base_cpi is None or results_map[param][ssit].pnd_cpi is None: print("a ssit value was not populated!"); exit(1)
         base_cpis = [results_map[param][ssit].base_cpi for ssit in ssits]
         pnd_cpis = [results_map[param][ssit].pnd_cpi for ssit in ssits]
-        diff_cpis = [results_map[param][ssit].diff for ssit in ssits]
         line, = abs_ax.plot(ssits, base_cpis, label=f'{label}={param}', marker='+', alpha=0.7)
         abs_ax.plot(ssits, pnd_cpis, label=f'{label}={param}', marker='o', color=line.get_color(), linestyle='--')
         lines.append(line)
-        diff_ax.plot(ssits, diff_cpis, label=f'{label}={param}')
     legends = [Line2D([0], [0], color=line.get_color(), lw=2, label=line.get_label()) for line in lines]
     abs_ax.set_xlabel('SSIT Size')
     abs_ax.set_ylabel('CPI')
     abs_ax.set_title(title+ "Absolute CPI")
     abs_ax.legend(handles=legends)
+    plt.savefig(results_dir+"/"+benchmark+"-abs.png", dpi=800)
+    for param in results_map.keys():
+        ssits = list(results_map[param].keys())
+        diff_cpis = [results_map[param][ssit].diff for ssit in ssits]
+        diff_ax.plot(ssits, diff_cpis, label=f'{label}={param}')
     diff_ax.set_xlabel('SSIT Size')
     diff_ax.set_ylabel('CPI % Diff')
     diff_ax.set_title(title+" - % Diff CPI")
     diff_ax.legend()
-    plt.savefig(results_dir+"/"+benchmark+".png", dpi=1200)
+    plt.savefig(results_dir+"/"+benchmark+"-diff.png", dpi=800)
 
 def plot_average(results_map, param_range, results_dir, label, title):
     average_map = {param:{ssit:CPIValues(1,1,0) for ssit in SSIT_range} for param in param_range}
