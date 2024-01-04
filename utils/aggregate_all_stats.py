@@ -4,7 +4,7 @@ import sys
 
 results_dir = sys.argv[1]
 
-spec_dir = "/work/luke_simpoints/spec2017/benchspec/CPU/"
+spec_dir = "/sim_home/luke/spec2017/benchspec/CPU/"
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
            "641.leela_s", "644.nab_s", "657.xz_s"]
@@ -25,7 +25,7 @@ for bench in benches:
             continue
         if is_res_dir:
             os.chdir(f)
-            p = subprocess.Popen("python3 ~/PND-Loads/utils/aggregate_stats.py", shell=True)
+            p = subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/aggregate_stats.py", shell=True)
             p.wait()
             subprocess.Popen("cp results.txt "+results_dir+"/"+name+"_pna."+f.split(".")[1].split('_')[0]+".txt", shell=True)
             os.chdir("..")
@@ -37,10 +37,10 @@ for bench in benches:
             continue
         if is_res_dir:
             os.chdir(f)
-            p = subprocess.Popen("python3 ~/PND-Loads/utils/aggregate_stats.py", shell=True)
+            p = subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/aggregate_stats.py", shell=True)
             p.wait()
             subprocess.Popen("cp results.txt "+results_dir+"/"+name+"_base."+f.split(".")[1].split('_')[0]+".txt", shell=True)
             os.chdir("..")
             
 os.chdir(results_dir)
-subprocess.Popen("python3 ~/PND-Loads/utils/cpi_cmp.py")
+subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/cpi_cmp.py")
