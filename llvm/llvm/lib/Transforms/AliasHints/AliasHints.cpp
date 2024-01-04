@@ -37,7 +37,6 @@ void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA, LLVMContex
         AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
         L->setAAMetadata(AAInfo);
     }
-    //for (auto L: constant_loads) changeAddrSpace(L, PREDICT_NO_ALIAS_ADDRESS_SPACE);
 }
 
 void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR, LLVMContext &Ctx){
@@ -73,7 +72,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
         if (!Load->isSimple()) continue;
-        if (Load->getPointerAddressSpace() == PREDICT_NO_ALIAS_ADDRESS_SPACE) continue; //we already marked this when checking for constant memory
+        if (Load->getAAMetadata().PND) continue; //we already marked this when checking for constant memory
         Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
             PNDLoads.insert(Load);
@@ -83,7 +82,6 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
         AAMDNodes AAInfo = Load->getAAMetadata();
         AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
         Load->setAAMetadata(AAInfo);
-        //changeAddrSpace(Load, PREDICT_NO_ALIAS_ADDRESS_SPACE);
     }
 
     for (auto LAI: LAIInstances){
@@ -211,8 +209,6 @@ bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution 
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                                         SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
                                         AAResults &AA, LoopInfo &LI){
-    std::string operand;
-    llvm::raw_string_ostream operand_buffer(operand);
     std::unique_ptr<Dependence> Dep;
     Loop *current_loop = LI.getLoopFor(Load->getParent());
     std::map<Instruction *, MemoryDepChecker::Dependence::DepType> store_map;
@@ -253,10 +249,6 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         }
     }
     for (auto Call: all_calls){
-        // if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
-        // Dep = DI.depends(Call, Load, true);
-        // if (!Dep) continue;
-        // return AliasHint::Unchanged;
         ModRefInfo res = AA.getModRefInfo(Load, Call);
         if (res == ModRefInfo::Mod || res == ModRefInfo::MustMod || res == ModRefInfo::ModRef ||
             res == ModRefInfo::MustModRef)
@@ -328,20 +320,10 @@ bool AliasHintsPass::withinSameVersion(LoadInst *Load, Instruction *DepInst, Sma
     return true;
 }
 
-
-void AliasHintsPass::changeAddrSpace(LoadInst *Load, unsigned int AddrSpace){
-    Value *Ptr = Load->getPointerOperand();
-    Type *ElemTy = Ptr->getType()->getScalarType();
-    PointerType *DestTy = PointerType::get(ElemTy, AddrSpace);
-    IRBuilder<> Builder(Load);
-    Value *CastPtr = Builder.CreateAddrSpaceCast(Ptr, DestTy);
-    Load->setOperand(0, CastPtr);
-}
-
 llvm::PassPluginLibraryInfo getAliasHintsPassPluginInfo() {
   return {LLVM_PLUGIN_API_VERSION, "AliasHints", LLVM_VERSION_STRING,
           [](PassBuilder &PB) {
-            PB.registerLateLoopOptimizationsEPCallback(
+            PB.registerLoopOptimizerEndEPCallback(
                 [](llvm::LoopPassManager &LPM, OptimizationLevel Level) {
                   LPM.addPass(AliasHintsPass());
                 });

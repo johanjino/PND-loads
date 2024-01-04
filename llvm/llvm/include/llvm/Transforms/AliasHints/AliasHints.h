@@ -106,7 +106,7 @@ class AAMDNodes;
 
 #define PREDICT_ALIAS_ADDRESS_SPACE 420
 #define PREDICT_NO_ALIAS_ADDRESS_SPACE 69
-#define CACHE_LINE_SIZE 64
+#define CACHE_LINE_SIZE 8
 
 typedef llvm::MemoryDepChecker::Dependence MemDep;
 

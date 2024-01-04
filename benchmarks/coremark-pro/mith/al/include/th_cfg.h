@@ -194,6 +194,7 @@ Please refer to LICENSE.md for the specific license agreement that pertains to t
 #endif
 
 #define RESTRICT restrict
+//#define RESTRICT 
 
 /* default alignment for fp data array */
 #if !defined(ALIGN_BOUNDARY)

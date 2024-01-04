@@ -68,20 +68,13 @@ INITIALIZE_PASS(AArch64LoadAliasMetadataInsertion, "aarch64-load-alias-metadata"
                 AARCH64_LOAD_ALIAS_METADATA_NAME, false, false)
 
 bool hasHint(MachineInstr &MI, unsigned AddrSpace){
+  return false;
   for (auto MemOp: MI.memoperands()){
     AAMDNodes AAInfo = MemOp->getAAInfo();
     if (AAInfo.PND) return true;
   }
   return false;
 }
-
-    // const Value *ir_pointer = MemOp->getValue();
-    // if (ir_pointer == NULL)
-    //   continue;
-    // if (ir_pointer->getType()->isPointerTy())
-    //   if (ir_pointer->getType()->getPointerAddressSpace() == AddrSpace){
-    //     return true;
-    //   }
 
 void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
     MachineBasicBlock &MBB) {
