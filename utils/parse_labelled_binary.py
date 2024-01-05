@@ -24,7 +24,8 @@ r2 = r2pipe.open(verify_binary)
 
 for addr in addresses:
     inst = r2.cmdj('pdj 1 @'+str(addr))[0]
-    if inst['type'] != 'load' and inst['type'] != 'lea':
+    opcode = inst['opcode']
+    if not opcode.startswith('ldr') or not opcode.startswith('ldur') or not opcode.startswith('ldp'):
         print("Found instruction at address "+str(addr)+" that isn't a load!")
         print("Instruction: ", r2.cmd('pd 1 @'+str(addr)))
         exit(1)
