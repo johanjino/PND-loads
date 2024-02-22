@@ -27,6 +27,8 @@ void MachineModuleSlotTracker::processMachineFunctionMetadata(
           AST->createMetadataSlot(AAInfo.Scope);
         if (AAInfo.NoAlias)
           AST->createMetadataSlot(AAInfo.NoAlias);
+        if (AAInfo.PND)
+          AST->createMetadataSlot(AAInfo.PND);
       }
 }
 
