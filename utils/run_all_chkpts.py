@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-spec_dir = "/work/luke_simpoints/spec2017/benchspec/CPU/"
+spec_dir = "/sim_home/luke/spec2017/benchspec/CPU/"
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
            "641.leela_s", "644.nab_s", "657.xz_s"]
@@ -13,9 +13,9 @@ for bench in benches:
     except FileNotFoundError:
         os.chdir(spec_dir+bench+"/run/only_pna/run_peak_refspeed_mytest-64.0001")
 
-    processes.append(subprocess.Popen("python3 ~/PND-Loads/utils/spec_automation.py pnd", shell=True))
+    processes.append(subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/spec_automation.py pnd", shell=True))
 
-    processes.append(subprocess.Popen("python3 ~/PND-Loads/utils/spec_automation.py base", shell=True))
+    processes.append(subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/spec_automation.py base", shell=True))
 
 for p in processes:
     p.wait()
