@@ -3,9 +3,9 @@
 	.section	.rodata.cst8,"aM",@progbits,8
 	.p2align	3                               // -- Begin function main
 .LCPI0_0:
-	.xword	0x4005dbd512ec6bcf              // double 2.7323400000000002
-.LCPI0_1:
 	.xword	0x4009327bb2fec56d              // double 3.1496499999999998
+.LCPI0_1:
+	.xword	0x4005dbd512ec6bcf              // double 2.7323400000000002
 	.text
 	.globl	main
 	.p2align	2
@@ -13,78 +13,50 @@
 main:                                   // @main
 	.cfi_startproc
 // %bb.0:
-	sub	sp, sp, #48
-	.cfi_def_cfa_offset 48
-	stp	x29, x30, [sp, #32]             // 16-byte Folded Spill
-	add	x29, sp, #32
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
+	stp	x29, x30, [sp, #-32]!           // 16-byte Folded Spill
+	.cfi_def_cfa_offset 32
+	str	x19, [sp, #16]                  // 8-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 32
+	.cfi_offset w19, -16
+	.cfi_offset w30, -24
+	.cfi_offset w29, -32
 	ldr	x0, [x1, #8]
-	bl	atoi
-	stur	w0, [x29, #-8]                  // 4-byte Folded Spill
-	mov	w8, #8
-	mov	w0, w8
+	mov	x1, xzr
+	mov	w2, #10
+	bl	strtol
+	mov	x19, x0
+	sbfiz	x0, x0, #2, #32
 	bl	malloc
-	mov	x8, x0
-	ldur	w0, [x29, #-8]                  // 4-byte Folded Reload
-	str	x8, [sp, #16]                   // 8-byte Folded Spill
-                                        // implicit-def: $x8
-	mov	w8, w0
-	sxtw	x8, w8
-	lsl	x0, x8, #2
-	bl	malloc
-	ldr	x8, [sp, #16]                   // 8-byte Folded Reload
-	mov	x9, x0
-	ldur	w0, [x29, #-8]                  // 4-byte Folded Reload
-	mov	w10, #13347
-	movk	w10, #66, lsl #16
-                                        // kill: def $x10 killed $w10
-	str	x10, [x8]
+	sub	w8, w19, #1
+	adrp	x9, .LCPI0_0
+	adrp	x10, .LCPI0_1
+	scvtf	d2, w19
 	//APP
 	dsb	sy
 	isb
 
 	//NO_APP
-	subs	w10, w0, #1
-	scvtf	d1, w10
-	adrp	x10, .LCPI0_1
-	ldr	d0, [x10, :lo12:.LCPI0_1]
+	scvtf	d0, w8
+	ldr	d1, [x9, :lo12:.LCPI0_0]
+	ldr	d3, [x10, :lo12:.LCPI0_1]
 	fmul	d0, d0, d1
-	scvtf	d2, w0
-	adrp	x10, .LCPI0_0
-	ldr	d1, [x10, :lo12:.LCPI0_0]
-	fmul	d1, d1, d2
+	fmul	d1, d2, d3
 	fdiv	d0, d0, d1
 	fdiv	d0, d0, d1
-	fcvtzu	x10, d0
-	add	x9, x9, x10, lsl #2
-	str	x9, [x8]
-	ldrpna	x8, [x8]
-	ldr	w8, [x8]
-	stur	w8, [x29, #-4]
-	ldur	w8, [x29, #-4]
-	sdiv	w9, w8, w0
-	mul	w9, w9, w0
-	subs	w8, w8, w9
-	subs	w8, w8, #0
-	cset	w8, ne
-	tbnz	w8, #0, .LBB0_2
-	b	.LBB0_1
-.LBB0_1:
-	mov	w8, #1
-	str	w8, [sp, #12]                   // 4-byte Folded Spill
-	b	.LBB0_3
-.LBB0_2:
-	mov	w8, wzr
-	str	w8, [sp, #12]                   // 4-byte Folded Spill
-	b	.LBB0_3
-.LBB0_3:
-	ldr	w0, [sp, #12]                   // 4-byte Folded Reload
-	.cfi_def_cfa wsp, 48
-	ldp	x29, x30, [sp, #32]             // 16-byte Folded Reload
-	add	sp, sp, #48
+	fcvtzu	x8, d0
+	ldr	w8, [x0, x8, lsl #2]
+	str	w8, [x29, #28]
+	ldr	w8, [x29, #28]
+	sdiv	w9, w8, w19
+	msub	w8, w9, w19, w8
+	cmp	w8, #0
+	cset	w0, eq
+	.cfi_def_cfa wsp, 32
+	ldr	x19, [sp, #16]                  // 8-byte Folded Reload
+	ldp	x29, x30, [sp], #32             // 16-byte Folded Reload
 	.cfi_def_cfa_offset 0
+	.cfi_restore w19
 	.cfi_restore w30
 	.cfi_restore w29
 	ret
@@ -95,5 +67,3 @@ main:                                   // @main
 	.ident	"clang version 16.0.0"
 	.section	".note.GNU-stack","",@progbits
 	.addrsig
-	.addrsig_sym atoi
-	.addrsig_sym malloc

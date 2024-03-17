@@ -36,6 +36,7 @@ void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA, LLVMContex
         AAMDNodes AAInfo = L->getAAMetadata();
         AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
         L->setAAMetadata(AAInfo);
+        errs() << "COUNT: 1\n";
     }
 }
 
@@ -83,6 +84,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
         AAMDNodes AAInfo = Load->getAAMetadata();
         AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
         Load->setAAMetadata(AAInfo);
+        errs() << "COUNT: 1\n";
     }
 
     for (auto LAI: LAIInstances){

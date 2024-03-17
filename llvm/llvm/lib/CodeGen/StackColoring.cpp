@@ -1089,7 +1089,7 @@ void StackColoring::remapInstructions(DenseMap<int, int> &SlotRemap) {
         // If this memory location can be a slot remapped here,
         // we remove AA information.
         bool MayHaveConflictingAAMD = false;
-        MDNodes *PND = nullptr;
+        MDNode *PND = nullptr;
         if (MMO->getAAInfo()) {
           PND = MMO->getAAInfo().PND;
           if (const Value *MMOV = MMO->getValue()) {
