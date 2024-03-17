@@ -22,18 +22,24 @@ for f in files:
             results[current_benchmark][f] = float(value)
 
 fig, ax = plt.subplots()
-fig.set_size_inches(20,12,forward=True)
-bar_width = 0.125
+fig.set_size_inches(12,10,forward=True)
+bar_width = 0.25
 for c, f in enumerate(files):
-    bars = ax.bar(np.arange(len(benchmark_names))+(bar_width*c), [results[name][f] for name in benchmark_names], width=bar_width)
+    bars = ax.bar(np.arange(len(benchmark_names))+(bar_width*c)-(bar_width/3), [results[name][f] for name in benchmark_names], width=bar_width)
     for bar in bars:
         value = bar.get_height()
         if abs(round(value,1)) > 0.1:
-            ax.text(bar.get_x() + bar.get_width() / 2, value, str(round(value,1))+"%", ha='center', va='bottom' if value >=0 else 'top')
+            ax.text(bar.get_x() + bar.get_width() / 2+(bar_width/3), value, str(round(value,1))+"%", ha='center', va='bottom' if value >=0 else 'top')
 
-ax.legend(labels=['Small Model', 'Large Model', 'Extra Large Model'], fontsize=22, loc='center left')
-ax.set_xlabel('Benchmark', fontsize=28)
+ax.legend(labels=['Small Model', 'Large Model', 'Extra Large Model'], fontsize=16, loc='center left')
+
+for i in range(len(benchmark_names)):
+    plt.axvline(x=i-bar_width, color='grey', linestyle=':', linewidth=1)
+
+plt.tick_params(axis='x',labelsize=14, rotation=60)
+plt.tick_params(axis='y',labelsize=12)
 plt.xticks(np.arange(len(benchmark_names)) + bar_width / 2, benchmark_names)
-ax.set_ylabel('Percent Change', fontsize=28)
-ax.set_title('CPI Difference', fontsize=32)
+ax.set_ylabel('Percent Change', fontsize=18)
+ax.set_title('CPI Difference', fontsize=18)
+plt.tight_layout()
 plt.savefig('/home/muke/Documents/papers/PND-ARCS/figures/cpi.png', dpi=600)

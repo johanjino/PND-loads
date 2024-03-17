@@ -5,8 +5,8 @@ import sys
 
 benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "mcf.0", "lbm.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "nab.0", "xz.0", "xz.1"]
 
-differences = ["differences-small", "differences-large", "differences-extra-large"]
-sizes = ["Small", "Large", "Extra-Large"]
+differences = ["differences-extra-large"]
+sizes = ["Large"]
 for c, difference in enumerate(differences):
     base_lookups = {}
     pnd_lookups = {}
@@ -34,7 +34,7 @@ for c, difference in enumerate(differences):
         percent_diff.append((pnd - base)/base * 100)
 
     fig, ax = plt.subplots()
-    fig.set_size_inches(20,12,forward=True)
+    fig.set_size_inches(12,10,forward=True)
 
     # Set every other bar to a different color
     color_sequence = ['#1f77b4', '#ff7f0e'] * 5
@@ -65,8 +65,11 @@ for c, difference in enumerate(differences):
     for i, value in enumerate(percent_diff):
         ax.text(positions1[i] + bar_width+0.03, pnd_values[i]+0.5, str(round(value,1))+"%", ha='center', va='bottom')
 
-    ax.set_xlabel('Benchmark', fontsize=28)
-    ax.set_ylabel('Lookups per KiloInst', fontsize=28)
-    ax.set_title('MDP Lookup Reduction', fontsize=32)
+    ax.set_ylabel('Lookups per KiloInst', fontsize=18)
+    ax.legend(labels=['Unlabelled Run', 'Labelled Run'], fontsize=16)
+    ax.set_title('MDP Lookup Reduction', fontsize=18)
     ax.set_xticks(positions1, benchmark_names)
+    plt.tick_params(axis='x',labelsize=14, rotation=60)
+    plt.tick_params(axis='y',labelsize=12)
+    plt.tight_layout()
     plt.savefig("/home/muke/Documents/papers/PND-ARCS/figures/lookups-small.png", dpi=600)
