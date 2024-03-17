@@ -7,32 +7,20 @@ addresses = []
 
 r2 = r2pipe.open(label_binary)
 
-r2.cmd('aaa')
-
-funcs = [i for i in r2.cmdj('isj') if i['type'] == 'FUNC']
-
-for func in funcs:
-    addr = func['vaddr']
-    num_insts = func['size'] / 4
-    r2.cmd('s '+str(addr))
-    insts = r2.cmdj('pdj '+str(num_insts))
-    for i in insts:
-        if i['opcode'] == "invalid":
-            addresses.append(i['offset'])
+addrs = [l.split()[0] for l in r2.cmd("/x ffffffff").split('\n') if len(l) > 0]
 
 r2 = r2pipe.open(verify_binary)
 
+pnd_addrs = []
+
 for addr in addresses:
     inst = r2.cmdj('pdj 1 @'+str(addr))[0]
-    opcode = inst['opcode']
-    if not opcode.startswith('ldr') or not opcode.startswith('ldur') or not opcode.startswith('ldp'):
-        print("Found instruction at address "+str(addr)+" that isn't a load!")
-        print("Instruction: ", r2.cmd('pd 1 @'+str(addr)))
-        exit(1)
-
-print("Verified")
+    opcode = inst['opcode'].strip()
+    if not opcode.startswith('ldr') and not opcode.startswith('ldur') and not opcode.startswith('ldp'):
+        continue
+    pnd_addrs.append(addr)
 
 address_file = open(verify_binary+"_pnd_address", "w")
-for addr in addresses:
+for addr in pnd_addrs:
     address_file.write(str(addr)+"\n")
 address_file.close()
