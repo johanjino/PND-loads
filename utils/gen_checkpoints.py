@@ -3,32 +3,15 @@ from subprocess import Popen
 import sys
 import os
 
-clean = 'clean' in sys.argv
-run_gem5 = 'gem5' in sys.argv
-gen_bbvs = 'bbvs' in sys.argv
-gen_simpoints = 'simpoint' in sys.argv
-
-spec = ["600.perlbench_s", "602.gcc_s", "605.mcf_s",
-        "619.lbm_s", "620.omnetpp_s",
-        "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
-        "638.imagick_s", "641.leela_s", "644.nab_s",
-        "657.xz_s"]
+bench = sys.argv[1]
+run = int(bench[-1])
+bench = bench[:-1]
 spec_path = "/sim_home/luke/spec2017/"
 gem5 = "/sim_home/luke/PND-Loads/gem5/"
 
-if clean:
-    runcpu = subprocess.run([spec_path+"bin/runcpu", "--action", "clobber", "--config",
-        "myconfig", *spec, "--define", "bits=64",
-        "--define", "build_ncpus=100", "--tune", "peak"])
-    runcpu = subprocess.run([spec_path+"bin/runcpu", "--action", "runsetup", "--config",
-                    "myconfig", *spec, "--define", "bits=64",
-        "--define", "build_ncpus=100", "--tune", "peak"])
-
-for bench in spec:
-    os.chdir(spec_path+"benchspec/CPU/"+bench+"/run/run_peak_refspeed_mytest-64.0000")
-    specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
-    Popen.wait(specinvoke)
-    commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if line.startswith(b".")]
-    for c, command in enumerate(commands):
-        print(gem5+"build/ARM/gem5.fast --outdir=checkpoints."+str(c)+" "+gem5+"configs/example/se.py --cpu-type=NonCachingSimpleCPU --take-simpoint-checkpoint=/sim_home/luke/simpoints/"+bench.split('.')[1]+"."+str(c)+".simpts,/sim_home/luke/simpoints/"+bench.split('.')[1]+"."+str(c)+".weights,100000000,10000000 -c "+command.split()[0]+" --options=\""+' '.join(command.split()[1:])+"\" --mem-size=50GB")
-        print()
+os.chdir(spec_path+"benchspec/CPU/"+bench+"/run/run_peak_refspeed_mytest-64.0000")
+specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
+Popen.wait(specinvoke)
+commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if line.startswith(b".")]
+command = commands[run]
+print(gem5+"build/ARM/gem5.fast --outdir=checkpoints."+str(run)+" "+gem5+"configs/example/se.py --cpu-type=NonCachingSimpleCPU --take-simpoint-checkpoint=/sim_home/luke/simpoints/"+bench.split('.')[1]+"."+str(run)+".simpts,/sim_home/luke/simpoints/"+bench.split('.')[1]+"."+str(run)+".weights,100000000,10000000 -c "+command.split()[0]+" --options=\""+' '.join(command.split()[1:])+"\" --mem-size=50GB")
