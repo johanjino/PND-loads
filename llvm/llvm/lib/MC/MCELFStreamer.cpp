@@ -626,6 +626,8 @@ void MCELFStreamer::emitInstToData(const MCInst &Inst,
   DF->setHasInstructions(STI);
   DF->getContents().append(Code.begin(), Code.end());
 
+  //if (Inst.PND) errs() << "Code: " << std::stoi(std::string(Code.c_str()), nullptr, 16) << "\n";
+
   if (Assembler.isBundlingEnabled() && Assembler.getRelaxAll()) {
     if (!isBundleLocked()) {
       mergeFragment(getOrCreateDataFragment(&STI), DF);

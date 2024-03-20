@@ -301,6 +301,12 @@ bool AArch64MCInstLower::lowerOperand(const MachineOperand &MO,
 
 void AArch64MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
   OutMI.setOpcode(MI->getOpcode());
+  if (MI->PND) {
+    OutMI.PND = true;
+    // if (MI->getMF()){
+    //   OutMI.FuncName = std::make_unique<StringRef>(MI->getMF()->getName());
+    // }
+  }
 
   for (const MachineOperand &MO : MI->operands()) {
     MCOperand MCOp;

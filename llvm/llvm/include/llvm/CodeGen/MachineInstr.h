@@ -67,6 +67,9 @@ class MachineInstr
     : public ilist_node_with_parent<MachineInstr, MachineBasicBlock,
                                     ilist_sentinel_tracking<true>> {
 public:
+
+  bool PND = false;
+
   using mmo_iterator = ArrayRef<MachineMemOperand *>::iterator;
 
   /// Flags to specify different kinds of comments to output in

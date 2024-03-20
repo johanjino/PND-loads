@@ -44,7 +44,10 @@ private:
   const MachineRegisterInfo *MRI;
   const AArch64InstrInfo *TII;
   bool Changed;
-  void processMachineBasicBlock(MachineBasicBlock &MBB);
+  unsigned numLoads = 0;
+  unsigned NumOpcodesReplaced;
+  void processMachineBasicBlock(MachineBasicBlock &MBB, std::vector<unsigned> &PNDOffsets);
+  bool hasHint(MachineInstr &MI, unsigned AddrSpace);
 public:
   static char ID; // Pass identification, replacement for typeid.
   AArch64LoadAliasMetadataInsertion() : MachineFunctionPass(ID) {
@@ -67,11 +70,12 @@ char AArch64LoadAliasMetadataInsertion::ID = 0;
 INITIALIZE_PASS(AArch64LoadAliasMetadataInsertion, "aarch64-load-alias-metadata",
                 AARCH64_LOAD_ALIAS_METADATA_NAME, false, false)
 
-bool hasHint(MachineInstr &MI, unsigned AddrSpace){
+bool AArch64LoadAliasMetadataInsertion::hasHint(MachineInstr &MI, unsigned AddrSpace){
+  numLoads++;
   for (auto MemOp: MI.memoperands()){
     AAMDNodes AAInfo = MemOp->getAAInfo();
     if (AAInfo.PND) {
-      errs() << "BACKEND COUNT: 1\n";
+      //errs() << "BACKEND COUNT: 1\n";
       return true;
     }
   }
@@ -79,7 +83,7 @@ bool hasHint(MachineInstr &MI, unsigned AddrSpace){
 }
 
 void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
-    MachineBasicBlock &MBB) {
+    MachineBasicBlock &MBB, std::vector<unsigned> &PNDOffsets) {
   DebugLoc DL;
   unsigned NewOpcode;
   for (MachineInstr &MI: MBB){
@@ -649,15 +653,17 @@ void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
         break;
 
       default:
-        if (!MI.mayStore() && hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE)){
-          printf("found MI with hint but no match!\n");
-          MI.print(llvm::outs());
-          printf("\n");
-        }
+        // if (!MI.mayStore() && hasHint(MI, PREDICT_NO_ALIAS_ADDRESS_SPACE)){
+        //   printf("found MI with hint but no match!\n");
+        //   MI.print(llvm::outs());
+        //   printf("\n");
+        // }
         continue;
     }
-    MI.setDesc(TII->get(NewOpcode));
-    NumOpcodesReplaced++;
+    MI.PND = true;
+    PNDOffsets.push_back(numLoads);
+    //MI.setDesc(TII->get(NewOpcode));
+    NumOpcodesReplaced += 1;
   }
 }
 
@@ -667,14 +673,23 @@ bool AArch64LoadAliasMetadataInsertion::runOnMachineFunction(MachineFunction &MF
     return false;
   }
 
+  std::vector<unsigned> PNDOffsets = std::vector<unsigned>();
+  numLoads = 0;
+
   TRI = MF.getSubtarget().getRegisterInfo();
   TII = MF.getSubtarget<AArch64Subtarget>().getInstrInfo();
   MRI = &MF.getRegInfo();
   LLVM_DEBUG(dbgs() << "***** AArch64LoadAliasMetadataInsertion *****\n");
   Changed = false;
   for (auto &MBB : MF)
-    processMachineBasicBlock(MBB);
-  if (NumOpcodesReplaced > 0) Changed = 1;
+    processMachineBasicBlock(MBB, PNDOffsets);
+  if (PNDOffsets.size() > 0){
+    //Changed = 1;
+    errs() << "FUNC:" << MF.getName() << ":";
+    int i;
+    for (i=0; i < PNDOffsets.size() - 1; i++) errs() << PNDOffsets[i] << ",";
+    errs() << PNDOffsets[i] << "\n";
+  }
   return Changed;
 }
 
