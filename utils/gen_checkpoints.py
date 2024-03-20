@@ -14,4 +14,5 @@ specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subproces
 Popen.wait(specinvoke)
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if line.startswith(b".")]
 command = commands[run]
-print(gem5+"build/ARM/gem5.fast --outdir=checkpoints."+str(run)+" "+gem5+"configs/example/se.py --cpu-type=NonCachingSimpleCPU --take-simpoint-checkpoint=/sim_home/luke/simpoints/"+bench.split('.')[1]+"."+str(run)+".simpts,/sim_home/luke/simpoints/"+bench.split('.')[1]+"."+str(run)+".weights,100000000,10000000 -c "+command.split()[0]+" --options=\""+' '.join(command.split()[1:])+"\" --mem-size=50GB")
+p = Popen(gem5+"build/ARM/gem5.fast --outdir=checkpoints."+str(run)+" "+gem5+"configs/example/se.py --cpu-type=NonCachingSimpleCPU --take-simpoint-checkpoint=/sim_home/luke/simpoints/"+bench+"."+str(run)+".simpts,/sim_home/luke/simpoints/"+bench+"."+str(run)+".weights,100000000,10000000 -c "+command.split()[0]+" --options=\""+' '.join(command.split()[1:])+"\" --mem-size=50GB", shell=True)
+p.wait()
