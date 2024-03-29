@@ -1,0 +1,32 @@
+import subprocess
+import os
+import sys
+
+spec_dir = "/sim_home/luke/spec2017/benchspec/CPU/"
+benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
+           "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
+           "641.leela_s", "657.xz_s", "607.cactuBSSN_s",
+           "648.exchange2_s", "620.omnetpp_s"]
+
+if len(sys.argv) > 1:
+    sub_benches = []
+    for bench in sys.argv[1:]:
+        if bench in benches:
+            sub_benches.append(bench)
+        else:
+            print("Unknown benchmark: ", bench)
+            exit(1)
+    benches = sub_benches
+
+for bench in benches:
+
+    name = bench.split(".")[1].split("_")[0]
+
+    os.chdir(spec_dir+bench+"/run/run_peak_refspeed_mytest-64.0000")
+
+    binary = name+"_s_peak.mytest-64"
+
+    labelled_binary = "../labelled/run_peak_refspeed_mytest-64.0000/"+binary
+
+    p = subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/parse_labelled_binary.py "+labelled_binary+" "+binary, shell=True)
+    p.wait()

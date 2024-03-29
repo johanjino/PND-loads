@@ -14,7 +14,7 @@ def aggregate_values(field_names):
             stats_file = os.path.join(dirname, "stats.txt")
             chkpt_number = int(dirname.split('.')[0])
             #if chkpt_number in broken_chkpts: continue
-            cpt_dir = "../"+os.getcwd().split("/")[-1].split('_')[0]
+            cpt_dir = "../checkpoints."+os.getcwd().split('.')[-1]
             for cpt in os.listdir(cpt_dir):
                 if cpt.startswith("cpt.") and int(cpt.split('_')[1]) == (chkpt_number-1):
                     weight = float(cpt.split('_')[5])

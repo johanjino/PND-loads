@@ -72,7 +72,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     AliasHint Hint;
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
-        if (!Load->isSimple()) continue;
+        if (!Load->isSimple()) continue; //difference
         if (Load->getAAMetadata().PND) continue; //we already marked this when checking for constant memory
         Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
@@ -250,6 +250,8 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         }
     }
     for (auto Call: all_calls){
+        //difference: we don't check for versioning! (altho actually that might not do anything anyway)
+        //difference: we use mod/ref instead of dep, but that should def be making it better
         ModRefInfo res = AA.getModRefInfo(Load, Call);
         if (res == ModRefInfo::Mod || res == ModRefInfo::MustMod || res == ModRefInfo::ModRef ||
             res == ModRefInfo::MustModRef)
@@ -258,6 +260,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     return AliasHint::PredictNone;
 }
 
+//difference: we leave out cross loop dep heuristics
 bool AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA){
     if (Dep->isConfused()) return true;
     if (Dep->isOrdered()){

@@ -32,7 +32,7 @@ for f in os.listdir(os.getcwd()):
     processed_benchmarks.add(benchmark+number)
 
     base_results = benchmark+"_base"+number+".txt"
-    pna_results = benchmark+"_pna"+number+".txt"
+    pna_results = benchmark+"_pnd"+number+".txt"
     base = get_values(base_results)
     pna = get_values(pna_results)
 
