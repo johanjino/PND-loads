@@ -72,7 +72,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     AliasHint Hint;
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
-        if (!Load->isSimple()) continue; //difference
+        //if (!Load->isSimple()) continue; //difference
         if (Load->getAAMetadata().PND) continue; //we already marked this when checking for constant memory
         Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
@@ -227,35 +227,40 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         if (!isProblematicDep(Load, Dep.get(), LI, SE, AA)) continue;
-        if (was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
-            Store->isSimple() && store_map.find(Store) != store_map.end()){
-            MemoryDepChecker::Dependence::DepType Type = store_map[Store];
-            switch (Type){
-                case MemoryDepChecker::Dependence::NoDep:
-                case MemoryDepChecker::Dependence::IndependentStride:
-                case MemoryDepChecker::Dependence::SafeDistance: //maybe need to do forward checks?
-                    continue;
-                case MemoryDepChecker::Dependence::Forward:
-                case MemoryDepChecker::Dependence::ForwardButPreventsForwarding:
-                    if (isVariantAtAllLevels(Load->getPointerOperand(), current_loop, LI, SE) &&
-                        isSeparateCacheLine(Load, Store, SE, AA))
-                        continue;
-                    return AliasHint::Unchanged;
-                default:
-                    return AliasHint::Unchanged;
-            }
-        }
-        else {
-            return AliasHint::Unchanged;
-        }
+        return AliasHint::Unchanged;
+        // if (was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
+        //     Store->isSimple() && store_map.find(Store) != store_map.end()){
+        //     MemoryDepChecker::Dependence::DepType Type = store_map[Store];
+        //     switch (Type){
+        //         case MemoryDepChecker::Dependence::NoDep:
+        //         case MemoryDepChecker::Dependence::IndependentStride:
+        //         case MemoryDepChecker::Dependence::SafeDistance: //maybe need to do forward checks?
+        //             continue;
+        //         case MemoryDepChecker::Dependence::Forward:
+        //         case MemoryDepChecker::Dependence::ForwardButPreventsForwarding:
+        //             if (isVariantAtAllLevels(Load->getPointerOperand(), current_loop, LI, SE) &&
+        //                 isSeparateCacheLine(Load, Store, SE, AA))
+        //                 continue;
+        //             return AliasHint::Unchanged;
+        //         default:
+        //             return AliasHint::Unchanged;
+        //     }
+        // }
+        // else {
+        //     return AliasHint::Unchanged;
+        // }
     }
     for (auto Call: all_calls){
         //difference: we don't check for versioning! (altho actually that might not do anything anyway)
         //difference: we use mod/ref instead of dep, but that should def be making it better
-        ModRefInfo res = AA.getModRefInfo(Load, Call);
-        if (res == ModRefInfo::Mod || res == ModRefInfo::MustMod || res == ModRefInfo::ModRef ||
-            res == ModRefInfo::MustModRef)
-            return AliasHint::Unchanged;
+        if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
+        Dep = DI.depends(Call, Load, true);
+        if (!Dep) continue;
+        if (!Dep->isUnordered()) return AliasHint::Unchanged;
+        // ModRefInfo res = AA.getModRefInfo(Load, Call);
+        // if (res == ModRefInfo::Mod || res == ModRefInfo::MustMod || res == ModRefInfo::ModRef ||
+        //     res == ModRefInfo::MustModRef)
+        //     return AliasHint::Unchanged;
     }
     return AliasHint::PredictNone;
 }
@@ -266,9 +271,21 @@ bool AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo 
     if (Dep->isOrdered()){
         Loop *LoadLoop = LI.getLoopFor(Load->getParent());
         unsigned LoadDepth = LoadLoop->getLoopDepth();
+        unsigned StoreDepth = LI.getLoopFor(Store->getParent())->getLoopDepth();
         Dep->normalize(&SE);
         unsigned Levels = Dep->getLevels();
         if ((Dep->isPeelFirst(LoadDepth) || Dep->isPeelLast(LoadDepth)) && LoadLoop->isOutermost()) return false;
+        //if cross-loop dep we can reason about instruction distances. this assumes loops are generally large and small kernels.
+        if (LoadDepth != StoreDepth){
+            int Diff = std::abs((int)LoadDepth - (int)StoreDepth);
+            if (Diff == 1) return true;
+            if (Diff == 2){
+                if (Levels == std::min(LoadDepth, StoreDepth)) return true;
+                return false;
+            }
+            if (Diff > 2) return false;
+        }
+        //if within the same loop it is simpler to reason about dep distances
         const SCEV *scev_distance;
         if (Levels > 2){
             //does there exist a distance greater than one at a level greater than two nests above the dep?
