@@ -44,9 +44,8 @@ private:
   const MachineRegisterInfo *MRI;
   const AArch64InstrInfo *TII;
   bool Changed;
-  unsigned numLoads = 0;
   unsigned NumOpcodesReplaced;
-  void processMachineBasicBlock(MachineBasicBlock &MBB, std::vector<unsigned> &PNDOffsets);
+  void processMachineBasicBlock(MachineBasicBlock &MBB);
   bool hasHint(MachineInstr &MI, unsigned AddrSpace);
 public:
   static char ID; // Pass identification, replacement for typeid.
@@ -71,11 +70,9 @@ INITIALIZE_PASS(AArch64LoadAliasMetadataInsertion, "aarch64-load-alias-metadata"
                 AARCH64_LOAD_ALIAS_METADATA_NAME, false, false)
 
 bool AArch64LoadAliasMetadataInsertion::hasHint(MachineInstr &MI, unsigned AddrSpace){
-  numLoads++;
   for (auto MemOp: MI.memoperands()){
     AAMDNodes AAInfo = MemOp->getAAInfo();
     if (AAInfo.PND) {
-      //errs() << "BACKEND COUNT: 1\n";
       return true;
     }
   }
@@ -83,7 +80,7 @@ bool AArch64LoadAliasMetadataInsertion::hasHint(MachineInstr &MI, unsigned AddrS
 }
 
 void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
-    MachineBasicBlock &MBB, std::vector<unsigned> &PNDOffsets) {
+    MachineBasicBlock &MBB) {
   DebugLoc DL;
   unsigned NewOpcode;
   for (MachineInstr &MI: MBB){
@@ -660,9 +657,7 @@ void AArch64LoadAliasMetadataInsertion::processMachineBasicBlock(
         // }
         continue;
     }
-    MI.PND = true;
-    PNDOffsets.push_back(numLoads);
-    //MI.setDesc(TII->get(NewOpcode));
+    MI.setDesc(TII->get(NewOpcode));
     NumOpcodesReplaced += 1;
   }
 }
@@ -673,23 +668,13 @@ bool AArch64LoadAliasMetadataInsertion::runOnMachineFunction(MachineFunction &MF
     return false;
   }
 
-  std::vector<unsigned> PNDOffsets = std::vector<unsigned>();
-  numLoads = 0;
-
   TRI = MF.getSubtarget().getRegisterInfo();
   TII = MF.getSubtarget<AArch64Subtarget>().getInstrInfo();
   MRI = &MF.getRegInfo();
   LLVM_DEBUG(dbgs() << "***** AArch64LoadAliasMetadataInsertion *****\n");
   Changed = false;
   for (auto &MBB : MF)
-    processMachineBasicBlock(MBB, PNDOffsets);
-  if (PNDOffsets.size() > 0){
-    //Changed = 1;
-    errs() << "FUNC:" << MF.getName() << ":";
-    int i;
-    for (i=0; i < PNDOffsets.size() - 1; i++) errs() << PNDOffsets[i] << ",";
-    errs() << PNDOffsets[i] << "\n";
-  }
+    processMachineBasicBlock(MBB);
   return Changed;
 }
 
