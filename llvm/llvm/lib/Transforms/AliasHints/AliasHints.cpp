@@ -271,6 +271,8 @@ bool AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo 
     if (Dep->isOrdered()){
         Loop *LoadLoop = LI.getLoopFor(Load->getParent());
         unsigned LoadDepth = LoadLoop->getLoopDepth();
+        Instruction *Source = Dep->getSrc();
+        StoreInst *Store = reinterpret_cast<StoreInst *>(Source);
         unsigned StoreDepth = LI.getLoopFor(Store->getParent())->getLoopDepth();
         Dep->normalize(&SE);
         unsigned Levels = Dep->getLevels();
