@@ -8,7 +8,7 @@ def aggregate_values(field_names):
 
     broken_chkpts = []
 
-    print("Benchmark: ", os.getcwd().split("/")[-1])
+    print("Benchmark: ", os.getcwd().split("/")[-4]+"."+os.getcwd().split("/")[-1])
     for dirname in os.listdir("."):
         if os.path.isdir(dirname) and dirname[0].isdigit() and dirname.split('.')[1] == 'out':
             stats_file = os.path.join(dirname, "stats.txt")

@@ -83,7 +83,7 @@ class BaseO3CPU(BaseCPU):
     iewToFetchDelay = Param.Cycles(1, "Issue/Execute/Writeback to fetch "
                                    "delay")
     commitToFetchDelay = Param.Cycles(1, "Commit to fetch delay")
-    fetchWidth = Param.Unsigned(24, "Fetch width")
+    fetchWidth = Param.Unsigned(12, "Fetch width")
     fetchBufferSize = Param.Unsigned(64, "Fetch buffer size in bytes")
     fetchQueueSize = Param.Unsigned(96, "Fetch queue size in micro-ops "
                                     "per-thread")
@@ -93,13 +93,13 @@ class BaseO3CPU(BaseCPU):
                                     "delay")
     commitToDecodeDelay = Param.Cycles(1, "Commit to decode delay")
     fetchToDecodeDelay = Param.Cycles(1, "Fetch to decode delay")
-    decodeWidth = Param.Unsigned(24, "Decode width")
+    decodeWidth = Param.Unsigned(12, "Decode width")
 
     iewToRenameDelay = Param.Cycles(1, "Issue/Execute/Writeback to rename "
                                     "delay")
     commitToRenameDelay = Param.Cycles(1, "Commit to rename delay")
     decodeToRenameDelay = Param.Cycles(1, "Decode to rename delay")
-    renameWidth = Param.Unsigned(24, "Rename width")
+    renameWidth = Param.Unsigned(12, "Rename width")
 
     commitToIEWDelay = Param.Cycles(1, "Commit to "
                "Issue/Execute/Writeback delay")
@@ -107,16 +107,16 @@ class BaseO3CPU(BaseCPU):
                "Issue/Execute/Writeback delay")
     issueToExecuteDelay = Param.Cycles(1, "Issue to execute delay (internal "
               "to the IEW stage)")
-    dispatchWidth = Param.Unsigned(24, "Dispatch width")
-    issueWidth = Param.Unsigned(24, "Issue width")
-    wbWidth = Param.Unsigned(24, "Writeback width")
+    dispatchWidth = Param.Unsigned(12, "Dispatch width")
+    issueWidth = Param.Unsigned(12, "Issue width")
+    wbWidth = Param.Unsigned(12, "Writeback width")
     fuPool = Param.FUPool(DefaultFUPool(), "Functional Unit pool")
 
     iewToCommitDelay = Param.Cycles(1, "Issue/Execute/Writeback to commit "
                "delay")
     renameToROBDelay = Param.Cycles(1, "Rename to reorder buffer delay")
-    commitWidth = Param.Unsigned(24, "Commit width")
-    squashWidth = Param.Unsigned(24, "Squash width")
+    commitWidth = Param.Unsigned(12, "Commit width")
+    squashWidth = Param.Unsigned(12, "Squash width")
     trapLatency = Param.Cycles(13, "Trap latency")
     fetchTrapLatency = Param.Cycles(1, "Fetch trap latency")
 
@@ -140,13 +140,13 @@ class BaseO3CPU(BaseCPU):
 
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers");
 
-    numPhysIntRegs = Param.Unsigned(256,
+    numPhysIntRegs = Param.Unsigned(576,
             "Number of physical integer registers")
-    numPhysFloatRegs = Param.Unsigned(256, "Number of physical floating point "
+    numPhysFloatRegs = Param.Unsigned(576, "Number of physical floating point "
                                       "registers")
-    numPhysVecRegs = Param.Unsigned(256, "Number of physical vector "
+    numPhysVecRegs = Param.Unsigned(576, "Number of physical vector "
                                       "registers")
-    numPhysVecPredRegs = Param.Unsigned(32, "Number of physical predicate "
+    numPhysVecPredRegs = Param.Unsigned(128, "Number of physical predicate "
                                       "registers")
     # most ISAs don't use condition-code regs, so default is 0
     numPhysCCRegs = Param.Unsigned(0, "Number of physical cc registers")

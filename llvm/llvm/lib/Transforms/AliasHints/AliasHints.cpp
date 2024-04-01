@@ -227,45 +227,41 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         if (!isProblematicDep(Load, Dep.get(), LI, SE, AA)) continue;
-        return AliasHint::Unchanged;
-        // if (was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
-        //     Store->isSimple() && store_map.find(Store) != store_map.end()){
-        //     MemoryDepChecker::Dependence::DepType Type = store_map[Store];
-        //     switch (Type){
-        //         case MemoryDepChecker::Dependence::NoDep:
-        //         case MemoryDepChecker::Dependence::IndependentStride:
-        //         case MemoryDepChecker::Dependence::SafeDistance: //maybe need to do forward checks?
-        //             continue;
-        //         case MemoryDepChecker::Dependence::Forward:
-        //         case MemoryDepChecker::Dependence::ForwardButPreventsForwarding:
-        //             if (isVariantAtAllLevels(Load->getPointerOperand(), current_loop, LI, SE) &&
-        //                 isSeparateCacheLine(Load, Store, SE, AA))
-        //                 continue;
-        //             return AliasHint::Unchanged;
-        //         default:
-        //             return AliasHint::Unchanged;
-        //     }
-        // }
-        // else {
-        //     return AliasHint::Unchanged;
-        // }
+        if (was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
+            Store->isSimple() && store_map.find(Store) != store_map.end()){
+            MemoryDepChecker::Dependence::DepType Type = store_map[Store];
+            switch (Type){
+                case MemoryDepChecker::Dependence::NoDep:
+                case MemoryDepChecker::Dependence::IndependentStride:
+                case MemoryDepChecker::Dependence::SafeDistance: //maybe need to do forward checks?
+                    continue;
+                case MemoryDepChecker::Dependence::Forward:
+                case MemoryDepChecker::Dependence::ForwardButPreventsForwarding:
+                    if (isVariantAtAllLevels(Load->getPointerOperand(), current_loop, LI, SE) &&
+                        isSeparateCacheLine(Load, Store, SE, AA))
+                        continue;
+                    return AliasHint::Unchanged;
+                default:
+                    return AliasHint::Unchanged;
+            }
+        }
+        else {
+            return AliasHint::Unchanged;
+        }
     }
     for (auto Call: all_calls){
-        //difference: we don't check for versioning! (altho actually that might not do anything anyway)
-        //difference: we use mod/ref instead of dep, but that should def be making it better
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
-        Dep = DI.depends(Call, Load, true);
-        if (!Dep) continue;
-        if (!Dep->isUnordered()) return AliasHint::Unchanged;
-        // ModRefInfo res = AA.getModRefInfo(Load, Call);
-        // if (res == ModRefInfo::Mod || res == ModRefInfo::MustMod || res == ModRefInfo::ModRef ||
-        //     res == ModRefInfo::MustModRef)
-        //     return AliasHint::Unchanged;
+	Dep = DI.depends(Call, Load, true);
+	if (!Dep) continue;
+	if (!Dep->isUnordered()) return AliasHint::Unchanged;
+	/*
+        ModRefInfo res = AA.getModRefInfo(Load, Call);
+	if (isModSet(res)) return AliasHint::Unchanged;
+	*/
     }
     return AliasHint::PredictNone;
 }
 
-//difference: we leave out cross loop dep heuristics
 bool AliasHintsPass::isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA){
     if (Dep->isConfused()) return true;
     if (Dep->isOrdered()){
@@ -346,7 +342,7 @@ bool AliasHintsPass::withinSameVersion(LoadInst *Load, Instruction *DepInst, Sma
 llvm::PassPluginLibraryInfo getAliasHintsPassPluginInfo() {
   return {LLVM_PLUGIN_API_VERSION, "AliasHints", LLVM_VERSION_STRING,
           [](PassBuilder &PB) {
-            PB.registerLoopOptimizerEndEPCallback(
+            PB.registerLateLoopOptimizationsEPCallback(
                 [](llvm::LoopPassManager &LPM, OptimizationLevel Level) {
                   LPM.addPass(AliasHintsPass());
                 });

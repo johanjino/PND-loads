@@ -1085,7 +1085,7 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu);
     instruction->setTid(tid);
 
-    if (std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end()){ //&&
+    if (instruction-isLoad() && std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end()){ //&&
         //instruction->isLoad() && (pnd_violation_count.find(this_pc.instAddr()) == pnd_violation_count.end() ||
         //pnd_violation_count[this_pc.instAddr()] <= 2)){
         instruction->setSpecFlag();
