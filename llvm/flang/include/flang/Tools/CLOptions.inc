@@ -106,10 +106,9 @@ inline void addCfgConversionPass(mlir::PassManager &pm) {
 
 inline void addAVC(
     mlir::PassManager &pm, const llvm::OptimizationLevel &optLevel) {
-  ArrayValueCopyOptions options;
   options.optimizeConflicts = optLevel.isOptimizingForSpeed();
   addNestedPassConditionally<mlir::func::FuncOp>(
-      pm, disableFirAvc, [&]() { return createArrayValueCopyPass(options); });
+      pm, disableFirAvc, [&]() { return createArrayValueCopyPass(); });
 }
 
 inline void addMemoryAllocationOpt(mlir::PassManager &pm) {
@@ -140,7 +139,6 @@ inline void addFIRToLLVMPass(
     mlir::PassManager &pm, llvm::OptimizationLevel optLevel = defaultOptLevel) {
   fir::FIRToLLVMPassOptions options;
   options.ignoreMissingTypeDescriptors = ignoreMissingTypeDescriptors;
-  options.applyTBAA = optLevel.isOptimizingForSpeed();
   addPassConditionally(pm, disableFirToLlvmIr,
       [&]() { return fir::createFIRToLLVMPass(options); });
 }
@@ -179,7 +177,7 @@ inline void createDefaultFIROptimizerPassPipeline(
   if (optLevel.isOptimizingForSpeed()) {
     // These passes may increase code size.
     pm.addPass(fir::createSimplifyIntrinsicsPass());
-    pm.addPass(fir::createAlgebraicSimplificationPass(config));
+    pm.addPass(fir::createAlgebraicSimplificationPass());
   }
   pm.addPass(mlir::createCSEPass());
   fir::addMemoryAllocationOpt(pm);
@@ -207,8 +205,6 @@ inline void createDefaultFIRCodeGenPassPipeline(
   fir::addBoxedProcedurePass(pm);
   pm.addNestedPass<mlir::func::FuncOp>(
       fir::createAbstractResultOnFuncOptPass());
-  pm.addNestedPass<fir::GlobalOp>(
-      fir::createAbstractResultOnGlobalOptPass());
   fir::addCodeGenRewritePass(pm);
   fir::addTargetRewritePass(pm);
   fir::addExternalNameConversionPass(pm);
