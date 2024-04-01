@@ -106,7 +106,6 @@ inline void addCfgConversionPass(mlir::PassManager &pm) {
 
 inline void addAVC(
     mlir::PassManager &pm, const llvm::OptimizationLevel &optLevel) {
-  options.optimizeConflicts = optLevel.isOptimizingForSpeed();
   addNestedPassConditionally<mlir::func::FuncOp>(
       pm, disableFirAvc, [&]() { return createArrayValueCopyPass(); });
 }
@@ -132,7 +131,7 @@ inline void addTargetRewritePass(mlir::PassManager &pm) {
 
 inline void addDebugFoundationPass(mlir::PassManager &pm) {
   addPassConditionally(pm, disableDebugFoundation,
-      [&]() { return fir::createAddDebugFoundationPass(); });
+      [&]() { return fir::addDebugFoundationPass(pm); });
 }
 
 inline void addFIRToLLVMPass(
@@ -176,7 +175,7 @@ inline void createDefaultFIROptimizerPassPipeline(
   pm.addPass(fir::createSimplifyRegionLitePass());
   if (optLevel.isOptimizingForSpeed()) {
     // These passes may increase code size.
-    pm.addPass(fir::createSimplifyIntrinsicsPass());
+    pm.addPass(fir::createSimplifyRegionLitePass());
     pm.addPass(fir::createAlgebraicSimplificationPass());
   }
   pm.addPass(mlir::createCSEPass());
