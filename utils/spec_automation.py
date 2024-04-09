@@ -16,6 +16,7 @@ random.seed(sum(ord(c) for c in base_dir))
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
 procs = []
 scaled_up = True
+very_scaled = False
 
 # iterate over all items in the current directory
 for out_dir in os.listdir(base_dir):
@@ -35,9 +36,12 @@ for out_dir in os.listdir(base_dir):
                 else:
                     address_file = binary+"_pnd_address"
                     O3outdir = "pnd."+out_dir[-1]+"/"+str(cpt_number)+".out"
-                run = "ADDR_FILE="+address_file+" "+gem5+"build/ARM/gem5.fast --outdir="+O3outdir+" "+gem5+"configs/example/se.py --cpu-type=DerivO3CPU --caches --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
+                run = "ADDR_FILE="+address_file+" "+gem5+"build/ARM/gem5.fast --outdir="+O3outdir+" "+gem5+"configs/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
                 if scaled_up:
-                    run += " --l1d_size=128KiB --l1i_size=128KiB --l2_size=4MB"
+                    if very_scaled:
+                        run += " --l1d_size=256KiB --l1i_size=256KiB --l2_size=4MB"
+                    else:
+                        run += " --l1d_size=128KiB --l1i_size=128KiB --l2_size=2MB"
                 p = Popen(run, shell=True)
                 procs.append(p)
                 while waited < 60*1 and finished == False:

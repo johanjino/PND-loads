@@ -251,13 +251,8 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     }
     for (auto Call: all_calls){
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
-	Dep = DI.depends(Call, Load, true);
-	if (!Dep) continue;
-	if (!Dep->isUnordered()) return AliasHint::Unchanged;
-	/*
         ModRefInfo res = AA.getModRefInfo(Load, Call);
 	if (isModSet(res)) return AliasHint::Unchanged;
-	*/
     }
     return AliasHint::PredictNone;
 }

@@ -28,6 +28,7 @@ for bench in benches:
             subprocess.Popen("cp results.txt "+results_dir+"/"+name+"_pnd."+f.split(".")[1]+".txt", shell=True)
             os.chdir("..")
 
+    continue
     for f in os.listdir(os.getcwd()):
         try:
             is_res_dir = os.path.isdir(f) and f.split(".")[1].isdigit() and f.split(".")[0] == "base"
