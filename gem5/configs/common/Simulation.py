@@ -322,7 +322,7 @@ def parseSimpointAnalysisFile(options, testsys):
 
         if (interval * interval_length - warmup_length > 0):
             starting_inst_count = \
-                interval * interval_length - warmup_length
+                ((interval*10) * interval_length)/10 - warmup_length
             actual_warmup_length = warmup_length
         else:
             # Not enough room for proper warmup
@@ -347,9 +347,10 @@ def parseSimpointAnalysisFile(options, testsys):
     return (simpoints, interval_length)
 
 def takeSimpointCheckpoints(simpoints, interval_length, cptdir):
+    #having a float interval number shouldnt matter here. if we pass in the real starting instruction too we can emit the right starting inst count automatically
     num_checkpoints = 0
-    index = 0
     last_chkpnt_inst_count = -1
+    index = 0
     for simpoint in simpoints:
         interval, weight, starting_inst_count, actual_warmup_length = simpoint
         if starting_inst_count == last_chkpnt_inst_count:
@@ -709,6 +710,8 @@ def run(options, root, testsys, cpu_class):
     # Take SimPoint checkpoints
     elif options.take_simpoint_checkpoints != None:
         takeSimpointCheckpoints(simpoints, interval_length, cptdir)
+        #if options.checkpoint_restore:
+            #takeSimpointCheckpoints(simpoints, interval_length, cptdir, options.simpoint_offset, options.checkpoint_restore)
 
     # Restore from SimPoint checkpoints
     elif options.restore_simpoint_checkpoint:

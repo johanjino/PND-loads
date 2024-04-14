@@ -16,7 +16,7 @@ random.seed(sum(ord(c) for c in base_dir))
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
 procs = []
 scaled_up = True
-very_scaled = False
+very_scaled = True
 
 # iterate over all items in the current directory
 for out_dir in os.listdir(base_dir):

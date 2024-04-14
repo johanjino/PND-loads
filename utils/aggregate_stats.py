@@ -66,7 +66,8 @@ def write_results(results_file, aggregated_values):
                 file.write(f"{name} {value}\n")
                 seen_fields.add(name)
             elif value != 0:
-                print("Field "+(field_name)+" has duplicate but doesn't have a value of 0")
+                pass
+                #print("Field "+(field_name)+" has duplicate but doesn't have a value of 0")
         for name, value in cpu_fields.items():
             file.write(f"{name} {value}\n")
 
