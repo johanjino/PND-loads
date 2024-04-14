@@ -65,7 +65,6 @@ DisableOption(
 #if !defined(FLANG_EXCLUDE_CODEGEN)
 DisableOption(CodeGenRewrite, "codegen-rewrite", "rewrite FIR for codegen");
 DisableOption(TargetRewrite, "target-rewrite", "rewrite FIR for target");
-DisableOption(DebugFoundation, "debug-foundation", "Add debug foundation");
 DisableOption(FirToLlvmIr, "fir-to-llvmir", "FIR to LLVM-IR dialect");
 DisableOption(LlvmIrToLlvm, "llvm", "conversion to LLVM");
 DisableOption(BoxedProcedureRewrite, "boxed-procedure-rewrite",
@@ -104,10 +103,9 @@ inline void addCfgConversionPass(mlir::PassManager &pm) {
       pm, disableCfgConversion, fir::createFirToCfgPass);
 }
 
-inline void addAVC(
-    mlir::PassManager &pm, const llvm::OptimizationLevel &optLevel) {
+inline void addAVC(mlir::PassManager &pm) {
   addNestedPassConditionally<mlir::func::FuncOp>(
-      pm, disableFirAvc, [&]() { return createArrayValueCopyPass(); });
+      pm, disableFirAvc, fir::createArrayValueCopyPass);
 }
 
 inline void addMemoryAllocationOpt(mlir::PassManager &pm) {
@@ -129,13 +127,7 @@ inline void addTargetRewritePass(mlir::PassManager &pm) {
   });
 }
 
-inline void addDebugFoundationPass(mlir::PassManager &pm) {
-  addPassConditionally(pm, disableDebugFoundation,
-      [&]() { return fir::addDebugFoundationPass(pm); });
-}
-
-inline void addFIRToLLVMPass(
-    mlir::PassManager &pm, llvm::OptimizationLevel optLevel = defaultOptLevel) {
+inline void addFIRToLLVMPass(mlir::PassManager &pm) {
   fir::FIRToLLVMPassOptions options;
   options.ignoreMissingTypeDescriptors = ignoreMissingTypeDescriptors;
   addPassConditionally(pm, disableFirToLlvmIr,
@@ -169,15 +161,13 @@ inline void createDefaultFIROptimizerPassPipeline(
   mlir::GreedyRewriteConfig config;
   config.enableRegionSimplification = false;
   pm.addPass(mlir::createCSEPass());
-  fir::addAVC(pm, optLevel);
+  fir::addAVC(pm);
   pm.addNestedPass<mlir::func::FuncOp>(fir::createCharacterConversionPass());
   pm.addPass(mlir::createCanonicalizerPass(config));
   pm.addPass(fir::createSimplifyRegionLitePass());
-  if (optLevel.isOptimizingForSpeed()) {
-    // These passes may increase code size.
-    pm.addPass(fir::createSimplifyRegionLitePass());
+  // Algebraic simplifications may increase code size.
+  if (optLevel.isOptimizingForSpeed())
     pm.addPass(fir::createAlgebraicSimplificationPass());
-  }
   pm.addPass(mlir::createCSEPass());
   fir::addMemoryAllocationOpt(pm);
 
@@ -199,15 +189,14 @@ inline void createDefaultFIROptimizerPassPipeline(
 }
 
 #if !defined(FLANG_EXCLUDE_CODEGEN)
-inline void createDefaultFIRCodeGenPassPipeline(
-    mlir::PassManager &pm, llvm::OptimizationLevel optLevel = defaultOptLevel) {
+inline void createDefaultFIRCodeGenPassPipeline(mlir::PassManager &pm) {
   fir::addBoxedProcedurePass(pm);
   pm.addNestedPass<mlir::func::FuncOp>(
       fir::createAbstractResultOnFuncOptPass());
   fir::addCodeGenRewritePass(pm);
   fir::addTargetRewritePass(pm);
   fir::addExternalNameConversionPass(pm);
-  fir::addFIRToLLVMPass(pm, optLevel);
+  fir::addFIRToLLVMPass(pm);
 }
 
 /// Create a pass pipeline for lowering from MLIR to LLVM IR
@@ -221,7 +210,7 @@ inline void createMLIRToLLVMPassPipeline(
   fir::createDefaultFIROptimizerPassPipeline(pm, optLevel);
 
   // Add codegen pass pipeline.
-  fir::createDefaultFIRCodeGenPassPipeline(pm, optLevel);
+  fir::createDefaultFIRCodeGenPassPipeline(pm);
 }
 #undef FLANG_EXCLUDE_CODEGEN
 #endif
