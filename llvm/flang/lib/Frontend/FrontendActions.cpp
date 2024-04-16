@@ -50,6 +50,7 @@
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Target/TargetMachine.h"
+#include "llvm/Transforms/AliasHints/AliasHints.h"
 #include <memory>
 
 using namespace Fortran::frontend;
@@ -643,6 +644,7 @@ static void generateMachineCodeOrAssemblyImpl(clang::DiagnosticsEngine &diags,
     diags.Report(diagID);
     return;
   }
+
 
   // Run the passes
   codeGenPasses.run(llvmModule);
