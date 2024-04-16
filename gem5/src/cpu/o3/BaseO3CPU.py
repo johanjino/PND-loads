@@ -125,33 +125,33 @@ class BaseO3CPU(BaseCPU):
     forwardComSize = Param.Unsigned(15,
             "Time buffer size for forward communication")
 
-    LQEntries = Param.Unsigned(192, "Number of load queue entries")
-    SQEntries = Param.Unsigned(192, "Number of store queue entries")
+    LQEntries = Param.Unsigned(96, "Number of load queue entries")
+    SQEntries = Param.Unsigned(96, "Number of store queue entries")
     LSQDepCheckShift = Param.Unsigned(4,
             "Number of places to shift addr before check")
     LSQCheckLoads = Param.Bool(True,
         "Should dependency violations be checked for "
         "loads & stores or just stores")
-    store_set_clear_period = Param.Unsigned(256*244,
+    store_set_clear_period = Param.Unsigned(128*244,
             "Number of load/store insts before the dep predictor "
             "should be invalidated")
-    LFSTSize = Param.Unsigned(256, "Last fetched store table size")
-    SSITSize = Param.Unsigned(256, "Store set ID table size")
+    LFSTSize = Param.Unsigned(128, "Last fetched store table size")
+    SSITSize = Param.Unsigned(128, "Store set ID table size")
 
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers");
 
-    numPhysIntRegs = Param.Unsigned(768,
+    numPhysIntRegs = Param.Unsigned(576,
             "Number of physical integer registers")
-    numPhysFloatRegs = Param.Unsigned(768, "Number of physical floating point "
+    numPhysFloatRegs = Param.Unsigned(576, "Number of physical floating point "
                                       "registers")
-    numPhysVecRegs = Param.Unsigned(768, "Number of physical vector "
+    numPhysVecRegs = Param.Unsigned(576, "Number of physical vector "
                                       "registers")
     numPhysVecPredRegs = Param.Unsigned(128, "Number of physical predicate "
                                       "registers")
     # most ISAs don't use condition-code regs, so default is 0
     numPhysCCRegs = Param.Unsigned(0, "Number of physical cc registers")
-    numIQEntries = Param.Unsigned(384, "Number of instruction queue entries")
-    numROBEntries = Param.Unsigned(1024, "Number of reorder buffer entries")
+    numIQEntries = Param.Unsigned(192, "Number of instruction queue entries")
+    numROBEntries = Param.Unsigned(576, "Number of reorder buffer entries")
 
     smtNumFetchingThreads = Param.Unsigned(1, "SMT Number of Fetching Threads")
     smtFetchPolicy = Param.SMTFetchPolicy('RoundRobin', "SMT Fetch policy")

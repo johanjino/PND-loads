@@ -16,7 +16,7 @@ random.seed(sum(ord(c) for c in base_dir))
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
 procs = []
 scaled_up = True
-very_scaled = True
+very_scaled = False
 
 # iterate over all items in the current directory
 for out_dir in os.listdir(base_dir):
@@ -36,6 +36,8 @@ for out_dir in os.listdir(base_dir):
                 else:
                     address_file = binary+"_pnd_address"
                     O3outdir = "pnd."+out_dir[-1]+"/"+str(cpt_number)+".out"
+                import pdb
+                pdb.set_trace()
                 run = "ADDR_FILE="+address_file+" "+gem5+"build/ARM/gem5.fast --outdir="+O3outdir+" "+gem5+"configs/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
                 if scaled_up:
                     if very_scaled:

@@ -330,6 +330,8 @@ def addCommonOptions(parser):
         help="<simpoint file,weight file,interval-length,warmup-length>")
     parser.add_argument(
         "--simpoint-offset", type=int, default=0, help="Instruction offset to adjust simpoint checkpoint generation by when restoring.")
+    parser.add_argument(
+        "--last-simpoint", type=int, default=0, help="Index of last taken simpoint")
     parser.add_argument("--restore-simpoint-checkpoint", action="store_true",
                         default=False,
                         help="restore from a simpoint checkpoint taken with " +

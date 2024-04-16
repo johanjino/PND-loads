@@ -24,6 +24,9 @@ for addr in addrs:
         continue
     pnd_addrs.append(int(addr,16))
 
+print(len(pnd_addrs))
+print()
+
 address_file = open(verify_binary+"_pnd_address", "w")
 for addr in pnd_addrs:
     address_file.write(str(addr)+"\n")
