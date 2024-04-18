@@ -249,11 +249,13 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
             return AliasHint::Unchanged;
         }
     }
+    /*
     for (auto Call: all_calls){
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
         ModRefInfo res = AA.getModRefInfo(Load, Call);
 	if (isModSet(res)) return AliasHint::Unchanged;
     }
+    */
     return AliasHint::PredictNone;
 }
 

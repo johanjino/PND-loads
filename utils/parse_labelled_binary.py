@@ -8,6 +8,10 @@ r2 = r2pipe.open(label_binary)
 
 addrs = [l.split()[0] for l in r2.cmd("/x ffffffff").split('\n') if len(l) > 0]
 
+print()
+print(len(addrs))
+print()
+
 r2 = r2pipe.open(verify_binary)
 
 pnd_addrs = []
@@ -24,6 +28,7 @@ for addr in addrs:
         continue
     pnd_addrs.append(int(addr,16))
 
+print()
 print(len(pnd_addrs))
 print()
 
