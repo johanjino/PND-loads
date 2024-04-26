@@ -5,13 +5,11 @@ import sys
 results_dir = sys.argv[1]
 
 spec_dir = "/sim_home/luke/spec2017/benchspec/CPU/"
-"""
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
-           "641.leela_s", "657.xz_s", "607.cactuBSSN_s",
-           "648.exchange2_s", "620.omnetpp_s"]
-"""
-benches = ["607.cactuBSSN_s", "648.exchange2_s"]
+           "641.leela_s", "657.xz_s", "602.gcc_s",
+           "620.omnetpp_s"]
+benches = ["602.gcc_s"]
 
 for bench in benches:
 

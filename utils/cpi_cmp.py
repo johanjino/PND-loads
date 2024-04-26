@@ -3,8 +3,8 @@ import os
 stats = {"CPI", "numStoresSearched",
           "StoreSet__0.SSITCollisions",
           "memOrderViolationEvents",
-          "StoreSet__0.LFSTInvalidations","cyclesStoreQueueAccessed",
-         "loadToUse::mean", "loadToUse::stdev", "Lookupreduction"}
+          "StoreSet__0.LFSTInvalidations","cyclesStoreQueueAccessed","baseUsingStoreSetCheck",
+         "loadToUse::mean", "loadToUse::stdev", "Lookupreduction", "instsIssued"}
 
 def get_values(results):
     values = {}
@@ -13,8 +13,10 @@ def get_values(results):
         fields = line.split()
         name = ''.join(fields[:-1])
         if len(name.split('.')) == 2:
+            if name == 'lsq0.memOrderViolationEvents': continue #want iew
             name = name.split('.')[1]
         value = fields[-1]
+        if name in values and float(value) == 0: continue
         if name in stats:
             values[name] = float(value)
     return values
@@ -40,8 +42,12 @@ for f in os.listdir(os.getcwd()):
     differences.write("\tLookup Reduction: "+str(pna['Lookupreduction'] * 100)+"\n")
     differences.write("\tBase CPI: "+str(base['CPI'])+"\n")
     differences.write("\tPND CPI: "+str(pna['CPI'])+"\n")
+    differences.write("\tBase Lookups: "+str((base['baseUsingStoreSetCheck']/base['instsIssued'])*1000)+"\n")
+    differences.write("\tPND Lookups: "+str((pna['baseUsingStoreSetCheck']/pna['instsIssued'])*1000)+"\n")
+    differences.write("\tBase Violations: "+str((base['memOrderViolationEvents']/base['instsIssued'])*1000000)+"\n")
+    differences.write("\tPND Violations: "+str((pna['memOrderViolationEvents']/pna['instsIssued'])*1000000)+"\n")
     for field in base:
-        if field == 'Lookupreduction': continue
+        if field == 'Lookupreduction' or field == 'baseUsingStoreSetCheck': continue
         base_value = base[field]
         pna_value = pna[field]
         difference = ((pna_value - base_value) / base_value) * 100

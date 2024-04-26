@@ -16,12 +16,13 @@ random.seed(sum(ord(c) for c in base_dir))
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
 procs = []
 scaled_up = True
-very_scaled = False
+very_scaled = True
 
 # iterate over all items in the current directory
 for out_dir in os.listdir(base_dir):
     if os.path.isdir(out_dir) and out_dir.startswith("checkpoints.") and out_dir[-1].isdigit():
         command = commands[int(out_dir[-1])]
+        command = command.split('>')[0]
         cpt_number = 0
         for cpt_dir in os.listdir(os.path.join(base_dir, out_dir)):
             waited = 0
@@ -50,7 +51,7 @@ for out_dir in os.listdir(base_dir):
                     if Popen.poll(p) != None:
                         finished = True
                 time.sleep(random.uniform(0,1)*60)
-                if psutil.virtual_memory().percent < 70 and psutil.cpu_percent() < 90: continue
+                if psutil.virtual_memory().percent < 80 and psutil.cpu_percent() < 90: continue
                 Popen.wait(p)
 for p in procs:
     Popen.wait(p)

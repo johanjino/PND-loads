@@ -1452,7 +1452,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 
             auto coverage = AddrRangeCoverage::NoAddrRangeCoverage;
 
-			/*
+	    /*
             //check for forwarding violation caused by PND load
             if (load_inst->isSpecbCheck() && !store_it->instruction()->isAtomic() &&
                 ((st_e_dep >= req_s_dep && st_s_dep <= req_e_dep) ||
@@ -1467,7 +1467,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                     "inst [sn:%lli] and [sn:%lli] at address %#x\n",
                     store_it->instruction()->seqNum, load_inst->seqNum, req_s_dep);
             }
-			*/
+	    */
 
 
             //THE CASE IF WE CAN FORWARD the value of the STORE to the LOAD

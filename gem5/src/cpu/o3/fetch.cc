@@ -73,8 +73,7 @@
 #include "sim/full_system.hh"
 #include "sim/system.hh"
 
-std::map<uint64_t, uint8_t> pnd_violation_count;
-std::set<uint64_t> pnd_addresses;
+std::unordered_set<uint64_t> pnd_addresses;
 static void load_addresses(){
     std::string filename = std::string(std::getenv("ADDR_FILE"));
 
@@ -1085,9 +1084,7 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu);
     instruction->setTid(tid);
 
-    if (instruction->isLoad() && std::find(pnd_addresses.begin(), pnd_addresses.end(), this_pc.instAddr()) != pnd_addresses.end()){ //&&
-        //instruction->isLoad() && (pnd_violation_count.find(this_pc.instAddr()) == pnd_violation_count.end() ||
-        //pnd_violation_count[this_pc.instAddr()] <= 2)){
+    if (instruction->isLoad() && pnd_addresses.count(this_pc.instAddr())) { 
         instruction->setSpecFlag();
     }
 
