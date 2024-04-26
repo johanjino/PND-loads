@@ -3,7 +3,10 @@ import numpy as np
 import os
 import sys
 
-benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "mcf.0", "lbm.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "nab.0", "xz.0", "xz.1"]
+version = sys.argv[1]
+stat = 'Lookups' if version == 'lookups' else 'Violations'
+
+benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "mcf.0", "lbm.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "nab.0", "xz.0", "xz.1", "omnetpp.0", "gcc.0", "gcc.1", "gcc.2"]
 
 differences = ["differences-extra-large"]
 sizes = ["Large"]
@@ -18,9 +21,9 @@ for c, difference in enumerate(differences):
                 continue
             if len(line.strip()) == 0: continue
             name, value = line.strip().split(': ')
-            if name == 'Base LookupPerKInst':
+            if name == 'Base '+stat:
                 base_lookups[current_benchmark] = value
-            if name == 'PND LookupPerKInst':
+            if name == 'PND '+stat:
                 pnd_lookups[current_benchmark] = value
 
     percent_diff = []
@@ -65,11 +68,14 @@ for c, difference in enumerate(differences):
     for i, value in enumerate(percent_diff):
         ax.text(positions1[i] + bar_width+0.03, pnd_values[i]+0.5, str(round(value,1))+"%", ha='center', va='bottom')
 
-    ax.set_ylabel('Lookups per KiloInst', fontsize=18)
+    measurment = 'Lookups per KiloInst' if version == 'lookups' else 'Violations per MegaInst'
+    ax.set_ylabel(measurment, fontsize=18)
     ax.legend(labels=['Unlabelled Run', 'Labelled Run'], fontsize=16)
-    ax.set_title('MDP Lookup Reduction', fontsize=18)
+    title = 'MDP Lookup Reduction' if version == 'lookups' else 'Memory Order Violation Difference'
+    ax.set_title(title, fontsize=18)
     ax.set_xticks(positions1, benchmark_names)
     plt.tick_params(axis='x',labelsize=14, rotation=60)
     plt.tick_params(axis='y',labelsize=12)
     plt.tight_layout()
-    plt.savefig("/home/muke/Documents/papers/PND-ARCS/figures/lookups-small.png", dpi=600)
+    plt.show()
+    #plt.savefig("/home/muke/Documents/papers/PND-ARCS/figures/lookups-small.png", dpi=600)
