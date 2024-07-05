@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc ../../../lib/libllvm_gtest_main.a CMakeFiles/llvm_gtest_main.dir/TestMain.cpp.o
+/usr/bin/ranlib -D ../../../lib/libllvm_gtest_main.a

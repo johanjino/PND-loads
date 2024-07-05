@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc ../../../../lib/libclangTesting.a CMakeFiles/clangTesting.dir/CommandLineArgs.cpp.o CMakeFiles/clangTesting.dir/TestAST.cpp.o
+/usr/bin/ranlib -D ../../../../lib/libclangTesting.a

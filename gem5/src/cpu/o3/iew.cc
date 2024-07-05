@@ -1351,6 +1351,9 @@ IEW::executeInsts()
                     iewStats.predictedNotTakenIncorrect++;
                 }
             } else if (ldstQueue.violation(tid)) {
+                //we find the matching store here, so we have to save it to compare against
+                //at commit. could attach it to the violator
+
                 assert(inst->isMemRef());
                 // If there was an ordering violation, then get the
                 // DynInst that caused the violation.  Note that this

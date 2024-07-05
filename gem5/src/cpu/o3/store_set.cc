@@ -266,6 +266,8 @@ StoreSet::insertStore(Addr store_PC, InstSeqNum store_seq_num, ThreadID tid)
         // Update the last store that was fetched with the current one.
         LFST[store_SSID] = store_seq_num;
 
+        ++(memDep->stats).LFSTWrites;
+
         validLFST[store_SSID] = 1;
 
         storeList[store_seq_num] = store_SSID;
@@ -346,7 +348,7 @@ StoreSet::issued(Addr issued_PC, InstSeqNum issued_seq_num, bool is_store)
     if (validLFST[store_SSID] && LFST[store_SSID] == issued_seq_num) {
         DPRINTF(StoreSet, "StoreSet: store invalidated itself in LFST.\n");
         validLFST[store_SSID] = false;
-        ++(memDep->stats).LFSTInvalidations;
+        ++(memDep->stats).LFSTWrites;
     }
 }
 

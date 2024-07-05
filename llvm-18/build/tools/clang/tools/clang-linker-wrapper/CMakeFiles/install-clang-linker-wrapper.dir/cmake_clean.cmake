@@ -1,0 +1,9 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/install-clang-linker-wrapper"
+  "LinkerWrapperOpts.inc"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang )
+  include(CMakeFiles/install-clang-linker-wrapper.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
