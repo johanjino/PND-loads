@@ -1,0 +1,3 @@
+//extension handlers
+HANDLE_EXTENSION(AliasHintsPass)
+#undef HANDLE_EXTENSION

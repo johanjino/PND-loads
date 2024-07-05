@@ -1,0 +1,2 @@
+# CMAKE generated file: DO NOT EDIT!
+# Timestamp file for custom commands dependencies management for check-llvm-codegen-riscv-rv64-legal-i32.

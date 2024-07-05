@@ -1,0 +1,6 @@
+LLVM_18.1 {
+  global:
+    clang_registerCheckers;
+    clang_analyzerAPIVersionString;
+  local: *;
+};
