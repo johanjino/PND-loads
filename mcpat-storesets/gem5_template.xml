@@ -211,7 +211,7 @@
         Do not change them, unless you understand them-->
         <stat name="IFU_duty_cycle" value="0.9"/>
         <stat name="BR_duty_cycle" value="0.72"/><!--branch-->
-			  <stat name="MemDep_duty_cycle" value="0.72"/>
+			  <stat name="MemDep_duty_cycle" value="0.71"/>
         <stat name="LSU_duty_cycle" value="0.71"/>
         <stat name="MemManU_I_duty_cycle" value="0.9"/>
         <stat name="MemManU_D_duty_cycle" value="0.71"/>

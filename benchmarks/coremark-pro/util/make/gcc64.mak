@@ -41,7 +41,7 @@ TOOLS	= /usr/aarch64-linux-gnu/
 
 # Variable: CC
 #	name of the compiler
-CC		= /PND-Loads/llvm/build/bin/clang --target=aarch64-linux-gnu -static -march=armv8-a
+CC		= clang --target=aarch64-linux-gnu -static -march=armv8-a
 # Solaris: /usr/ccs/bin/as requires space after -o passed from gcc.
 #OBJOUT = -o \#
 OBJOUT	= -o
@@ -52,7 +52,7 @@ OEXT = .o
 
 AS		= $(TOOLS)/bin/as
 
-LD		= /PND-Loads/llvm/build/bin/clang --target=aarch64-linux-gnu -static -march=armv8-a
+LD		= clang --target=aarch64-linux-gnu -static -march=armv8-a
 EXEOUT	= -o
 EXE		= .exe
 

@@ -311,29 +311,16 @@ MemDepPredictor::MemDepPredictor(ParseXML* XML_interface, int ithCore_, InputPar
 	executionTime = coredynp.executionTime;
 	interface_ip.assoc               = 1;
 	interface_ip.pure_cam            = false;
-	if (coredynp.multithreaded)
-	{
+  interface_ip.is_cache			 = false;
+  interface_ip.pure_ram            = true;
 
-		tag							     = int(log2(coredynp.num_hthreads)+ EXTRA_TAG_BITS);
-		interface_ip.specific_tag        = 1;
-		interface_ip.tag_w               = tag;
-
-		interface_ip.is_cache			 = true;
-		interface_ip.pure_ram            = false;
-		}
-	else
-	{
-		interface_ip.is_cache			 = false;
-		interface_ip.pure_ram            = true;
-
-	}
 	//SSIT
 	data							 = int(ceil(XML->sys.core[ithCore].memdep_predictor.ssit_size / 8.0));
 	interface_ip.line_sz             = data;
 	interface_ip.cache_sz            = data*XML->sys.core[ithCore].memdep_predictor.ssit_entries;
 	interface_ip.nbanks              = 1;
 	interface_ip.out_w               = interface_ip.line_sz*8;
-	interface_ip.access_mode         = 2;
+	interface_ip.access_mode         = 1;
 	interface_ip.throughput          = 1.0/clockRate;
 	interface_ip.latency             = 1.0/clockRate;
 	interface_ip.obj_func_dyn_energy = 0;
@@ -354,7 +341,7 @@ MemDepPredictor::MemDepPredictor(ParseXML* XML_interface, int ithCore_, InputPar
 	interface_ip.cache_sz            = data*XML->sys.core[ithCore].memdep_predictor.lfst_entries;
 	interface_ip.nbanks              = 1;
 	interface_ip.out_w               = interface_ip.line_sz*8;
-	interface_ip.access_mode         = 2;
+	interface_ip.access_mode         = 1;
 	interface_ip.throughput          = 1.0/clockRate;
 	interface_ip.latency             = 1.0/clockRate;
 	interface_ip.obj_func_dyn_energy = 0;
@@ -2031,24 +2018,24 @@ void MemDepPredictor::computeEnergy(bool is_tdp)
 	ssit->power_t.reset();
 	lfst->power_t.reset();
 
-    ssit->power_t.readOp.dynamic   +=  ssit->local_result.power.readOp.dynamic*ssit->stats_t.readAc.access +
-                ssit->stats_t.writeAc.access*ssit->local_result.power.writeOp.dynamic;
-    lfst->power_t.readOp.dynamic   +=  lfst->local_result.power.readOp.dynamic*lfst->stats_t.readAc.access +
-                lfst->stats_t.writeAc.access*lfst->local_result.power.writeOp.dynamic;
+  ssit->power_t.readOp.dynamic   +=  ssit->local_result.power.readOp.dynamic*ssit->stats_t.readAc.access +
+              ssit->stats_t.writeAc.access*ssit->local_result.power.writeOp.dynamic;
+  lfst->power_t.readOp.dynamic   +=  lfst->local_result.power.readOp.dynamic*lfst->stats_t.readAc.access +
+              lfst->stats_t.writeAc.access*lfst->local_result.power.writeOp.dynamic;
 
-    if (is_tdp)
-    {
-    	ssit->power = ssit->power_t + ssit->local_result.power*pppm_lkg;
-    	lfst->power = lfst->power_t + lfst->local_result.power*pppm_lkg;
+  if (is_tdp)
+  {
+    ssit->power = ssit->power_t + ssit->local_result.power*pppm_lkg;
+    lfst->power = lfst->power_t + lfst->local_result.power*pppm_lkg;
 
-    	power = power + ssit->power + lfst->power;
-    }
-    else
-    {
-    	ssit->rt_power = ssit->power_t + ssit->local_result.power*pppm_lkg;
-    	lfst->rt_power = lfst->power_t + lfst->local_result.power*pppm_lkg;
-    	rt_power = rt_power + ssit->rt_power + lfst->rt_power;
-    }
+    power = power + ssit->power + lfst->power;
+  }
+  else
+  {
+    ssit->rt_power = ssit->power_t + ssit->local_result.power*pppm_lkg;
+    lfst->rt_power = lfst->power_t + lfst->local_result.power*pppm_lkg;
+    rt_power = rt_power + ssit->rt_power + lfst->rt_power;
+  }
 }
 
 void MemDepPredictor::displayEnergy(uint32_t indent,int plevel,bool is_tdp)
