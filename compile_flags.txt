@@ -1,9 +1,10 @@
 -I
-/usr/lib/llvm/16/include
--std=c++14
+/usr/lib/llvm/17/include
+-std=c++17
 -D_GNU_SOURCE
 -D__STDC_CONSTANT_MACROS
 -D__STDC_FORMAT_MACRO
 -D__STDC_LIMIT_MACROS
 -L
-/usr/lib/llvm/16/lib
+/usr/lib/llvm/17/lib64
+-lLLVM-17

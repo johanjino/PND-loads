@@ -171,7 +171,7 @@ Fetch::Fetch(CPU *_cpu, const BaseO3CPUParams &params)
     // Get the size of an instruction.
     instSize = decoder[0]->moreBytesSize();
 
-    load_addresses();
+    //load_addresses();
 }
 
 std::string Fetch::name() const { return cpu->name() + ".fetch"; }
@@ -1083,6 +1083,9 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
     DynInstPtr instruction = new (arrays) DynInst(
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu);
     instruction->setTid(tid);
+
+    if (this_pc.instAddr() == 0x400704)
+        std::cout << "Inst: " << instruction->staticInst->disassemble(this_pc.instAddr()) << "\n";
 
     if (instruction->isLoad() && pnd_addresses.count(this_pc.instAddr())) { 
         instruction->setSpecFlag();

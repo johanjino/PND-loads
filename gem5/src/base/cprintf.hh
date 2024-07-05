@@ -34,6 +34,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <cstdint>
 
 #include "base/cprintf_formats.hh"
 
