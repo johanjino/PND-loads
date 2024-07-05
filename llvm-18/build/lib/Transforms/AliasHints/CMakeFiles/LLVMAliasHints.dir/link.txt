@@ -1,2 +1,0 @@
-/usr/bin/ar Dqc ../../libLLVMAliasHints.a CMakeFiles/LLVMAliasHints.dir/AliasHints.cpp.o
-/usr/bin/ranlib -D ../../libLLVMAliasHints.a

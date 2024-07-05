@@ -72,7 +72,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     AliasHint Hint;
     std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
-        //if (!Load->isSimple()) continue; //difference
+        if (!Load->isSimple()) continue;
         if (Load->getAAMetadata().PND) continue; //we already marked this when checking for constant memory
         Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
         if(Hint == AliasHint::PredictNone)
@@ -91,6 +91,7 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
 
 }
 
+//TODO: replace with either IndirectUnsafe or dep.isScalar
 bool isVariantAtAllLevels(Value *Ptr, Loop *ParentLoop, LoopInfo &LI, ScalarEvolution &SE){
     Loop *L = ParentLoop;
     Value *NextValue = Ptr;
@@ -133,6 +134,7 @@ static bool canComputePointerDiff(ScalarEvolution &SE,
     return SE.instructionCouldExistWithOperands(A, B);
 }
 
+//FIXME
 bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution &SE, AAResults &AA){
 
     LoadInst *L;
@@ -227,7 +229,8 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         if (!isProblematicDep(Load, Dep.get(), LI, SE, AA)) continue;
-        if (was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
+        //DEBUG: disabling LAI stuff for now
+        if (false && was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
             Store->isSimple() && store_map.find(Store) != store_map.end()){
             MemoryDepChecker::Dependence::DepType Type = store_map[Store];
             switch (Type){
@@ -252,7 +255,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     for (auto Call: all_calls){
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
         ModRefInfo res = AA.getModRefInfo(Load, Call);
-	if (isModSet(res)) return AliasHint::Unchanged;
+        if (isModSet(res)) return AliasHint::Unchanged;
     }
     return AliasHint::PredictNone;
 }

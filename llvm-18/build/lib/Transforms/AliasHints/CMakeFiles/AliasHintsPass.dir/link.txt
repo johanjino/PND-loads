@@ -1,2 +1,0 @@
-/usr/bin/ar Dqc ../../libAliasHintsPass.a CMakeFiles/obj.AliasHintsPass.dir/AliasHints.cpp.o
-/usr/bin/ranlib -D ../../libAliasHintsPass.a
