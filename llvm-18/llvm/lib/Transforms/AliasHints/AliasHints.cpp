@@ -230,7 +230,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         if (!Dep) continue;
         if (!isProblematicDep(Load, Dep.get(), LI, SE, AA)) continue;
         //DEBUG: disabling LAI stuff for now
-        if (false && was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
+        if (was_LAI_analysed && LI.getLoopFor(Store->getParent()) == current_loop &&
             Store->isSimple() && store_map.find(Store) != store_map.end()){
             MemoryDepChecker::Dependence::DepType Type = store_map[Store];
             switch (Type){
