@@ -1,5 +1,5 @@
 // RUN: %check_clang_tidy %s modernize-use-equals-default %t -- \
-// RUN:   -config="{CheckOptions: [{key: modernize-use-equals-default.IgnoreMacros, value: false}]}" \
+// RUN:   -config="{CheckOptions: {modernize-use-equals-default.IgnoreMacros: false}}" \
 // RUN:   -- -fno-delayed-template-parsing -fexceptions
 
 // Out of line definition.
@@ -30,6 +30,32 @@ struct IL {
   // CHECK-MESSAGES: :[[@LINE-4]]:7: warning: use '= default'
   // CHECK-FIXES: IL &operator=(const IL &Other) = default;
   int Field;
+};
+
+// Skip unions.
+union NU {
+  NU(const NU &Other) : Field(Other.Field) {}
+  // CHECK-FIXES: NU(const NU &Other) :
+  NU &operator=(const NU &Other) {
+    Field = Other.Field;
+    return *this;
+  }
+  // CHECK-FIXES: NU &operator=(const NU &Other) {
+  IL Field;
+};
+
+// Skip structs/classes containing anonymous unions.
+struct SU {
+  SU(const SU &Other) : Field(Other.Field) {}
+  // CHECK-FIXES: SU(const SU &Other) :
+  SU &operator=(const SU &Other) {
+    Field = Other.Field;
+    return *this;
+  }
+  // CHECK-FIXES: SU &operator=(const SU &Other) {
+  union {
+    IL Field;
+  };
 };
 
 // Wrong type.
@@ -431,6 +457,13 @@ struct WRT : IL {
 IL &WRT::operator=(const WRT &Other) {
   return *this;
 }
+
+// Wrong return type.
+struct WRTConstRef {
+  const WRTConstRef &operator = (const WRTConstRef &) {
+    return *this;
+  }
+};
 
 // Try-catch.
 struct ITC {

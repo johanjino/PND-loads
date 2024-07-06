@@ -37,7 +37,7 @@ namespace {
 }
 
 char Hello::ID = 0;
-static RegisterPass<Hello> X("hello", "Hello World Pass", false, false);
+static RegisterPass<Hello> X("hello", "Hello World Pass");
 
 namespace {
   // Hello2 - The second implementation with getAnalysisUsage implemented.

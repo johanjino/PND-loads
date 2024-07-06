@@ -801,7 +801,7 @@ public:
       // reuse the information about UseStmt for DefStmt
       DefStmt = UseStmt;
 
-      LLVM_FALLTHROUGH;
+      [[fallthrough]];
     case VirtualUse::Inter:
       Instruction *Inst = cast<Instruction>(UseVal);
 
@@ -1149,7 +1149,7 @@ class ForwardOpTreePrinterLegacyPass final : public ScopPass {
 public:
   static char ID;
 
-  ForwardOpTreePrinterLegacyPass() : ForwardOpTreePrinterLegacyPass(outs()){};
+  ForwardOpTreePrinterLegacyPass() : ForwardOpTreePrinterLegacyPass(outs()) {}
   explicit ForwardOpTreePrinterLegacyPass(llvm::raw_ostream &OS)
       : ScopPass(ID), OS(OS) {}
 

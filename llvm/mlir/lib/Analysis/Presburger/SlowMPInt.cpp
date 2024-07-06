@@ -7,7 +7,15 @@
 //===----------------------------------------------------------------------===//
 
 #include "mlir/Analysis/Presburger/SlowMPInt.h"
-#include "llvm/Support/MathExtras.h"
+#include "mlir/Support/LLVM.h"
+#include "llvm/ADT/APInt.h"
+#include "llvm/ADT/Hashing.h"
+#include "llvm/ADT/STLFunctionalExtras.h"
+#include "llvm/Support/raw_ostream.h"
+#include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <functional>
 
 using namespace mlir;
 using namespace presburger;
@@ -221,7 +229,9 @@ SlowMPInt detail::mod(const SlowMPInt &lhs, const SlowMPInt &rhs) {
 
 SlowMPInt detail::gcd(const SlowMPInt &a, const SlowMPInt &b) {
   assert(a >= 0 && b >= 0 && "operands must be non-negative!");
-  return SlowMPInt(llvm::APIntOps::GreatestCommonDivisor(a.val, b.val));
+  unsigned width = getMaxWidth(a.val, b.val);
+  return SlowMPInt(llvm::APIntOps::GreatestCommonDivisor(a.val.sext(width),
+                                                         b.val.sext(width)));
 }
 
 /// Returns the least common multiple of 'a' and 'b'.

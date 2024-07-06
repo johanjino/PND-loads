@@ -9,11 +9,6 @@
 #==============================================================================#
 # File extensions to be ignored anywhere in the tree.
 #==============================================================================#
-*.o
-*.bc
-*.s
-*.ll
-a.out
 # Temp files created by most text editors.
 *~
 # Merge files created by git.
@@ -32,7 +27,7 @@ a.out
 /*/CMakeUserPresets.json
 
 # Nested build directory
-/build*
+build*
 
 #==============================================================================#
 # Explicit files to ignore (only matches one).
@@ -57,8 +52,6 @@ autoconf/autom4te.cache
 # CLion project configuration
 /.idea
 
-micro-benchmarks/coremark-pro/*/*.ll
-
 #==============================================================================#
 # Directories to ignore (do not add trailing '/'s, they skip symlinks).
 #==============================================================================#
@@ -77,4 +70,3 @@ pythonenv*
 /clang/utils/analyzer/projects/*/RefScanBuildResults
 # automodapi puts generated documentation files here.
 /lldb/docs/python_api/
-addrspace_fixer/target/

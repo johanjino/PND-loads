@@ -11,11 +11,17 @@
 // UNSUPPORTED: no-localization
 // UNSUPPORTED: c++03
 
-// TODO: Investigate this failure, which happens only with the Bootstrapping build.
-// UNSUPPORTED: clang-13, clang-14, clang-15, clang-16
+// TODO: Investigate these failures which break the CI.
+// UNSUPPORTED: clang-16, clang-17, clang-18
 
-// TODO: Investigate this failure on GCC 12 (in Ubuntu Jammy)
-// UNSUPPORTED: gcc-12
+// TODO: Investigate this failure on GCC 13 (in Ubuntu Jammy)
+// UNSUPPORTED: gcc-13
+
+// The Android libc++ tests are run on a non-Android host, connected to an
+// Android device over adb. gdb needs special support to make this work (e.g.
+// gdbclient.py, ndk-gdb.py, gdbserver), and the Android organization doesn't
+// support gdb anymore, favoring lldb instead.
+// UNSUPPORTED: android
 
 // RUN: %{cxx} %{flags} %s -o %t.exe %{compile_flags} -g %{link_flags}
 // Ensure locale-independence for unicode tests.
@@ -643,17 +649,14 @@ void shared_ptr_test() {
 
 void streampos_test() {
   std::streampos test0 = 67;
-  ComparePrettyPrintToChars(
-      test0, "std::fpos with stream offset:67 with state: {count:0 value:0}");
+  ComparePrettyPrintToRegex(test0, "^std::fpos with stream offset:67( with state: {count:0 value:0})?$");
   std::istringstream input("testing the input stream here");
   std::streampos test1 = input.tellg();
-  ComparePrettyPrintToChars(
-      test1, "std::fpos with stream offset:0 with state: {count:0 value:0}");
+  ComparePrettyPrintToRegex(test1, "^std::fpos with stream offset:0( with state: {count:0 value:0})?$");
   std::unique_ptr<char[]> buffer(new char[5]);
   input.read(buffer.get(), 5);
   test1 = input.tellg();
-  ComparePrettyPrintToChars(
-      test1, "std::fpos with stream offset:5 with state: {count:0 value:0}");
+  ComparePrettyPrintToRegex(test1, "^std::fpos with stream offset:5( with state: {count:0 value:0})?$");
 }
 
 int main(int, char**) {

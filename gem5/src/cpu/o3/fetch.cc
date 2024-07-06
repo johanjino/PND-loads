@@ -171,7 +171,7 @@ Fetch::Fetch(CPU *_cpu, const BaseO3CPUParams &params)
     // Get the size of an instruction.
     instSize = decoder[0]->moreBytesSize();
 
-    //load_addresses();
+    load_addresses();
 }
 
 std::string Fetch::name() const { return cpu->name() + ".fetch"; }

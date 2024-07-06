@@ -131,9 +131,7 @@ MemDepUnit::MemDepUnitStats::MemDepUnitStats(statistics::Group *parent)
       ADD_STAT(SSITCollisions, statistics::units::Count::get(),
                "Number of times two different PCs hash to the same SSIT entry within a clear period."),
       ADD_STAT(SSITOverwrites, statistics::units::Count::get(),
-               "Number of times an existing SSIT entry is overwritten"),
-      ADD_STAT(LFSTWrites, statistics::units::Count::get(),
-               "Number of times an inserted store updates the LFST.")
+               "Number of times an existing SSIT entry is overwritten")
 {
 }
 

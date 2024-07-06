@@ -19,11 +19,11 @@
 // RTLIB-GXX-SAME: "-lgcc_s"
 // RTLIB-GXX-NOT: "--no-as-needed"
 //
-// RUN: %clang -### %s 2>&1 \
+// RUN: not %clang -### %s 2>&1 \
 // RUN:     --target=x86_64-unknown-linux -rtlib=libgcc --unwindlib=libunwind \
 // RUN:     --gcc-toolchain="" -resource-dir=%S/Inputs/resource_dir \
 // RUN:   | FileCheck --check-prefix=RTLIB-GCC-UNWINDLIB-COMPILER-RT %s
-// RUN: %clangxx -### %s 2>&1 \
+// RUN: not %clangxx -### %s 2>&1 \
 // RUN:     --target=x86_64-unknown-linux -rtlib=libgcc --unwindlib=libunwind \
 // RUN:     --gcc-toolchain="" -resource-dir=%S/Inputs/resource_dir \
 // RUN:   | FileCheck --check-prefix=RTLIB-GCC-UNWINDLIB-COMPILER-RT %s
@@ -32,7 +32,7 @@
 // RTLIB-GCC-UNWINDLIB-COMPILER-RT-SAME: "-lunwind"
 // RTLIB-GCC-UNWINDLIB-COMPILER-RT-SAME: "--no-as-needed"
 //
-// RUN: %clang -### %s 2>&1 \
+// RUN: not %clang -### %s 2>&1 \
 // RUN:     --target=x86_64-unknown-linux -rtlib=libgcc --unwindlib=libunwind \
 // RUN:     -shared-libgcc \
 // RUN:     --gcc-toolchain="" -resource-dir=%S/Inputs/resource_dir \
@@ -40,7 +40,7 @@
 // RTLIB-GCC-SHARED-UNWINDLIB-COMPILER-RT: "-l:libunwind.so"
 // RTLIB-GCC-SHARED-UNWINDLIB-COMPILER-RT-SAME: "-lgcc"
 //
-// RUN: %clang -### %s 2>&1 \
+// RUN: not %clang -### %s 2>&1 \
 // RUN:     --target=x86_64-unknown-linux -rtlib=libgcc --unwindlib=libunwind \
 // RUN:     -static-libgcc \
 // RUN:     --gcc-toolchain="" -resource-dir=%S/Inputs/resource_dir \
@@ -86,6 +86,13 @@
 // RUN:     --gcc-toolchain="" -resource-dir=%S/Inputs/resource_dir \
 // RUN: FileCheck --input-file=%t.err --check-prefix=RTLIB-GCC-UNWINDLIB-COMPILER_RT %s
 // RTLIB-GCC-UNWINDLIB-COMPILER_RT: "{{[.|\\\n]*}}--rtlib=libgcc requires --unwindlib=libgcc"
+//
+// RUN: %clang -### %s 2>&1 \
+// RUN:     --target=x86_64-pc-windows-msvc -rtlib=compiler-rt --unwindlib=libunwind \
+// RUN:     -resource-dir=%S/Inputs/resource_dir \
+// RUN:   | FileCheck --check-prefix=MSVC-RTLIB-COMPILER-RT-UNWINDLIB-COMPILER-RT %s
+// MSVC-RTLIB-COMPILER-RT-UNWINDLIB-COMPILER-RT: "{{.*}}clang_rt.builtins-x86_64.lib"
+// MSVC-RTLIB-COMPILER-RT-UNWINDLIB-COMPILER-RT-NOT: "{{.*}}unwind.lib"
 //
 // RUN: %clang -### %s 2>&1 \
 // RUN:     --target=x86_64-w64-mingw32 -rtlib=compiler-rt --unwindlib=libunwind \

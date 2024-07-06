@@ -156,10 +156,10 @@ void APValue::LValuePathEntry::Profile(llvm::FoldingSetNodeID &ID) const {
 
 APValue::LValuePathSerializationHelper::LValuePathSerializationHelper(
     ArrayRef<LValuePathEntry> Path, QualType ElemTy)
-    : ElemTy((const void *)ElemTy.getTypePtrOrNull()), Path(Path) {}
+    : Ty((const void *)ElemTy.getTypePtrOrNull()), Path(Path) {}
 
 QualType APValue::LValuePathSerializationHelper::getType() {
-  return QualType::getFromOpaquePtr(ElemTy);
+  return QualType::getFromOpaquePtr(Ty);
 }
 
 namespace {
@@ -390,11 +390,13 @@ APValue &APValue::operator=(const APValue &RHS) {
 }
 
 APValue &APValue::operator=(APValue &&RHS) {
-  if (Kind != None && Kind != Indeterminate)
-    DestroyDataAndMakeUninit();
-  Kind = RHS.Kind;
-  Data = RHS.Data;
-  RHS.Kind = None;
+  if (this != &RHS) {
+    if (Kind != None && Kind != Indeterminate)
+      DestroyDataAndMakeUninit();
+    Kind = RHS.Kind;
+    Data = RHS.Data;
+    RHS.Kind = None;
+  }
   return *this;
 }
 
@@ -637,10 +639,10 @@ static bool TryPrintAsStringLiteral(raw_ostream &Out,
     return false;
 
   // Nothing we can do about a sequence that is not null-terminated
-  if (!Inits.back().getInt().isZero())
+  if (!Inits.back().isInt() || !Inits.back().getInt().isZero())
     return false;
-  else
-    Inits = Inits.drop_back();
+
+  Inits = Inits.drop_back();
 
   llvm::SmallString<40> Buf;
   Buf.push_back('"');
@@ -655,6 +657,8 @@ static bool TryPrintAsStringLiteral(raw_ostream &Out,
   }
 
   for (auto &Val : Inits) {
+    if (!Val.isInt())
+      return false;
     int64_t Char64 = Val.getInt().getExtValue();
     if (!isASCII(Char64))
       return false; // Bye bye, see you in integers.
@@ -837,6 +841,10 @@ void APValue::printPretty(raw_ostream &Out, const PrintingPolicy &Policy,
           Out << *VD;
           ElemTy = VD->getType();
         }
+      } else if (ElemTy->isAnyComplexType()) {
+        // The lvalue refers to a complex type
+        Out << (Path[I].getAsArrayIndex() == 0 ? ".real" : ".imag");
+        ElemTy = ElemTy->castAs<ComplexType>()->getElementType();
       } else {
         // The lvalue must refer to an array.
         Out << '[' << Path[I].getAsArrayIndex() << ']';
@@ -871,7 +879,7 @@ void APValue::printPretty(raw_ostream &Out, const PrintingPolicy &Policy,
           Out << "...}";
           return;
         }
-        LLVM_FALLTHROUGH;
+        [[fallthrough]];
       default:
         getArrayInitializedElt(I).printPretty(Out, Policy, ElemTy, Ctx);
       }
@@ -982,7 +990,7 @@ bool APValue::hasLValuePath() const {
 ArrayRef<APValue::LValuePathEntry> APValue::getLValuePath() const {
   assert(isLValue() && hasLValuePath() && "Invalid accessor");
   const LV &LVal = *((const LV *)(const char *)&Data);
-  return llvm::makeArrayRef(LVal.getPath(), LVal.PathLength);
+  return llvm::ArrayRef(LVal.getPath(), LVal.PathLength);
 }
 
 unsigned APValue::getLValueCallIndex() const {
@@ -1060,7 +1068,7 @@ ArrayRef<const CXXRecordDecl*> APValue::getMemberPointerPath() const {
   assert(isMemberPointer() && "Invalid accessor");
   const MemberPointerData &MPD =
       *((const MemberPointerData *)(const char *)&Data);
-  return llvm::makeArrayRef(MPD.getPath(), MPD.PathLength);
+  return llvm::ArrayRef(MPD.getPath(), MPD.PathLength);
 }
 
 void APValue::MakeLValue() {
@@ -1107,7 +1115,7 @@ LinkageInfo LinkageComputer::getLVForValue(const APValue &V,
 
   auto MergeLV = [&](LinkageInfo MergeLV) {
     LV.merge(MergeLV);
-    return LV.getLinkage() == InternalLinkage;
+    return LV.getLinkage() == Linkage::Internal;
   };
   auto Merge = [&](const APValue &V) {
     return MergeLV(getLVForValue(V, computation));

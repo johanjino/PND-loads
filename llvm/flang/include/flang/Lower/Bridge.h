@@ -15,9 +15,16 @@
 
 #include "flang/Common/Fortran.h"
 #include "flang/Lower/AbstractConverter.h"
+#include "flang/Lower/EnvironmentDefault.h"
+#include "flang/Lower/LoweringOptions.h"
+#include "flang/Lower/StatementContext.h"
 #include "flang/Optimizer/Builder/FIRBuilder.h"
-#include "flang/Optimizer/Support/KindMapping.h"
+#include "flang/Optimizer/Dialect/Support/KindMapping.h"
 #include "mlir/IR/BuiltinOps.h"
+
+namespace llvm {
+class DataLayout;
+} // namespace llvm
 
 namespace Fortran {
 namespace common {
@@ -48,13 +55,20 @@ public:
   /// Create a lowering bridge instance.
   static LoweringBridge
   create(mlir::MLIRContext &ctx,
+         Fortran::semantics::SemanticsContext &semanticsContext,
          const Fortran::common::IntrinsicTypeDefaultKinds &defaultKinds,
          const Fortran::evaluate::IntrinsicProcTable &intrinsics,
          const Fortran::evaluate::TargetCharacteristics &targetCharacteristics,
          const Fortran::parser::AllCookedSources &allCooked,
-         llvm::StringRef triple, fir::KindMapping &kindMap) {
-    return LoweringBridge(ctx, defaultKinds, intrinsics, targetCharacteristics,
-                          allCooked, triple, kindMap);
+         llvm::StringRef triple, fir::KindMapping &kindMap,
+         const Fortran::lower::LoweringOptions &loweringOptions,
+         const std::vector<Fortran::lower::EnvironmentDefault> &envDefaults,
+         const Fortran::common::LanguageFeatureControl &languageFeatures,
+         const llvm::DataLayout *dataLayout = nullptr) {
+    return LoweringBridge(ctx, semanticsContext, defaultKinds, intrinsics,
+                          targetCharacteristics, allCooked, triple, kindMap,
+                          loweringOptions, envDefaults, languageFeatures,
+                          dataLayout);
   }
 
   //===--------------------------------------------------------------------===//
@@ -83,8 +97,29 @@ public:
   /// Get the kind map.
   const fir::KindMapping &getKindMap() const { return kindMap; }
 
+  const Fortran::lower::LoweringOptions &getLoweringOptions() const {
+    return loweringOptions;
+  }
+
+  const std::vector<Fortran::lower::EnvironmentDefault> &
+  getEnvironmentDefaults() const {
+    return envDefaults;
+  }
+
+  const Fortran::common::LanguageFeatureControl &getLanguageFeatures() const {
+    return languageFeatures;
+  }
+
   /// Create a folding context. Careful: this is very expensive.
   Fortran::evaluate::FoldingContext createFoldingContext() const;
+
+  Fortran::semantics::SemanticsContext &getSemanticsContext() const {
+    return semanticsContext;
+  }
+
+  Fortran::lower::StatementContext &fctCtx() { return functionContext; }
+
+  Fortran::lower::StatementContext &openAccCtx() { return openAccContext; }
 
   bool validModule() { return getModule(); }
 
@@ -103,14 +138,22 @@ public:
 private:
   explicit LoweringBridge(
       mlir::MLIRContext &ctx,
+      Fortran::semantics::SemanticsContext &semanticsContext,
       const Fortran::common::IntrinsicTypeDefaultKinds &defaultKinds,
       const Fortran::evaluate::IntrinsicProcTable &intrinsics,
       const Fortran::evaluate::TargetCharacteristics &targetCharacteristics,
       const Fortran::parser::AllCookedSources &cooked, llvm::StringRef triple,
-      fir::KindMapping &kindMap);
+      fir::KindMapping &kindMap,
+      const Fortran::lower::LoweringOptions &loweringOptions,
+      const std::vector<Fortran::lower::EnvironmentDefault> &envDefaults,
+      const Fortran::common::LanguageFeatureControl &languageFeatures,
+      const llvm::DataLayout *dataLayout);
   LoweringBridge() = delete;
   LoweringBridge(const LoweringBridge &) = delete;
 
+  Fortran::semantics::SemanticsContext &semanticsContext;
+  Fortran::lower::StatementContext functionContext;
+  Fortran::lower::StatementContext openAccContext;
   const Fortran::common::IntrinsicTypeDefaultKinds &defaultKinds;
   const Fortran::evaluate::IntrinsicProcTable &intrinsics;
   const Fortran::evaluate::TargetCharacteristics &targetCharacteristics;
@@ -118,6 +161,9 @@ private:
   mlir::MLIRContext &context;
   std::unique_ptr<mlir::ModuleOp> module;
   fir::KindMapping &kindMap;
+  const Fortran::lower::LoweringOptions &loweringOptions;
+  const std::vector<Fortran::lower::EnvironmentDefault> &envDefaults;
+  const Fortran::common::LanguageFeatureControl &languageFeatures;
 };
 
 } // namespace lower

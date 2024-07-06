@@ -7,7 +7,6 @@
 //===----------------------------------------------------------------------===//
 
 // UNSUPPORTED: c++03, c++11, c++14, c++17
-// UNSUPPORTED: libcpp-has-no-incomplete-ranges
 
 // constexpr explicit sentinel(filter_view&);
 
@@ -32,7 +31,7 @@ constexpr void test() {
   };
 
   std::array<int, 5> array{0, 1, 2, 3, 4};
-  FilterView view = make_filter_view(array.begin(), array.end(), AlwaysTrue{});
+  FilterView view = make_filter_view(array.data(), array.data() + array.size(), AlwaysTrue{});
 
   FilterSentinel sent(view);
   assert(base(base(sent.base())) == base(base(view.end().base())));

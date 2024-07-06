@@ -14,7 +14,6 @@
 #include "bolt/Core/BinaryContext.h"
 #include "bolt/Core/BinaryFunction.h"
 #include "llvm/ADT/SmallPtrSet.h"
-#include "llvm/MC/MCAsmLayout.h"
 #include "llvm/MC/MCInst.h"
 #include "llvm/Support/Errc.h"
 
@@ -102,7 +101,7 @@ bool BinaryBasicBlock::validateSuccessorInvariants() {
     if (Valid) {
       for (const MCSymbol *Sym : UniqueSyms) {
         Valid &= (Sym == Function->getFunctionEndLabel() ||
-                  Sym == Function->getFunctionColdEndLabel());
+                  Sym == Function->getFunctionEndLabel(getFragmentNum()));
         if (!Valid) {
           errs() << "BOLT-WARNING: Jump table contains illegal entry: "
                  << Sym->getName() << "\n";
@@ -198,14 +197,13 @@ int32_t BinaryBasicBlock::getCFIStateAtInstr(const MCInst *Instr) const {
   // Find the last CFI preceding Instr in this basic block.
   const MCInst *LastCFI = nullptr;
   bool InstrSeen = (Instr == nullptr);
-  for (auto RII = Instructions.rbegin(), E = Instructions.rend(); RII != E;
-       ++RII) {
+  for (const MCInst &Inst : llvm::reverse(Instructions)) {
     if (!InstrSeen) {
-      InstrSeen = (&*RII == Instr);
+      InstrSeen = (&Inst == Instr);
       continue;
     }
-    if (Function->getBinaryContext().MIB->isCFI(*RII)) {
-      LastCFI = &*RII;
+    if (Function->getBinaryContext().MIB->isCFI(Inst)) {
+      LastCFI = &Inst;
       break;
     }
   }
@@ -491,7 +489,7 @@ void BinaryBasicBlock::addBranchInstruction(const BinaryBasicBlock *Successor) {
   assert(isSuccessor(Successor));
   BinaryContext &BC = Function->getBinaryContext();
   MCInst NewInst;
-  std::unique_lock<std::shared_timed_mutex> Lock(BC.CtxMutex);
+  std::unique_lock<llvm::sys::RWMutex> Lock(BC.CtxMutex);
   BC.MIB->createUncondBranch(NewInst, Successor->getLabel(), BC.Ctx.get());
   Instructions.emplace_back(std::move(NewInst));
 }
@@ -581,28 +579,17 @@ uint64_t BinaryBasicBlock::estimateSize(const MCCodeEmitter *Emitter) const {
 
 BinaryBasicBlock::BinaryBranchInfo &
 BinaryBasicBlock::getBranchInfo(const BinaryBasicBlock &Succ) {
-  auto BI = branch_info_begin();
-  for (BinaryBasicBlock *BB : successors()) {
-    if (&Succ == BB)
-      return *BI;
-    ++BI;
-  }
-
-  llvm_unreachable("Invalid successor");
-  return *BI;
+  return const_cast<BinaryBranchInfo &>(
+      static_cast<const BinaryBasicBlock &>(*this).getBranchInfo(Succ));
 }
 
-BinaryBasicBlock::BinaryBranchInfo &
-BinaryBasicBlock::getBranchInfo(const MCSymbol *Label) {
-  auto BI = branch_info_begin();
-  for (BinaryBasicBlock *BB : successors()) {
-    if (BB->getLabel() == Label)
-      return *BI;
-    ++BI;
-  }
-
-  llvm_unreachable("Invalid successor");
-  return *BI;
+const BinaryBasicBlock::BinaryBranchInfo &
+BinaryBasicBlock::getBranchInfo(const BinaryBasicBlock &Succ) const {
+  const auto Zip = llvm::zip(successors(), branch_info());
+  const auto Result = llvm::find_if(
+      Zip, [&](const auto &Tuple) { return std::get<0>(Tuple) == &Succ; });
+  assert(Result != Zip.end() && "Cannot find target in successors");
+  return std::get<1>(*Result);
 }
 
 BinaryBasicBlock *BinaryBasicBlock::splitAt(iterator II) {
@@ -623,28 +610,6 @@ BinaryBasicBlock *BinaryBasicBlock::splitAt(iterator II) {
   Instructions.erase(II, end());
 
   return NewBlock;
-}
-
-void BinaryBasicBlock::updateOutputValues(const MCAsmLayout &Layout) {
-  if (!LocSyms)
-    return;
-
-  const uint64_t BBAddress = getOutputAddressRange().first;
-  const uint64_t BBOffset = Layout.getSymbolOffset(*getLabel());
-  for (const auto &LocSymKV : *LocSyms) {
-    const uint32_t InputFunctionOffset = LocSymKV.first;
-    const uint32_t OutputOffset = static_cast<uint32_t>(
-        Layout.getSymbolOffset(*LocSymKV.second) - BBOffset);
-    getOffsetTranslationTable().emplace_back(
-        std::make_pair(OutputOffset, InputFunctionOffset));
-
-    // Update reverse (relative to BAT) address lookup table for function.
-    if (getFunction()->requiresAddressTranslation()) {
-      getFunction()->getInputOffsetToAddressMap().emplace(
-          std::make_pair(InputFunctionOffset, OutputOffset + BBAddress));
-    }
-  }
-  LocSyms.reset(nullptr);
 }
 
 } // namespace bolt

@@ -1,15 +1,13 @@
-// RUN: %libomptarget-compile-run-and-check-generic
+// RUN: %libomptarget-compile-generic
+// RUN: env HSA_XNACK=1 \
+// RUN: %libomptarget-run-generic | %fcheck-generic
 // XFAIL: nvptx64-nvidia-cuda
-// XFAIL: nvptx64-nvidia-cuda-oldDriver
 // XFAIL: nvptx64-nvidia-cuda-LTO
 
-// Fails on amdgpu with error: GPU Memory Error
-// XFAIL: amdgcn-amd-amdhsa
-// XFAIL: amdgcn-amd-amdhsa-oldDriver
-// XFAIL: amdgcn-amd-amdhsa-LTO
+// REQUIRES: unified_shared_memory
 
-#include <stdio.h>
 #include <omp.h>
+#include <stdio.h>
 
 // ---------------------------------------------------------------------------
 // Various definitions copied from OpenMP RTL

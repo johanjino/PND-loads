@@ -10,9 +10,6 @@ command interpreter (we refer to this for brevity as the embedded interpreter).
 Of course, in this context it has full access to the LLDB API - with some
 additional conveniences we will call out in the FAQ.
 
-.. contents::
-   :local:
-
 Documentation
 --------------
 
@@ -356,7 +353,7 @@ The custom Resolver is provided as a Python class with the following methods:
 |                    |                                       | symbol name, you could write a generic symbol name based Resolver, and then allow the user to pass               |
 |                    |                                       | in the particular symbol in the extra_args                                                                       |
 +--------------------+---------------------------------------+------------------------------------------------------------------------------------------------------------------+
-| ``__callback__``   | ``sym_ctx``:`lldb.SBSymbolContext`   | This is the Resolver callback.                                                                                    |
+| ``__callback__``   | ``sym_ctx``:`lldb.SBSymbolContext`    | This is the Resolver callback.                                                                                   |
 |                    |                                       | The ``sym_ctx`` argument will be filled with the current stage                                                   |
 |                    |                                       | of the search.                                                                                                   |
 |                    |                                       |                                                                                                                  |
@@ -378,7 +375,7 @@ The custom Resolver is provided as a Python class with the following methods:
 |                    |                                       | So you would want to return `lldb.eSearchDepthModule`.  This method is optional.  If not provided the search     |
 |                    |                                       | will be done at Module depth.                                                                                    |
 +--------------------+---------------------------------------+------------------------------------------------------------------------------------------------------------------+
-| ``get_short_help`  | ``None``                              | This is an optional method.  If provided, the returned string will be printed at the beginning of                |
+| ``get_short_help`` | ``None``                              | This is an optional method.  If provided, the returned string will be printed at the beginning of                |
 |                    |                                       | the description for this breakpoint.                                                                             |
 +--------------------+---------------------------------------+------------------------------------------------------------------------------------------------------------------+
 
@@ -608,7 +605,7 @@ look like:
 
       # Finally, dispose of the debugger you just made.
       lldb.SBDebugger.Destroy(debugger)
-      # Terminate the debug sesssion
+      # Terminate the debug session
       lldb.SBDebugger.Terminate()
 
 
@@ -860,7 +857,8 @@ functions 'read', 'write' and 'close' follows:
     def get_recognized_arguments(self, frame):
       if frame.name in ["read", "write", "close"]:
         fd = frame.EvaluateExpression("$arg1").unsigned
-        value = lldb.target.CreateValueFromExpression("fd", "(int)%d" % fd)
+        target = frame.thread.process.target
+        value = target.CreateValueFromExpression("fd", "(int)%d" % fd)
         return [value]
       return []
 
