@@ -15,7 +15,7 @@
 // 'wide' iteration. After this transformation the index is incremented
 // by the SIMD vector width, and not by one.
 //
-// This pass has three parts:
+// This pass has four parts:
 // 1. The main loop pass that drives the different parts.
 // 2. LoopVectorizationLegality - A unit that checks for the legality
 //    of the vectorization.
@@ -27,7 +27,7 @@
 //
 // There is a development effort going on to migrate loop vectorizer to the
 // VPlan infrastructure and to introduce outer loop vectorization support (see
-// docs/Proposal/VectorizationPlan.rst and
+// docs/VectorizationPlan.rst and
 // http://lists.llvm.org/pipermail/llvm-dev/2017-December/119523.html). For this
 // purpose, we temporarily introduced the VPlan-native vectorization path: an
 // alternative vectorization path that is natively implemented on top of the
@@ -59,18 +59,16 @@
 #include "llvm/IR/PassManager.h"
 #include "llvm/Support/CommandLine.h"
 #include <functional>
-#include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 
 namespace llvm {
 
-class AAResults;
 class AssumptionCache;
 class BlockFrequencyInfo;
 class DemandedBits;
 class DominatorTree;
 class Function;
 class Loop;
-class LoopAccessInfo;
+class LoopAccessInfoManager;
 class LoopInfo;
 class OptimizationRemarkEmitter;
 class ProfileSummaryInfo;
@@ -179,9 +177,8 @@ public:
   BlockFrequencyInfo *BFI;
   TargetLibraryInfo *TLI;
   DemandedBits *DB;
-  AAResults *AA;
   AssumptionCache *AC;
-  std::function<const LoopAccessInfo &(Loop &)> *GetLAA;
+  LoopAccessInfoManager *LAIs;
   OptimizationRemarkEmitter *ORE;
   ProfileSummaryInfo *PSI;
 
@@ -190,13 +187,13 @@ public:
                      function_ref<StringRef(StringRef)> MapClassName2PassName);
 
   // Shim for old PM.
-  LoopVectorizeResult
-  runImpl(Function &F, ScalarEvolution &SE_, LoopInfo &LI_,
-          TargetTransformInfo &TTI_, DominatorTree &DT_,
-          BlockFrequencyInfo &BFI_, TargetLibraryInfo *TLI_, DemandedBits &DB_,
-          AAResults &AA_, AssumptionCache &AC_,
-          std::function<const LoopAccessInfo &(Loop &)> &GetLAA_,
-          OptimizationRemarkEmitter &ORE_, ProfileSummaryInfo *PSI_);
+  LoopVectorizeResult runImpl(Function &F, ScalarEvolution &SE_, LoopInfo &LI_,
+                              TargetTransformInfo &TTI_, DominatorTree &DT_,
+                              BlockFrequencyInfo *BFI_, TargetLibraryInfo *TLI_,
+                              DemandedBits &DB_, AssumptionCache &AC_,
+                              LoopAccessInfoManager &LAIs_,
+                              OptimizationRemarkEmitter &ORE_,
+                              ProfileSummaryInfo *PSI_);
 
   bool processLoop(Loop *L);
 };
@@ -217,66 +214,5 @@ void reportVectorizationInfo(const StringRef OREMsg, const StringRef ORETag,
                              Instruction *I = nullptr);
 
 } // end namespace llvm
-
-using namespace llvm;
-
-/// Helper struct to manage generating runtime checks for vectorization.
-///
-/// The runtime checks are created up-front in temporary blocks to allow better
-/// estimating the cost and un-linked from the existing IR. After deciding to
-/// vectorize, the checks are moved back. If deciding not to vectorize, the
-/// temporary blocks are completely removed.
-class GeneratedRTChecks {
-  /// Basic block which contains the generated SCEV checks, if any.
-  BasicBlock *SCEVCheckBlock = nullptr;
-
-  /// The value representing the result of the generated SCEV checks. If it is
-  /// nullptr, either no SCEV checks have been generated or they have been used.
-  Value *SCEVCheckCond = nullptr;
-
-  /// Basic block which contains the generated memory runtime checks, if any.
-  BasicBlock *MemCheckBlock = nullptr;
-
-  /// The value representing the result of the generated memory runtime checks.
-  /// If it is nullptr, either no memory runtime checks have been generated or
-  /// they have been used.
-  Value *MemRuntimeCheckCond = nullptr;
-
-  DominatorTree *DT;
-  LoopInfo *LI;
-  TargetTransformInfo *TTI;
-
-  SCEVExpander SCEVExp;
-  SCEVExpander MemCheckExp;
-
-  bool CostTooHigh = false;
-
-public:
-  GeneratedRTChecks(ScalarEvolution &SE, DominatorTree *DT, LoopInfo *LI,
-                    TargetTransformInfo *TTI, const DataLayout &DL)
-      : DT(DT), LI(LI), TTI(TTI), SCEVExp(SE, DL, "scev.check"),
-        MemCheckExp(SE, DL, "scev.check") {}
-
-  /// Generate runtime checks in SCEVCheckBlock and MemCheckBlock, so we can
-  /// accurately estimate the cost of the runtime checks. The blocks are
-  /// un-linked from the IR and is added back during vector code generation. If
-  /// there is no vector code generation, the check blocks are removed
-  /// completely.
-  void Create(Loop *L, const LoopAccessInfo &LAI,
-              const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC);
-
-  BasicBlock *getMemCheckBlock(){ return MemCheckBlock; };
-
-  InstructionCost getCost();
-
-  ~GeneratedRTChecks(void);
-
-  BasicBlock *emitSCEVChecks(BasicBlock *Bypass,
-                              BasicBlock *LoopVectorPreHeader,
-                              BasicBlock *LoopExitBlock);
-
-  BasicBlock *emitMemRuntimeChecks(BasicBlock *Bypass,
-                                   BasicBlock *LoopVectorPreHeader);
-};
 
 #endif // LLVM_TRANSFORMS_VECTORIZE_LOOPVECTORIZE_H

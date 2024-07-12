@@ -11,9 +11,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "clang/AST/TypeLoc.h"
-#include "clang/AST/DeclTemplate.h"
+#include "clang/AST/ASTConcept.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Attr.h"
+#include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Expr.h"
 #include "clang/AST/NestedNameSpecifier.h"
 #include "clang/AST/TemplateBase.h"
@@ -208,7 +209,7 @@ SourceLocation TypeLoc::getBeginLoc() const {
         LeftMost = Cur;
         break;
       }
-      LLVM_FALLTHROUGH;
+      [[fallthrough]];
     case FunctionNoProto:
     case ConstantArray:
     case DependentSizedArray:
@@ -260,7 +261,7 @@ SourceLocation TypeLoc::getEndLoc() const {
       // `id` and `id<...>` have no star location.
       if (Cur.castAs<ObjCObjectPointerTypeLoc>().getStarLoc().isInvalid())
         break;
-      LLVM_FALLTHROUGH;
+      [[fallthrough]];
     case Pointer:
     case BlockPointer:
     case MemberPointer:
@@ -424,6 +425,8 @@ TypeSpecifierType BuiltinTypeLoc::getWrittenTypeSpec() const {
 #include "clang/Basic/PPCTypes.def"
 #define RVV_TYPE(Name, Id, SingletonId) case BuiltinType::Id:
 #include "clang/Basic/RISCVVTypes.def"
+#define WASM_TYPE(Name, Id, SingletonId) case BuiltinType::Id:
+#include "clang/Basic/WebAssemblyReferenceTypes.def"
   case BuiltinType::BuiltinFn:
   case BuiltinType::IncompleteMatrixIdx:
   case BuiltinType::OMPArraySection:
@@ -521,8 +524,8 @@ void TypeOfTypeLoc::initializeLocal(ASTContext &Context,
                                        SourceLocation Loc) {
   TypeofLikeTypeLoc<TypeOfTypeLoc, TypeOfType, TypeOfTypeLocInfo>
       ::initializeLocal(Context, Loc);
-  this->getLocalData()->UnderlyingTInfo = Context.getTrivialTypeSourceInfo(
-      getUnderlyingType(), Loc);
+  this->getLocalData()->UnmodifiedTInfo =
+      Context.getTrivialTypeSourceInfo(getUnmodifiedType(), Loc);
 }
 
 void UnaryTransformTypeLoc::initializeLocal(ASTContext &Context,
@@ -568,17 +571,14 @@ DependentTemplateSpecializationTypeLoc::initializeLocal(ASTContext &Context,
   setTemplateNameLoc(Loc);
   setLAngleLoc(Loc);
   setRAngleLoc(Loc);
-  TemplateSpecializationTypeLoc::initializeArgLocs(Context, getNumArgs(),
-                                                   getTypePtr()->getArgs(),
-                                                   getArgInfos(), Loc);
+  TemplateSpecializationTypeLoc::initializeArgLocs(
+      Context, getTypePtr()->template_arguments(), getArgInfos(), Loc);
 }
 
-void TemplateSpecializationTypeLoc::initializeArgLocs(ASTContext &Context,
-                                                      unsigned NumArgs,
-                                                  const TemplateArgument *Args,
-                                              TemplateArgumentLocInfo *ArgInfos,
-                                                      SourceLocation Loc) {
-  for (unsigned i = 0, e = NumArgs; i != e; ++i) {
+void TemplateSpecializationTypeLoc::initializeArgLocs(
+    ASTContext &Context, ArrayRef<TemplateArgument> Args,
+    TemplateArgumentLocInfo *ArgInfos, SourceLocation Loc) {
+  for (unsigned i = 0, e = Args.size(); i != e; ++i) {
     switch (Args[i].getKind()) {
     case TemplateArgument::Null:
       llvm_unreachable("Impossible TemplateArgument");
@@ -586,6 +586,7 @@ void TemplateSpecializationTypeLoc::initializeArgLocs(ASTContext &Context,
     case TemplateArgument::Integral:
     case TemplateArgument::Declaration:
     case TemplateArgument::NullPtr:
+    case TemplateArgument::StructuralValue:
       ArgInfos[i] = TemplateArgumentLocInfo();
       break;
 
@@ -622,25 +623,42 @@ void TemplateSpecializationTypeLoc::initializeArgLocs(ASTContext &Context,
   }
 }
 
-DeclarationNameInfo AutoTypeLoc::getConceptNameInfo() const {
-  return DeclarationNameInfo(getNamedConcept()->getDeclName(),
-                             getLocalData()->ConceptNameLoc);
+// Builds a ConceptReference where all locations point at the same token,
+// for use in trivial TypeSourceInfo for constrained AutoType
+static ConceptReference *createTrivialConceptReference(ASTContext &Context,
+                                                       SourceLocation Loc,
+                                                       const AutoType *AT) {
+  DeclarationNameInfo DNI =
+      DeclarationNameInfo(AT->getTypeConstraintConcept()->getDeclName(), Loc,
+                          AT->getTypeConstraintConcept()->getDeclName());
+  unsigned size = AT->getTypeConstraintArguments().size();
+  TemplateArgumentLocInfo *TALI = new TemplateArgumentLocInfo[size];
+  TemplateSpecializationTypeLoc::initializeArgLocs(
+      Context, AT->getTypeConstraintArguments(), TALI, Loc);
+  TemplateArgumentListInfo TAListI;
+  for (unsigned i = 0; i < size; ++i) {
+    TAListI.addArgument(
+        TemplateArgumentLoc(AT->getTypeConstraintArguments()[i],
+                            TALI[i])); // TemplateArgumentLocInfo()
+  }
+
+  auto *ConceptRef = ConceptReference::Create(
+      Context, NestedNameSpecifierLoc{}, Loc, DNI, nullptr,
+      AT->getTypeConstraintConcept(),
+      ASTTemplateArgumentListInfo::Create(Context, TAListI));
+  delete[] TALI;
+  return ConceptRef;
 }
 
 void AutoTypeLoc::initializeLocal(ASTContext &Context, SourceLocation Loc) {
-  setNestedNameSpecifierLoc(NestedNameSpecifierLoc());
-  setTemplateKWLoc(Loc);
-  setConceptNameLoc(Loc);
-  setFoundDecl(nullptr);
-  setRAngleLoc(Loc);
-  setLAngleLoc(Loc);
   setRParenLoc(Loc);
-  TemplateSpecializationTypeLoc::initializeArgLocs(Context, getNumArgs(),
-                                                   getTypePtr()->getArgs(),
-                                                   getArgInfos(), Loc);
   setNameLoc(Loc);
+  setConceptReference(nullptr);
+  if (getTypePtr()->isConstrained()) {
+    setConceptReference(
+        createTrivialConceptReference(Context, Loc, getTypePtr()));
+  }
 }
-
 
 namespace {
 

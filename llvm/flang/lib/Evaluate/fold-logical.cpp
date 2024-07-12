@@ -7,8 +7,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "fold-implementation.h"
+#include "fold-matmul.h"
 #include "fold-reduction.h"
 #include "flang/Evaluate/check-expression.h"
+#include "flang/Runtime/magic-numbers.h"
 
 namespace Fortran::evaluate {
 
@@ -22,21 +24,19 @@ static std::optional<Expr<SomeType>> ZeroExtend(const Constant<T> &c) {
       Constant<LargestInt>(std::move(exts), ConstantSubscripts(c.shape())));
 }
 
-// for ALL & ANY
+// for ALL, ANY & PARITY
 template <typename T>
-static Expr<T> FoldAllAny(FoldingContext &context, FunctionRef<T> &&ref,
+static Expr<T> FoldAllAnyParity(FoldingContext &context, FunctionRef<T> &&ref,
     Scalar<T> (Scalar<T>::*operation)(const Scalar<T> &) const,
     Scalar<T> identity) {
   static_assert(T::category == TypeCategory::Logical);
-  using Element = Scalar<T>;
   std::optional<int> dim;
-  if (std::optional<Constant<T>> array{
-          ProcessReductionArgs<T>(context, ref.arguments(), dim, identity,
+  if (std::optional<ArrayAndMask<T>> arrayAndMask{
+          ProcessReductionArgs<T>(context, ref.arguments(), dim,
               /*ARRAY(MASK)=*/0, /*DIM=*/1)}) {
-    auto accumulator{[&](Element &element, const ConstantSubscripts &at) {
-      element = (element.*operation)(array->At(at));
-    }};
-    return Expr<T>{DoReduction<T>(*array, dim, identity, accumulator)};
+    OperationAccumulator accumulator{arrayAndMask->array, operation};
+    return Expr<T>{DoReduction<T>(
+        arrayAndMask->array, arrayAndMask->mask, dim, identity, accumulator)};
   }
   return Expr<T>{std::move(ref)};
 }
@@ -52,10 +52,10 @@ Expr<Type<TypeCategory::Logical, KIND>> FoldIntrinsicFunction(
   std::string name{intrinsic->name};
   using SameInt = Type<TypeCategory::Integer, KIND>;
   if (name == "all") {
-    return FoldAllAny(
+    return FoldAllAnyParity(
         context, std::move(funcRef), &Scalar<T>::AND, Scalar<T>{true});
   } else if (name == "any") {
-    return FoldAllAny(
+    return FoldAllAnyParity(
         context, std::move(funcRef), &Scalar<T>::OR, Scalar<T>{false});
   } else if (name == "associated") {
     bool gotConstant{true};
@@ -140,6 +140,8 @@ Expr<Type<TypeCategory::Logical, KIND>> FoldIntrinsicFunction(
           },
           ix->u);
     }
+  } else if (name == "dot_product") {
+    return FoldDotProduct<T>(context, std::move(funcRef));
   } else if (name == "extends_type_of") {
     // Type extension testing with EXTENDS_TYPE_OF() ignores any type
     // parameters. Returns a constant truth value when the result is known now.
@@ -153,35 +155,65 @@ Expr<Type<TypeCategory::Logical, KIND>> FoldIntrinsicFunction(
       }
     }
   } else if (name == "isnan" || name == "__builtin_ieee_is_nan") {
-    // A warning about an invalid argument is discarded from converting
-    // the argument of isnan() / IEEE_IS_NAN().
-    auto restorer{context.messages().DiscardMessages()};
-    using DefaultReal = Type<TypeCategory::Real, 4>;
-    return FoldElementalIntrinsic<T, DefaultReal>(context, std::move(funcRef),
-        ScalarFunc<T, DefaultReal>([](const Scalar<DefaultReal> &x) {
-          return Scalar<T>{x.IsNotANumber()};
-        }));
+    // Only replace the type of the function if we can do the fold
+    if (args[0] && args[0]->UnwrapExpr() &&
+        IsActuallyConstant(*args[0]->UnwrapExpr())) {
+      auto restorer{context.messages().DiscardMessages()};
+      using DefaultReal = Type<TypeCategory::Real, 4>;
+      return FoldElementalIntrinsic<T, DefaultReal>(context, std::move(funcRef),
+          ScalarFunc<T, DefaultReal>([](const Scalar<DefaultReal> &x) {
+            return Scalar<T>{x.IsNotANumber()};
+          }));
+    }
   } else if (name == "__builtin_ieee_is_negative") {
     auto restorer{context.messages().DiscardMessages()};
     using DefaultReal = Type<TypeCategory::Real, 4>;
-    return FoldElementalIntrinsic<T, DefaultReal>(context, std::move(funcRef),
-        ScalarFunc<T, DefaultReal>([](const Scalar<DefaultReal> &x) {
-          return Scalar<T>{x.IsNegative()};
-        }));
+    if (args[0] && args[0]->UnwrapExpr() &&
+        IsActuallyConstant(*args[0]->UnwrapExpr())) {
+      return FoldElementalIntrinsic<T, DefaultReal>(context, std::move(funcRef),
+          ScalarFunc<T, DefaultReal>([](const Scalar<DefaultReal> &x) {
+            return Scalar<T>{x.IsNegative()};
+          }));
+    }
   } else if (name == "__builtin_ieee_is_normal") {
     auto restorer{context.messages().DiscardMessages()};
     using DefaultReal = Type<TypeCategory::Real, 4>;
-    return FoldElementalIntrinsic<T, DefaultReal>(context, std::move(funcRef),
-        ScalarFunc<T, DefaultReal>([](const Scalar<DefaultReal> &x) {
-          return Scalar<T>{x.IsNormal()};
-        }));
+    if (args[0] && args[0]->UnwrapExpr() &&
+        IsActuallyConstant(*args[0]->UnwrapExpr())) {
+      return FoldElementalIntrinsic<T, DefaultReal>(context, std::move(funcRef),
+          ScalarFunc<T, DefaultReal>([](const Scalar<DefaultReal> &x) {
+            return Scalar<T>{x.IsNormal()};
+          }));
+    }
   } else if (name == "is_contiguous") {
     if (args.at(0)) {
       if (auto *expr{args[0]->UnwrapExpr()}) {
-        if (IsSimplyContiguous(*expr, context)) {
-          return Expr<T>{true};
+        if (auto contiguous{IsContiguous(*expr, context)}) {
+          return Expr<T>{*contiguous};
+        }
+      } else if (auto *assumedType{args[0]->GetAssumedTypeDummy()}) {
+        if (auto contiguous{IsContiguous(*assumedType, context)}) {
+          return Expr<T>{*contiguous};
         }
       }
+    }
+  } else if (name == "is_iostat_end") {
+    if (args[0] && args[0]->UnwrapExpr() &&
+        IsActuallyConstant(*args[0]->UnwrapExpr())) {
+      using Int64 = Type<TypeCategory::Integer, 8>;
+      return FoldElementalIntrinsic<T, Int64>(context, std::move(funcRef),
+          ScalarFunc<T, Int64>([](const Scalar<Int64> &x) {
+            return Scalar<T>{x.ToInt64() == FORTRAN_RUNTIME_IOSTAT_END};
+          }));
+    }
+  } else if (name == "is_iostat_eor") {
+    if (args[0] && args[0]->UnwrapExpr() &&
+        IsActuallyConstant(*args[0]->UnwrapExpr())) {
+      using Int64 = Type<TypeCategory::Integer, 8>;
+      return FoldElementalIntrinsic<T, Int64>(context, std::move(funcRef),
+          ScalarFunc<T, Int64>([](const Scalar<Int64> &x) {
+            return Scalar<T>{x.ToInt64() == FORTRAN_RUNTIME_IOSTAT_EOR};
+          }));
     }
   } else if (name == "lge" || name == "lgt" || name == "lle" || name == "llt") {
     // Rewrite LGE/LGT/LLE/LLT into ASCII character relations
@@ -201,8 +233,120 @@ Expr<Type<TypeCategory::Logical, KIND>> FoldIntrinsicFunction(
     if (auto *expr{UnwrapExpr<Expr<SomeLogical>>(args[0])}) {
       return Fold(context, ConvertToType<T>(std::move(*expr)));
     }
-  } else if (name == "merge") {
-    return FoldMerge<T>(context, std::move(funcRef));
+  } else if (name == "matmul") {
+    return FoldMatmul(context, std::move(funcRef));
+  } else if (name == "out_of_range") {
+    if (Expr<SomeType> * cx{UnwrapExpr<Expr<SomeType>>(args[0])}) {
+      auto restorer{context.messages().DiscardMessages()};
+      *args[0] = Fold(context, std::move(*cx));
+      if (Expr<SomeType> & folded{DEREF(args[0].value().UnwrapExpr())};
+          IsActuallyConstant(folded)) {
+        std::optional<std::vector<typename T::Scalar>> result;
+        if (Expr<SomeReal> * realMold{UnwrapExpr<Expr<SomeReal>>(args[1])}) {
+          if (const auto *xInt{UnwrapExpr<Expr<SomeInteger>>(folded)}) {
+            result.emplace();
+            std::visit(
+                [&](const auto &mold, const auto &x) {
+                  using RealType =
+                      typename std::decay_t<decltype(mold)>::Result;
+                  static_assert(RealType::category == TypeCategory::Real);
+                  using Scalar = typename RealType::Scalar;
+                  using xType = typename std::decay_t<decltype(x)>::Result;
+                  const auto &xConst{DEREF(UnwrapExpr<Constant<xType>>(x))};
+                  for (const auto &elt : xConst.values()) {
+                    result->emplace_back(
+                        Scalar::template FromInteger(elt).flags.test(
+                            RealFlag::Overflow));
+                  }
+                },
+                realMold->u, xInt->u);
+          } else if (const auto *xReal{UnwrapExpr<Expr<SomeReal>>(folded)}) {
+            result.emplace();
+            std::visit(
+                [&](const auto &mold, const auto &x) {
+                  using RealType =
+                      typename std::decay_t<decltype(mold)>::Result;
+                  static_assert(RealType::category == TypeCategory::Real);
+                  using Scalar = typename RealType::Scalar;
+                  using xType = typename std::decay_t<decltype(x)>::Result;
+                  const auto &xConst{DEREF(UnwrapExpr<Constant<xType>>(x))};
+                  for (const auto &elt : xConst.values()) {
+                    result->emplace_back(elt.IsFinite() &&
+                        Scalar::template Convert(elt).flags.test(
+                            RealFlag::Overflow));
+                  }
+                },
+                realMold->u, xReal->u);
+          }
+        } else if (Expr<SomeInteger> *
+            intMold{UnwrapExpr<Expr<SomeInteger>>(args[1])}) {
+          if (const auto *xInt{UnwrapExpr<Expr<SomeInteger>>(folded)}) {
+            result.emplace();
+            std::visit(
+                [&](const auto &mold, const auto &x) {
+                  using IntType = typename std::decay_t<decltype(mold)>::Result;
+                  static_assert(IntType::category == TypeCategory::Integer);
+                  using Scalar = typename IntType::Scalar;
+                  using xType = typename std::decay_t<decltype(x)>::Result;
+                  const auto &xConst{DEREF(UnwrapExpr<Constant<xType>>(x))};
+                  for (const auto &elt : xConst.values()) {
+                    result->emplace_back(
+                        Scalar::template ConvertSigned(elt).overflow);
+                  }
+                },
+                intMold->u, xInt->u);
+          } else if (Expr<SomeLogical> *
+                         cRound{args.size() >= 3
+                                 ? UnwrapExpr<Expr<SomeLogical>>(args[2])
+                                 : nullptr};
+                     !cRound || IsActuallyConstant(*args[2]->UnwrapExpr())) {
+            if (const auto *xReal{UnwrapExpr<Expr<SomeReal>>(folded)}) {
+              common::RoundingMode roundingMode{common::RoundingMode::ToZero};
+              if (cRound &&
+                  common::visit(
+                      [](const auto &x) {
+                        using xType =
+                            typename std::decay_t<decltype(x)>::Result;
+                        return GetScalarConstantValue<xType>(x)
+                            .value()
+                            .IsTrue();
+                      },
+                      cRound->u)) {
+                // ROUND=.TRUE. - convert with NINT()
+                roundingMode = common::RoundingMode::TiesAwayFromZero;
+              }
+              result.emplace();
+              std::visit(
+                  [&](const auto &mold, const auto &x) {
+                    using IntType =
+                        typename std::decay_t<decltype(mold)>::Result;
+                    static_assert(IntType::category == TypeCategory::Integer);
+                    using Scalar = typename IntType::Scalar;
+                    using xType = typename std::decay_t<decltype(x)>::Result;
+                    const auto &xConst{DEREF(UnwrapExpr<Constant<xType>>(x))};
+                    for (const auto &elt : xConst.values()) {
+                      // Note that OUT_OF_RANGE(Inf/NaN) is .TRUE. for the
+                      // real->integer case, but not for  real->real.
+                      result->emplace_back(!elt.IsFinite() ||
+                          elt.template ToInteger<Scalar>(roundingMode)
+                              .flags.test(RealFlag::Overflow));
+                    }
+                  },
+                  intMold->u, xReal->u);
+            }
+          }
+        }
+        if (result) {
+          if (auto extents{GetConstantExtents(context, folded)}) {
+            return Expr<T>{
+                Constant<T>{std::move(*result), std::move(*extents)}};
+          }
+        }
+      }
+    }
+  } else if (name == "parity") {
+    return FoldAllAnyParity(
+        context, std::move(funcRef), &Scalar<T>::NEQV, Scalar<T>{false});
   } else if (name == "same_type_as") {
     // Type equality testing with SAME_TYPE_AS() ignores any type parameters.
     // Returns a constant truth value when the result is known now.
@@ -218,7 +362,6 @@ Expr<Type<TypeCategory::Logical, KIND>> FoldIntrinsicFunction(
   } else if (name == "__builtin_ieee_support_datatype" ||
       name == "__builtin_ieee_support_denormal" ||
       name == "__builtin_ieee_support_divide" ||
-      name == "__builtin_ieee_support_divide" ||
       name == "__builtin_ieee_support_inf" ||
       name == "__builtin_ieee_support_io" ||
       name == "__builtin_ieee_support_nan" ||
@@ -228,9 +371,6 @@ Expr<Type<TypeCategory::Logical, KIND>> FoldIntrinsicFunction(
       name == "__builtin_ieee_support_underflow_control") {
     return Expr<T>{true};
   }
-  // TODO: dot_product, is_iostat_end,
-  // is_iostat_eor, logical, matmul, out_of_range,
-  // parity
   return Expr<T>{std::move(funcRef)};
 }
 

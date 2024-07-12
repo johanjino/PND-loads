@@ -962,8 +962,6 @@ Commit::commitInsts()
 
     ThreadID commit_thread = getCommittingThread();
 
-    bool mem_order_violation = ldstQueue.violation(commit_thread);
-
     // Commit as many instructions as possible until the commit bandwidth
     // limit is reached, or it becomes impossible to commit any more.
     while (num_committed < commitWidth) {
@@ -1009,24 +1007,6 @@ Commit::commitInsts()
                     "ROB.\n");
 
             rob->retireHead(commit_thread);
-
-            /*
-             * if branch (look up how they're handled):
-             * store history in queue (only needs to be 32 entries)
-             * if load:
-             * find seqnum of last violating store, step through branch history until first branch with greater seqnum collecting histories
-             * update PHAST
-             */
-            //TODO: bring in classes/objects and debug targets from iew/iq to commit
-            if (mem_order_violation && head_inst == ldstQueue.getMemDepViolator(commit_thread)) {
-
-                //TODO: add field to dyninst
-                DynInstPtr store = head_inst.violating_store;
-
-                //call rob to scan list and return branches
-                //collect their branch history
-                //unset violation flag
-            }
 
             ++stats.commitSquashedInsts;
             // Notify potential listeners that this instruction is squashed

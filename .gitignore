@@ -1,6 +1,7 @@
 *.ll
 *.pyc
 *.s
+*/build
 gem5-oracle
 utils/venv
 fs/

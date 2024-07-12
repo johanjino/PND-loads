@@ -60,11 +60,9 @@
 #include "lldb/Utility/LLDBLog.h"
 #include "lldb/Utility/Log.h"
 #include "lldb/Utility/Predicate.h"
-#include "lldb/Utility/ReproducerProvider.h"
 #include "lldb/Utility/Status.h"
 #include "lldb/lldb-private-forward.h"
 #include "llvm/ADT/SmallString.h"
-#include "llvm/ADT/StringSwitch.h"
 #include "llvm/Support/Errno.h"
 #include "llvm/Support/FileSystem.h"
 
@@ -135,11 +133,7 @@ private:
 #endif // __linux__
 
 #ifdef __linux__
-#if defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 8))
-static __thread volatile sig_atomic_t g_usr1_called;
-#else
 static thread_local volatile sig_atomic_t g_usr1_called;
-#endif
 
 static void SigUsr1Handler(int) { g_usr1_called = 1; }
 #endif // __linux__
@@ -548,9 +542,11 @@ void Host::Kill(lldb::pid_t pid, int signo) { ::kill(pid, signo); }
 #endif
 
 #if !defined(__APPLE__)
-bool Host::OpenFileInExternalEditor(const FileSpec &file_spec,
-                                    uint32_t line_no) {
-  return false;
+llvm::Error Host::OpenFileInExternalEditor(llvm::StringRef editor,
+                                           const FileSpec &file_spec,
+                                           uint32_t line_no) {
+  return llvm::errorCodeToError(
+      std::error_code(ENOTSUP, std::system_category()));
 }
 
 bool Host::IsInteractiveGraphicSession() { return false; }
@@ -558,7 +554,7 @@ bool Host::IsInteractiveGraphicSession() { return false; }
 
 std::unique_ptr<Connection> Host::CreateDefaultConnection(llvm::StringRef url) {
 #if defined(_WIN32)
-  if (url.startswith("file://"))
+  if (url.starts_with("file://"))
     return std::unique_ptr<Connection>(new ConnectionGenericFile());
 #endif
   return std::unique_ptr<Connection>(new ConnectionFileDescriptor());
@@ -614,22 +610,7 @@ void llvm::format_provider<WaitStatus>::format(const WaitStatus &WS,
 
 uint32_t Host::FindProcesses(const ProcessInstanceInfoMatch &match_info,
                              ProcessInstanceInfoList &process_infos) {
-
-  if (llvm::Optional<ProcessInstanceInfoList> infos =
-          repro::GetReplayProcessInstanceInfoList()) {
-    process_infos = *infos;
-    return process_infos.size();
-  }
-
-  uint32_t result = FindProcessesImpl(match_info, process_infos);
-
-  if (repro::Generator *g = repro::Reproducer::Instance().GetGenerator()) {
-    g->GetOrCreate<repro::ProcessInfoProvider>()
-        .GetNewProcessInfoRecorder()
-        ->Record(process_infos);
-  }
-
-  return result;
+  return FindProcessesImpl(match_info, process_infos);
 }
 
 char SystemLogHandler::ID;

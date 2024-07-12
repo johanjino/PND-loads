@@ -48,6 +48,7 @@ template <typename T> int UsedInTemplateFunc() { return 1; }
 void OverloadFunc(int);
 void OverloadFunc(double);
 int FuncUsedByUsingDeclInMacro() { return 1; }
+long double operator""_w(long double);
 
 class ostream {
 public:
@@ -106,6 +107,7 @@ using n::UnusedInstance; // UnusedInstance
 using n::UnusedFunc; // UnusedFunc
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: using decl 'UnusedFunc' is unused
 // CHECK-FIXES: {{^}}// UnusedFunc
+using n::operator""_w;
 using n::cout;
 using n::endl;
 
@@ -183,6 +185,7 @@ void g() {
   UsedInstance.i;
   UsedFunc();
   UsedTemplateFunc<int>();
+  1.5_w;
   cout << endl;
   Color2 color2;
   int t1 = Color3::Yellow;
@@ -211,13 +214,11 @@ template <typename T, template <typename> class U> class Bar {};
 // argument.
 Bar<int, Q> *bar;
 
-namespace internal { 
-  struct S {};
-  int operator+(S s1, S s2);
-} 
-
-// Make sure this statement is not reported as unused.
-using internal::operator+; 
-using internal::S;
-
-int j() { return S() + S(); }
+namespace gh69714 {
+struct StructGH69714_1 {};
+struct StructGH69714_2 {};
+} // namespace gh69714
+using gh69714::StructGH69714_1;
+using gh69714::StructGH69714_2;
+struct StructGH69714_1 a;
+struct StructGH69714_2 *b;

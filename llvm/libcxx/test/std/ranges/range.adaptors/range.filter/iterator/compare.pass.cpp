@@ -7,7 +7,6 @@
 //===----------------------------------------------------------------------===//
 
 // UNSUPPORTED: c++03, c++11, c++14, c++17
-// UNSUPPORTED: libcpp-has-no-incomplete-ranges
 
 // friend constexpr bool operator==(iterator const&, iterator const&)
 //  requires equality_comparable<iterator_t<V>>
@@ -39,7 +38,7 @@ constexpr void test() {
 
   {
     std::array<int, 5> array{0, 1, 2, 3, 4};
-    FilterView view = make_filter_view(array.begin(), array.end(), AlwaysTrue{});
+    FilterView view = make_filter_view(array.data(), array.data() + array.size(), AlwaysTrue{});
     FilterIterator it1 = view.begin();
     FilterIterator it2 = view.begin();
     std::same_as<bool> decltype(auto) result = (it1 == it2);
@@ -51,7 +50,7 @@ constexpr void test() {
 
   {
     std::array<int, 5> array{0, 1, 2, 3, 4};
-    FilterView view = make_filter_view(array.begin(), array.end(), AlwaysTrue{});
+    FilterView view = make_filter_view(array.data(), array.data() + array.size(), AlwaysTrue{});
     assert(!(view.begin() == view.end()));
   }
 }

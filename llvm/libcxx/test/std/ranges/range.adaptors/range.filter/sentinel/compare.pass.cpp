@@ -7,7 +7,6 @@
 //===----------------------------------------------------------------------===//
 
 // UNSUPPORTED: c++03, c++11, c++14, c++17
-// UNSUPPORTED: libcpp-has-no-incomplete-ranges
 
 // friend constexpr bool operator==(iterator const&, sentinel const&);
 
@@ -27,7 +26,7 @@ constexpr void test() {
   std::array<int, 5> array{0, 1, 2, 3, 4};
 
   {
-    View v(Iterator(array.begin()), Sentinel(Iterator(array.end())));
+    View v(Iterator(array.data()), Sentinel(Iterator(array.data() + array.size())));
     std::ranges::filter_view view(std::move(v), AlwaysTrue{});
     auto const it = view.begin();
     auto const sent = view.end();
@@ -35,7 +34,7 @@ constexpr void test() {
     assert(!result);
   }
   {
-    View v(Iterator(array.begin()), Sentinel(Iterator(array.end())));
+    View v(Iterator(array.data()), Sentinel(Iterator(array.data() + array.size())));
     std::ranges::filter_view view(std::move(v), [](auto) { return false; });
     auto const it = view.begin();
     auto const sent = view.end();

@@ -189,12 +189,13 @@ class MCInst {
   unsigned Flags = 0;
 
   SMLoc Loc;
-  SmallVector<MCOperand, 8> Operands;
+  SmallVector<MCOperand, 10> Operands;
 
 public:
-  MCInst() = default;
 
-  bool PND = false;
+  bool label = false;
+
+  MCInst() = default;
 
   void setOpcode(unsigned Op) { Opcode = Op; }
   unsigned getOpcode() const { return Opcode; }

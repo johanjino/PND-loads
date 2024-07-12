@@ -231,7 +231,7 @@ void dr251(void) {
   struct dr251_fred *ptr; /* expected-error {{use of 'dr251_fred' with tag type that does not match previous declaration}} */
 }
 
-#if __STDC_VERSION__ < 202000L
+#if __STDC_VERSION__ < 202311L
 /* WG14 DR252: yes
  * Incomplete argument types when calling non-prototyped functions
  */
@@ -247,10 +247,10 @@ void dr252(void) {
    * prototype, but Clang treats it as an error.
    */
   dr252_no_proto(dr252_proto()); /* expected-error {{argument type 'void' is incomplete}}
-                                    expected-warning {{passing arguments to 'dr252_no_proto' without a prototype is deprecated in all versions of C and is not supported in C2x}}
+                                    expected-warning {{passing arguments to 'dr252_no_proto' without a prototype is deprecated in all versions of C and is not supported in C23}}
                                   */
 }
-#endif /* __STDC_VERSION__ < 202000L */
+#endif /* __STDC_VERSION__ < 202311L */
 
 /* WG14 DR258: yes
  * Ordering of "defined" and macro replacement
@@ -448,9 +448,11 @@ void dr298(void) {
   /* FIXME: These uses of the constants need a pedantic warning in C89 mode;
    * we've picked a type that does not exist in C89.
    */
-  (void)_Generic(9223372036854775808,     /* expected-warning {{integer literal is too large to be represented in a signed integer type, interpreting as unsigned}} */
+  (void)_Generic(9223372036854775808,     /* expected-warning {{integer literal is too large to be represented in a signed integer type, interpreting as unsigned}}
+                                             c89only-warning {{'long long' is an extension when C99 mode is not enabled}}
+                                           */
                  unsigned long long : 1); /* c89only-warning {{'long long' is an extension when C99 mode is not enabled}} */
-  (void)_Generic(9223372036854775807,
+  (void)_Generic(9223372036854775807,     /* c89only-warning {{'long long' is an extension when C99 mode is not enabled}} */
                  long long : 1);          /* c89only-warning {{'long long' is an extension when C99 mode is not enabled}} */
 }
 #endif /* __LLONG_WIDTH__ == 64 && __LONG_WIDTH__ < 64 */

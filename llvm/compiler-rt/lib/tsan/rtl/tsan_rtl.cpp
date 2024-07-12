@@ -213,6 +213,9 @@ static void DoResetImpl(uptr epoch) {
 #else
   auto resetFailed =
       !MmapFixedSuperNoReserve(shadow_begin, shadow_end-shadow_begin, "shadow");
+#  if !SANITIZER_GO
+  DontDumpShadow(shadow_begin, shadow_end - shadow_begin);
+#  endif
 #endif
   if (resetFailed) {
     Printf("failed to reset shadow memory\n");
@@ -443,7 +446,7 @@ static bool InitializeMemoryProfiler() {
     ctx->memprof_fd = 2;
   } else {
     InternalScopedString filename;
-    filename.append("%s.%d", fname, (int)internal_getpid());
+    filename.AppendF("%s.%d", fname, (int)internal_getpid());
     ctx->memprof_fd = OpenFile(filename.data(), WrOnly);
     if (ctx->memprof_fd == kInvalidFd) {
       Printf("ThreadSanitizer: failed to open memory profile file '%s'\n",
@@ -603,8 +606,8 @@ void MapShadow(uptr addr, uptr size) {
     // Second and subsequent calls map heap.
     if (shadow_end <= ctx->mapped_shadow_end)
       return;
-    if (ctx->mapped_shadow_begin < shadow_begin)
-      ctx->mapped_shadow_begin = shadow_begin;
+    if (!ctx->mapped_shadow_begin || ctx->mapped_shadow_begin > shadow_begin)
+       ctx->mapped_shadow_begin = shadow_begin;
     if (shadow_begin < ctx->mapped_shadow_end)
       shadow_begin = ctx->mapped_shadow_end;
     VPrintf(2, "MapShadow begin/end = (0x%zx-0x%zx)\n",

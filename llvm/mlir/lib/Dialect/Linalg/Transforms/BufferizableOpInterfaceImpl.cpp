@@ -9,10 +9,12 @@
 #include "mlir/Dialect/Linalg/Transforms/BufferizableOpInterfaceImpl.h"
 #include "mlir/Dialect/Bufferization/IR/BufferizableOpInterface.h"
 #include "mlir/Dialect/Bufferization/IR/Bufferization.h"
+#include "mlir/Dialect/Bufferization/IR/DstBufferizableOpInterfaceImpl.h"
 #include "mlir/Dialect/Linalg/IR/Linalg.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
 #include "mlir/IR/Dialect.h"
 #include "mlir/IR/Operation.h"
+#include "mlir/Interfaces/DestinationStyleOpInterface.h"
 
 using namespace mlir;
 using namespace linalg;
@@ -20,26 +22,28 @@ using namespace mlir::bufferization;
 
 namespace {
 
-/// Generic conversion for any LinalgOp on tensors.
-static LogicalResult bufferizeLinalgOp(RewriterBase &rewriter, LinalgOp op,
-                                       const BufferizationOptions &options) {
+/// Generic conversion for any DestinationStyleOpInterface on tensors.
+static LogicalResult
+bufferizeDestinationStyleOpInterface(RewriterBase &rewriter,
+                                     DestinationStyleOpInterface op,
+                                     const BufferizationOptions &options) {
   // Take a guard before anything else.
   OpBuilder::InsertionGuard g(rewriter);
   rewriter.setInsertionPoint(op);
 
   // Nothing to do. This op is already bufferized.
-  if (op.hasBufferSemantics())
+  if (op.hasPureBufferSemantics())
     return success();
 
   // Ensure op has only tensors. Allow mixed tensor-buffer mode on a per-need
   // basis.
-  if (!op.hasTensorSemantics())
-    return op->emitError() << "op does not have tensor semantics";
+  if (!op.hasPureTensorSemantics())
+    return op->emitError() << "op does not have pure tensor semantics";
 
   // New input operands for the cloned op.
   SmallVector<Value> newInputBuffers;
-  newInputBuffers.reserve(op.getNumInputs());
-  for (OpOperand *opOperand : op.getInputOperands()) {
+  newInputBuffers.reserve(op.getNumDpsInputs());
+  for (OpOperand *opOperand : op.getDpsInputOperands()) {
     if (op.isScalar(opOperand)) {
       newInputBuffers.push_back(opOperand->get());
       continue;
@@ -53,7 +57,7 @@ static LogicalResult bufferizeLinalgOp(RewriterBase &rewriter, LinalgOp op,
   // New output operands for the cloned op.
   SmallVector<Value> newOutputBuffers;
   for (OpResult opResult : op->getOpResults()) {
-    OpOperand *opOperand = op.getOutputOperand(opResult.getResultNumber());
+    OpOperand *opOperand = op.getDpsInitOperand(opResult.getResultNumber());
     FailureOr<Value> resultBuffer =
         getBuffer(rewriter, opOperand->get(), options);
     if (failed(resultBuffer))
@@ -71,8 +75,8 @@ static LogicalResult bufferizeLinalgOp(RewriterBase &rewriter, LinalgOp op,
   // new op. Since the new op does not have any tensor results, it does not
   // return anything.
   assert(op->getNumRegions() == 1 && "expected that op has 1 region");
-  auto newOp = cast<LinalgOp>(op.cloneWithoutRegions(
-      rewriter, op.getLoc(), /*resultTypes=*/TypeRange{}, newOperands));
+  auto newOp = cast<DestinationStyleOpInterface>(cloneWithoutRegions(
+      rewriter, op, /*newResultTypes=*/TypeRange{}, newOperands));
   rewriter.inlineRegionBefore(op->getRegion(0), newOp->getRegion(0),
                               newOp->getRegion(0).begin());
 
@@ -86,49 +90,56 @@ static LogicalResult bufferizeLinalgOp(RewriterBase &rewriter, LinalgOp op,
 /// operates entirely on memrefs.
 template <typename OpTy>
 struct LinalgOpInterface
-    : public BufferizableOpInterface::ExternalModel<LinalgOpInterface<OpTy>,
-                                                    OpTy> {
+    : public DstBufferizableOpInterfaceExternalModel<LinalgOpInterface<OpTy>,
+                                                     OpTy> {
   bool bufferizesToMemoryRead(Operation *op, OpOperand &opOperand,
                               const AnalysisState &state) const {
     // Operand is read if it is used in the computation.
-    auto genericOp = cast<linalg::LinalgOp>(op);
-    return genericOp.payloadUsesValueFromOperand(&opOperand);
+    auto linalgOp = cast<linalg::LinalgOp>(op);
+    return linalgOp.payloadUsesValueFromOperand(&opOperand);
   }
 
   bool bufferizesToMemoryWrite(Operation *op, OpOperand &opOperand,
                                const AnalysisState &state) const {
-    // Operand is written to if it has an aliasing OpResult.
-    auto bufferizableOp = cast<BufferizableOpInterface>(op);
-    return !bufferizableOp.getAliasingOpResult(opOperand, state).empty();
+    // Operand is written to if it is not an input/init.
+    auto dpsOp = cast<DestinationStyleOpInterface>(op);
+    return dpsOp.isDpsInit(&opOperand);
   }
 
-  SmallVector<OpOperand *>
-  getAliasingOpOperand(Operation *op, OpResult opResult,
-                       const AnalysisState &state) const {
-    auto genericOp = cast<linalg::LinalgOp>(op);
+  bool bufferizesToElementwiseAccess(Operation *op, const AnalysisState &state,
+                                     ArrayRef<OpOperand *> opOperands) const {
+    auto linalgOp = cast<linalg::LinalgOp>(op);
 
-    // The i-th OpResult may alias with the i-th "out" tensor.
-    return {genericOp.getOutputOperand(opResult.getResultNumber())};
-  }
+    // All loops must be parallel.
+    if (linalgOp.getNumLoops() != linalgOp.getNumParallelLoops())
+      return false;
 
-  SmallVector<OpResult> getAliasingOpResult(Operation *op, OpOperand &opOperand,
-                                            const AnalysisState &state) const {
-    auto genericOp = cast<linalg::LinalgOp>(op);
+    // All index maps of tensors must be identity maps.
+    SmallVector<AffineMap> indexingMaps = linalgOp.getIndexingMapsArray();
+    assert(linalgOp->getNumOperands() == indexingMaps.size() &&
+           "unexpected number of indexing maps");
+    for (auto [operand, map] :
+         llvm::zip(linalgOp->getOpOperands(), indexingMaps)) {
+      // Non-tensors do not participate in bufferization, so they can be
+      // ignored.
+      if (!isa<RankedTensorType, MemRefType>(operand.get().getType()))
+        continue;
+      // Only consider operands in `opOperands`.
+      if (!llvm::is_contained(opOperands, &operand))
+        continue;
+      // TODO: This could be generalized to other indexing maps. (All indexing
+      // must be the same.)
+      if (!map.isIdentity())
+        return false;
+    }
 
-    // The i-th "out" tensor may alias with the i-th OpResult.
-    if (genericOp.isOutputTensor(&opOperand))
-      return {genericOp.getTiedOpResult(&opOperand)};
-    return {};
-  }
-
-  BufferRelation bufferRelation(Operation *op, OpResult opResult,
-                                const AnalysisState &state) const {
-    return BufferRelation::Equivalent;
+    return true;
   }
 
   LogicalResult bufferize(Operation *op, RewriterBase &rewriter,
                           const BufferizationOptions &options) const {
-    return bufferizeLinalgOp(rewriter, cast<LinalgOp>(op), options);
+    return bufferizeDestinationStyleOpInterface(
+        rewriter, cast<DestinationStyleOpInterface>(op), options);
   }
 };
 
@@ -137,8 +148,7 @@ struct LinalgOpInterface
 template <typename... Ops>
 struct LinalgOpInterfaceHelper {
   static void registerOpInterface(MLIRContext *ctx) {
-    (void)std::initializer_list<int>{
-        0, (Ops::template attachInterface<LinalgOpInterface<Ops>>(*ctx), 0)...};
+    (Ops::template attachInterface<LinalgOpInterface<Ops>>(*ctx), ...);
   }
 };
 } // namespace

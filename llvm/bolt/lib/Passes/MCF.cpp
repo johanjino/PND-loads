@@ -86,7 +86,6 @@ void updateEdgeWeight<BinaryBasicBlock *>(EdgeWeightMap &EdgeWeights,
                                           const BinaryBasicBlock *B,
                                           double Weight) {
   EdgeWeights[std::make_pair(A, B)] = Weight;
-  return;
 }
 
 template <>
@@ -95,7 +94,6 @@ void updateEdgeWeight<Inverse<BinaryBasicBlock *>>(EdgeWeightMap &EdgeWeights,
                                                    const BinaryBasicBlock *B,
                                                    double Weight) {
   EdgeWeights[std::make_pair(B, A)] = Weight;
-  return;
 }
 
 template <class NodeT>
@@ -264,6 +262,7 @@ bool guessPredEdgeCounts(BinaryBasicBlock *BB, ArcSet &GuessedArcs) {
       continue;
 
     Pred->getBranchInfo(*BB).Count = Guessed;
+    GuessedArcs.insert(std::make_pair(Pred, BB));
     return true;
   }
   llvm_unreachable("Expected unguessed arc");
@@ -450,10 +449,10 @@ void estimateEdgeCounts(BinaryFunction &BF) {
     computeEdgeWeights<BinaryBasicBlock *>(BF, SuccEdgeWeights);
   }
   if (opts::EqualizeBBCounts) {
-    LLVM_DEBUG(BF.print(dbgs(), "before equalize BB counts", true));
+    LLVM_DEBUG(BF.print(dbgs(), "before equalize BB counts"));
     auto Info = DataflowInfoManager(BF, nullptr, nullptr);
     equalizeBBCounts(Info, BF);
-    LLVM_DEBUG(BF.print(dbgs(), "after equalize BB counts", true));
+    LLVM_DEBUG(BF.print(dbgs(), "after equalize BB counts"));
   }
   if (opts::IterativeGuess)
     guessEdgeByIterativeApproach(BF);

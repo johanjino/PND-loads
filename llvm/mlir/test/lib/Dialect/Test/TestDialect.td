@@ -14,7 +14,6 @@ include "mlir/IR/OpBase.td"
 def Test_Dialect : Dialect {
   let name = "test";
   let cppNamespace = "::test";
-  let emitAccessorPrefix = kEmitAccessorPrefix_Prefixed;
   let hasCanonicalizer = 1;
   let hasConstantMaterializer = 1;
   let hasOperationAttrVerify = 1;
@@ -29,10 +28,12 @@ def Test_Dialect : Dialect {
 
   let extraClassDeclaration = [{
     void registerAttributes();
+    void registerInterfaces();
     void registerTypes();
+    void registerOpsSyntax();
 
     // Provides a custom printing/parsing for some operations.
-    ::llvm::Optional<ParseOpHook>
+    ::std::optional<ParseOpHook>
       getParseOperationHook(::llvm::StringRef opName) const override;
     ::llvm::unique_function<void(::mlir::Operation *,
                                  ::mlir::OpAsmPrinter &printer)>
@@ -42,22 +43,9 @@ def Test_Dialect : Dialect {
      void printType(::mlir::Type type,
                     ::mlir::DialectAsmPrinter &printer) const override;
 
-    /// Returns the external elements data manager for this dialect.
-    TestExternalElementsDataManager &getExternalDataManager() {
-      return externalDataManager;
-    }
-
   private:
     // Storage for a custom fallback interface.
     void *fallbackEffectOpInterfaces;
-
-    ::mlir::Type parseTestType(::mlir::AsmParser &parser,
-                               ::llvm::SetVector<::mlir::Type> &stack) const;
-    void printTestType(::mlir::Type type, ::mlir::AsmPrinter &printer,
-                       ::llvm::SetVector<::mlir::Type> &stack) const;
-
-    /// An external data manager used to test external elements data.
-    TestExternalElementsDataManager externalDataManager;
   }];
 }
 

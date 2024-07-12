@@ -46,15 +46,21 @@ void getRegNameFromBitVec(const BinaryContext &BC, const BitVector &RegV,
 void StokeInfo::checkInstr(const BinaryFunction &BF, StokeFuncInfo &FuncInfo) {
   MCPlusBuilder *MIB = BF.getBinaryContext().MIB.get();
   BitVector RegV(NumRegs, false);
-  for (BinaryBasicBlock *BB : BF.getLayout().blocks()) {
+  for (const BinaryBasicBlock *BB : BF.getLayout().blocks()) {
     if (BB->empty())
       continue;
 
-    for (MCInst &It : *BB) {
+    // Skip function with exception handling.
+    if (BB->throw_size() || BB->lp_size()) {
+      FuncInfo.Omitted = true;
+      return;
+    }
+
+    for (const MCInst &It : *BB) {
       if (MIB->isPseudo(It))
         continue;
       // skip function with exception handling yet
-      if (MIB->isEHLabel(It) || MIB->isInvoke(It)) {
+      if (MIB->isInvoke(It)) {
         FuncInfo.Omitted = true;
         return;
       }
@@ -75,7 +81,7 @@ void StokeInfo::checkInstr(const BinaryFunction &BF, StokeFuncInfo &FuncInfo) {
       if (IsPush)
         FuncInfo.StackOut = true;
 
-      if (MIB->isStore(It) && !IsPush && !IsRipAddr)
+      if (MIB->mayStore(It) && !IsPush && !IsRipAddr)
         FuncInfo.HeapOut = true;
 
       if (IsRipAddr)

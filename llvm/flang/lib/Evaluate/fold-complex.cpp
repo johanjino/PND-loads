@@ -7,6 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "fold-implementation.h"
+#include "fold-matmul.h"
 #include "fold-reduction.h"
 
 namespace Fortran::evaluate {
@@ -47,7 +48,7 @@ Expr<Type<TypeCategory::Complex, KIND>> FoldIntrinsicFunction(
           // into a complex constructor so that lowering can deal with the
           // optional aspect (there is no optional aspect with the complex
           // constructor).
-          if (MayBePassedAsAbsentOptional(*args[1]->UnwrapExpr(), context)) {
+          if (MayBePassedAsAbsentOptional(*args[1]->UnwrapExpr())) {
             return Expr<T>{std::move(funcRef)};
           }
         }
@@ -62,15 +63,16 @@ Expr<Type<TypeCategory::Complex, KIND>> FoldIntrinsicFunction(
                     ToReal<KIND>(context, std::move(im))}});
       }
     }
-  } else if (name == "merge") {
-    return FoldMerge<T>(context, std::move(funcRef));
+  } else if (name == "dot_product") {
+    return FoldDotProduct<T>(context, std::move(funcRef));
+  } else if (name == "matmul") {
+    return FoldMatmul(context, std::move(funcRef));
   } else if (name == "product") {
     auto one{Scalar<Part>::FromInteger(value::Integer<8>{1}).value};
     return FoldProduct<T>(context, std::move(funcRef), Scalar<T>{one});
   } else if (name == "sum") {
     return FoldSum<T>(context, std::move(funcRef));
   }
-  // TODO: dot_product, matmul
   return Expr<T>{std::move(funcRef)};
 }
 

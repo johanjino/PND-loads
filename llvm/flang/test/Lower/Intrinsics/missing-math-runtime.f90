@@ -4,7 +4,7 @@
 
  complex(16) :: a
  real(16) :: b
-! CHECK: not yet implemented: no math runtime available for 'hypot(f128, f128)'
+! CHECK: not yet implemented: no math runtime available for 'ABS(COMPLEX(KIND=16))'
  b = abs(a)
 end
 

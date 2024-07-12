@@ -9,7 +9,6 @@
 // <algorithm>
 
 // UNSUPPORTED: c++03, c++11, c++14, c++17
-// UNSUPPORTED: libcpp-has-no-incomplete-ranges
 
 // template<input_iterator I1, sentinel_for<I1> S1, input_iterator I2, sentinel_for<I2> S2,
 //          weakly_incrementable O, class Comp = ranges::less,
@@ -286,7 +285,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
       assert(std::ranges::equal(out, std::array<TracedCopy, 2>{3, 8}));
 
       assert(std::ranges::all_of(out, &TracedCopy::copiedOnce));
@@ -299,7 +298,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
       assert(std::ranges::equal(out, std::array<TracedCopy, 2>{3, 8}));
 
       assert(std::ranges::all_of(out, &TracedCopy::copiedOnce));
@@ -363,7 +362,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
 
     // range overload
@@ -377,7 +376,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
 
     // member pointer Comparator iterator overload
@@ -390,7 +389,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
 
     // member pointer Comparator range overload
@@ -402,7 +401,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
   }
 
@@ -423,7 +422,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
 
     // range overload
@@ -435,7 +434,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
 
     // member pointer Projection iterator overload
@@ -448,7 +447,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
 
     // member pointer Projection range overload
@@ -460,7 +459,7 @@ constexpr bool test() {
 
       assert(result.in1 == r1.end());
       assert(result.in2 == r2.end());
-      assert(result.out == out.end());
+      assert(result.out == out.data() + out.size());
     }
   }
 
@@ -568,8 +567,8 @@ int main(int, char**) {
 
   // Cannot static_assert on the entire permutation test because it exceeds the constexpr execution step limit
   // due to the large number of combination of types of iterators (it is a 3-dimensional cartesian product)
-  // Instead of having one single static_assert that tests all the combinations, in the runAllIteratorPermutationsTests 
-  // function, it has lots of smaller static_assert and each of them test 2-dimensional cartesian product which is less 
+  // Instead of having one single static_assert that tests all the combinations, in the runAllIteratorPermutationsTests
+  // function, it has lots of smaller static_assert and each of them test 2-dimensional cartesian product which is less
   // than the step limit.
   runAllIteratorPermutationsTests();
 

@@ -96,6 +96,13 @@ static cl::opt<std::string>
                       cl::desc("Maximize the band depth (yes/no)"), cl::Hidden,
                       cl::init("yes"), cl::cat(PollyCategory));
 
+static cl::opt<int>
+    ScheduleComputeOut("polly-schedule-computeout",
+                       cl::desc("Bound the scheduler by maximal amount"
+                                "of computational steps. "),
+                       cl::Hidden, cl::init(300000), cl::ZeroOrMore,
+                       cl::cat(PollyCategory));
+
 static cl::opt<bool>
     GreedyFusion("polly-loopfusion-greedy",
                  cl::desc("Aggressively try to fuse everything"), cl::Hidden,
@@ -296,6 +303,16 @@ private:
   /// @param Node The node to check.
   static bool isTileableBandNode(isl::schedule_node Node);
 
+  /// Check if this node is a band node we want to transform using pattern
+  /// matching.
+  ///
+  /// We look for innermost band nodes where individual dimensions are marked as
+  /// permutable. There is no restriction on the number of individual
+  /// dimensions.
+  ///
+  /// @param Node The node to check.
+  static bool isPMOptimizableBandNode(isl::schedule_node Node);
+
   /// Pre-vectorizes one scheduling dimension of a schedule band.
   ///
   /// prevectSchedBand splits out the dimension DimToVectorize, tiles it and
@@ -456,11 +473,21 @@ static bool isSimpleInnermostBand(const isl::schedule_node &Node) {
   return true;
 }
 
-bool ScheduleTreeOptimizer::isTileableBandNode(isl::schedule_node Node) {
+/// Check if this node is a band node, which has only one child.
+///
+/// @param Node The node to check.
+static bool isOneTimeParentBandNode(isl::schedule_node Node) {
   if (isl_schedule_node_get_type(Node.get()) != isl_schedule_node_band)
     return false;
 
   if (isl_schedule_node_n_children(Node.get()) != 1)
+    return false;
+
+  return true;
+}
+
+bool ScheduleTreeOptimizer::isTileableBandNode(isl::schedule_node Node) {
+  if (!isOneTimeParentBandNode(Node))
     return false;
 
   if (!isl_schedule_node_band_get_permutable(Node.get()))
@@ -472,6 +499,13 @@ bool ScheduleTreeOptimizer::isTileableBandNode(isl::schedule_node Node) {
     return false;
 
   return isSimpleInnermostBand(Node);
+}
+
+bool ScheduleTreeOptimizer::isPMOptimizableBandNode(isl::schedule_node Node) {
+  if (!isOneTimeParentBandNode(Node))
+    return false;
+
+  return Node.child(0).isa<isl::schedule_node_leaf>();
 }
 
 __isl_give isl::schedule_node
@@ -519,10 +553,8 @@ ScheduleTreeOptimizer::optimizeBand(__isl_take isl_schedule_node *NodeArg,
   assert(OAI && "Expecting optimization options");
 
   isl::schedule_node Node = isl::manage(NodeArg);
-  if (!isTileableBandNode(Node))
-    return Node.release();
 
-  if (OAI->PatternOpts) {
+  if (OAI->PatternOpts && isPMOptimizableBandNode(Node)) {
     isl::schedule_node PatternOptimizedSchedule =
         tryOptimizeMatMulPattern(Node, OAI->TTI, OAI->D);
     if (!PatternOptimizedSchedule.is_null()) {
@@ -531,6 +563,9 @@ ScheduleTreeOptimizer::optimizeBand(__isl_take isl_schedule_node *NodeArg,
       return PatternOptimizedSchedule.release();
     }
   }
+
+  if (!isTileableBandNode(Node))
+    return Node.release();
 
   if (OAI->Postopts)
     Node = applyTileBandOpt(Node);
@@ -683,11 +718,6 @@ static void runIslScheduleOptimizer(
     function_ref<const Dependences &(Dependences::AnalysisLevel)> GetDeps,
     TargetTransformInfo *TTI, OptimizationRemarkEmitter *ORE,
     isl::schedule &LastSchedule, bool &DepsChanged) {
-
-  // Skip SCoPs in case they're already optimised by PPCGCodeGeneration
-  if (S.isToBeSkipped())
-    return;
-
   // Skip empty SCoPs but still allow code generation as it will delete the
   // loops present but not needed.
   if (S.getSize() == 0) {
@@ -837,7 +867,25 @@ static void runIslScheduleOptimizer(
     SC = SC.set_proximity(Proximity);
     SC = SC.set_validity(Validity);
     SC = SC.set_coincidence(Validity);
+
+    // Save error handling behavior
+    long MaxOperations = isl_ctx_get_max_operations(Ctx);
+    isl_ctx_set_max_operations(Ctx, ScheduleComputeOut);
     Schedule = SC.compute_schedule();
+    bool ScheduleQuota = false;
+    if (isl_ctx_last_error(Ctx) == isl_error_quota) {
+      isl_ctx_reset_error(Ctx);
+      LLVM_DEBUG(
+          dbgs() << "Schedule optimizer calculation exceeds ISL quota\n");
+      ScheduleQuota = true;
+    }
+    isl_options_set_on_error(Ctx, ISL_ON_ERROR_ABORT);
+    isl_ctx_reset_operations(Ctx);
+    isl_ctx_set_max_operations(Ctx, MaxOperations);
+
+    if (ScheduleQuota)
+      return;
+
     isl_options_set_on_error(Ctx, OnErrorStatus);
 
     ScopsRescheduled++;

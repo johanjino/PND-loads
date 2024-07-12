@@ -9,6 +9,7 @@
 #include "llvm/DebugInfo/PDB/Native/FormatUtil.h"
 
 #include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/STLForwardCompat.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/BinaryFormat/COFF.h"
 #include "llvm/DebugInfo/CodeView/CodeView.h"
@@ -66,6 +67,8 @@ std::string llvm::pdb::formatChunkKind(DebugSubsectionKind Kind,
       RETURN_CASE(DebugSubsectionKind, MergedAssemblyInput,
                   "merged assembly input");
       RETURN_CASE(DebugSubsectionKind, CoffSymbolRVA, "coff symbol rva");
+      RETURN_CASE(DebugSubsectionKind, XfgHashType, "xfg hash type");
+      RETURN_CASE(DebugSubsectionKind, XfgHashVirtual, "xfg hash virtual");
     }
   } else {
     switch (Kind) {
@@ -89,6 +92,11 @@ std::string llvm::pdb::formatChunkKind(DebugSubsectionKind Kind,
                   "DEBUG_S_MERGED_ASSEMBLYINPUT");
       RETURN_CASE(DebugSubsectionKind, CoffSymbolRVA,
                   "DEBUG_S_COFF_SYMBOL_RVA");
+      RETURN_CASE(DebugSubsectionKind, XfgHashType,
+                  "DEBUG_S_XFGHASH_TYPE");
+      RETURN_CASE(DebugSubsectionKind, XfgHashVirtual,
+                  "DEBUG_S_XFGHASH_VIRTUAL");
+
     }
   }
   return formatUnknownEnum(Kind);
@@ -112,9 +120,7 @@ std::string llvm::pdb::formatTypeLeafKind(TypeLeafKind K) {
     return #EnumName;
 #include "llvm/DebugInfo/CodeView/CodeViewTypes.def"
   default:
-    return formatv("UNKNOWN RECORD ({0:X})",
-                   static_cast<std::underlying_type_t<TypeLeafKind>>(K))
-        .str();
+    return formatv("UNKNOWN RECORD ({0:X})", llvm::to_underlying(K)).str();
   }
 }
 

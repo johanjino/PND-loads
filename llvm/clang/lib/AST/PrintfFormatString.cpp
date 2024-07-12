@@ -140,7 +140,7 @@ static PrintfSpecifierResult ParsePrintfSpecifier(FormatStringHandler &H,
         // Set the privacy flag if the privacy annotation in the
         // comma-delimited segment is at least as strict as the privacy
         // annotations in previous comma-delimited segments.
-        if (MatchedStr.startswith("mask")) {
+        if (MatchedStr.starts_with("mask")) {
           StringRef MaskType = MatchedStr.substr(sizeof("mask.") - 1);
           unsigned Size = MaskType.size();
           if (Warn && (Size == 0 || Size > 8))
@@ -326,6 +326,14 @@ static PrintfSpecifierResult ParsePrintfSpecifier(FormatStringHandler &H,
     case 's': k = ConversionSpecifier::sArg; break;
     case 'u': k = ConversionSpecifier::uArg; break;
     case 'x': k = ConversionSpecifier::xArg; break;
+    // C23.
+    case 'b':
+      if (isFreeBSDKPrintf)
+        k = ConversionSpecifier::FreeBSDbArg; // int followed by char *
+      else
+        k = ConversionSpecifier::bArg;
+      break;
+    case 'B': k = ConversionSpecifier::BArg; break;
     // POSIX specific.
     case 'C': k = ConversionSpecifier::CArg; break;
     case 'S': k = ConversionSpecifier::SArg; break;
@@ -337,11 +345,6 @@ static PrintfSpecifierResult ParsePrintfSpecifier(FormatStringHandler &H,
     case '@': k = ConversionSpecifier::ObjCObjArg; break;
     // Glibc specific.
     case 'm': k = ConversionSpecifier::PrintErrno; break;
-    // FreeBSD kernel specific.
-    case 'b':
-      if (isFreeBSDKPrintf)
-        k = ConversionSpecifier::FreeBSDbArg; // int followed by char *
-      break;
     case 'r':
       if (isFreeBSDKPrintf)
         k = ConversionSpecifier::FreeBSDrArg; // int
@@ -497,7 +500,7 @@ ArgType PrintfSpecifier::getScalarArgType(ASTContext &Ctx,
       case LengthModifier::AsShort:
         if (Ctx.getTargetInfo().getTriple().isOSMSVCRT())
           return Ctx.IntTy;
-        LLVM_FALLTHROUGH;
+        [[fallthrough]];
       default:
         return ArgType::Invalid();
     }
@@ -797,6 +800,8 @@ bool PrintfSpecifier::fixType(QualType QT, const LangOptions &LangOpt,
 #include "clang/Basic/PPCTypes.def"
 #define RVV_TYPE(Name, Id, SingletonId) case BuiltinType::Id:
 #include "clang/Basic/RISCVVTypes.def"
+#define WASM_TYPE(Name, Id, SingletonId) case BuiltinType::Id:
+#include "clang/Basic/WebAssemblyReferenceTypes.def"
 #define SIGNED_TYPE(Id, SingletonId)
 #define UNSIGNED_TYPE(Id, SingletonId)
 #define FLOATING_TYPE(Id, SingletonId)
@@ -961,8 +966,10 @@ bool PrintfSpecifier::hasValidAlternativeForm() const {
   if (!HasAlternativeForm)
     return true;
 
-  // Alternate form flag only valid with the oxXaAeEfFgG conversions
+  // Alternate form flag only valid with the bBoxXaAeEfFgG conversions
   switch (CS.getKind()) {
+  case ConversionSpecifier::bArg:
+  case ConversionSpecifier::BArg:
   case ConversionSpecifier::oArg:
   case ConversionSpecifier::OArg:
   case ConversionSpecifier::xArg:
@@ -988,8 +995,10 @@ bool PrintfSpecifier::hasValidLeadingZeros() const {
   if (!HasLeadingZeroes)
     return true;
 
-  // Leading zeroes flag only valid with the diouxXaAeEfFgG conversions
+  // Leading zeroes flag only valid with the bBdiouxXaAeEfFgG conversions
   switch (CS.getKind()) {
+  case ConversionSpecifier::bArg:
+  case ConversionSpecifier::BArg:
   case ConversionSpecifier::dArg:
   case ConversionSpecifier::DArg:
   case ConversionSpecifier::iArg:
@@ -1080,8 +1089,10 @@ bool PrintfSpecifier::hasValidPrecision() const {
   if (Precision.getHowSpecified() == OptionalAmount::NotSpecified)
     return true;
 
-  // Precision is only valid with the diouxXaAeEfFgGsP conversions
+  // Precision is only valid with the bBdiouxXaAeEfFgGsP conversions
   switch (CS.getKind()) {
+  case ConversionSpecifier::bArg:
+  case ConversionSpecifier::BArg:
   case ConversionSpecifier::dArg:
   case ConversionSpecifier::DArg:
   case ConversionSpecifier::iArg:
