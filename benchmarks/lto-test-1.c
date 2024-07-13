@@ -1,3 +1,5 @@
+void test(int *a, int *b, int i);
+
 int main(int argc, char **argv) {
 	int a[100]; 
 	int b[100];
