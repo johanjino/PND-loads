@@ -10,16 +10,10 @@
 PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
                                       LoopStandardAnalysisResults &AR, LPMUpdater &U){
     Function &F = *LN.getParent();
-	errs() << "Running on: " << F.getName() << "\n";
     LLVMContext &Ctx = F.getContext();
     DependenceInfo DI = DependenceInfo(&F, &AR.AA, &AR.SE, &AR.LI);
 
     markLoads(LN, DI, AR, Ctx);
-
-	std::string operand;
-	llvm::raw_string_ostream operand_buffer(operand);
-	LN.getOutermostLoop().print(operand_buffer, true);
-	errs() << operand_buffer.str() << "\n";	
 
     return PreservedAnalyses::all();
 }
