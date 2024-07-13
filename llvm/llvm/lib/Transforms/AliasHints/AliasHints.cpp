@@ -75,19 +75,21 @@ void AliasHintsPass::markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAna
     /* Iterate over all loads using our own method for finding labels */
     markConstantAccesses(*LN.getParent(), AR.AA, Ctx);
     AliasHint Hint;
-    std::set<LoadInst *> PNDLoads;
     for (auto Load: all_loads){
         if (!Load->isSimple()) continue;
-        if (Load->getAAMetadata().PND) continue; //we already marked this when checking for constant memory
         Hint = determineHint(Load, all_stores, all_calls, LAIInstances, VersionPairs, DI, AR.SE, AR.AA, AR.LI);
-        if(Hint == AliasHint::PredictNone)
-            PNDLoads.insert(Load);
-    }
-
-    for (auto Load: PNDLoads){
-        AAMDNodes AAInfo = Load->getAAMetadata();
-        AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
-        Load->setAAMetadata(AAInfo);
+        if(Hint == AliasHint::PredictNone) {
+            AAMDNodes AAInfo = Load->getAAMetadata();
+            AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
+            Load->setAAMetadata(AAInfo);
+        }
+        else if (Hint == AliasHint::Unchanged && Load->getAAMetadata().PND) {
+            //We found that a load labelled on a previous invocation of the pass
+            //shouldn't be labelled thanks to more available information
+            AAMDNodes AAInfo = Load->getAAMetadata();
+            AAInfo.PND = nullptr;
+            Load->setAAMetadata(AAInfo);
+        }
     }
 
     for (auto LAI: LAIInstances){
