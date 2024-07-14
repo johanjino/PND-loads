@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2014, 2020 ARM Limited
+* Copyright (c) 2012, 2014, 2020 ARM Limited
  * All rights reserved
  *
  * The license below extends only to copyright in the software and shall
@@ -161,6 +161,28 @@ class MemDepUnit
     /** Debugging function to dump the lists of instructions. */
     void dumpLists();
 
+    /** The thread id of this memory dependence unit. */
+    int id;
+    struct MemDepUnitStats : public statistics::Group
+    {
+        MemDepUnitStats(statistics::Group *parent);
+        /** Stat for number of inserted loads. */
+        statistics::Scalar insertedLoads;
+        /** Stat for number of inserted stores. */
+        statistics::Scalar insertedStores;
+        /** Stat for number of conflicting loads that had to wait for a
+         *  store. */
+        statistics::Scalar conflictingLoads;
+        /** Stat for number of conflicting stores that had to wait for a
+         *  store. */
+        statistics::Scalar conflictingStores;
+
+        statistics::Scalar MDPLookups;
+        statistics::Scalar bypassedMDPLookups;
+        statistics::Scalar LFSTReads;
+        statistics::Scalar LFSTWrites;
+    } stats;
+
   private:
 
     /** Completes a memory instruction. */
@@ -261,27 +283,6 @@ class MemDepUnit
     /** Pointer to the IQ. */
     InstructionQueue *iqPtr;
 
-    /** The thread id of this memory dependence unit. */
-    int id;
-    struct MemDepUnitStats : public statistics::Group
-    {
-        MemDepUnitStats(statistics::Group *parent);
-        /** Stat for number of inserted loads. */
-        statistics::Scalar insertedLoads;
-        /** Stat for number of inserted stores. */
-        statistics::Scalar insertedStores;
-        /** Stat for number of conflicting loads that had to wait for a
-         *  store. */
-        statistics::Scalar conflictingLoads;
-        /** Stat for number of conflicting stores that had to wait for a
-         *  store. */
-        statistics::Scalar conflictingStores;
-
-        statistics::Scalar MDPLookups;
-        statistics::Scalar bypassedMDPLookups;
-        statistics::Scalar LFSTReads;
-        statistics::Scalar LFSTWrites;
-    } stats;
 };
 
 } // namespace o3

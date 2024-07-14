@@ -175,8 +175,7 @@ IEW::IEWStats::IEWStats(CPU *cpu)
              "Number of branch mispredicts detected at execute",
              predictedTakenIncorrect + predictedNotTakenIncorrect),
     ADD_STAT(PNDLoadViolations, statistics::units::Count::get(),
-             "Number of mem order violations triggered by a PND load",
-             predictedTakenIncorrect + predictedNotTakenIncorrect),
+             "Number of mem order violations triggered by a PND load"),
     executedInstStats(cpu),
     ADD_STAT(instsToCommit, statistics::units::Count::get(),
              "Cumulative count of insts sent to commit"),
@@ -1289,7 +1288,7 @@ IEW::executeInsts()
                 DynInstPtr violator;
                 violator = ldstQueue.getMemDepViolator(tid);
 
-                if (violator->isPND()) ++stats.PNDLoadViolations;
+                if (violator->isPND()) ++iewStats.PNDLoadViolations;
 
                 DPRINTF(IEW, "LDSTQ detected a violation. Violator PC: %s "
                         "[sn:%lli], inst PC: %s [sn:%lli]. Addr is: %#x.\n",

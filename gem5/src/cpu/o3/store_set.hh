@@ -71,7 +71,7 @@ class StoreSet
     StoreSet() { };
 
     /** Creates store set predictor with given table sizes. */
-    StoreSet(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit*_memDep);
+    StoreSet(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit *_memDep);
 
     /** Default destructor. */
     ~StoreSet();

@@ -32,6 +32,7 @@
 #include "base/logging.hh"
 #include "base/trace.hh"
 #include "debug/StoreSet.hh"
+#include "cpu/o3/inst_queue.hh"
 
 namespace gem5
 {
@@ -87,6 +88,7 @@ StoreSet::init(uint64_t clear_period, int _SSIT_size, int _LFST_size, MemDepUnit
     SSITSize = _SSIT_size;
     LFSTSize = _LFST_size;
     clearPeriod = clear_period;
+    memDep = _memDep;
 
     DPRINTF(StoreSet, "StoreSet: Creating store set object.\n");
     DPRINTF(StoreSet, "StoreSet: SSIT size: %i, LFST size: %i.\n",
@@ -114,7 +116,6 @@ StoreSet::init(uint64_t clear_period, int _SSIT_size, int _LFST_size, MemDepUnit
 
     memOpsPred = 0;
 
-    memDep = _memDep;
 }
 
 
