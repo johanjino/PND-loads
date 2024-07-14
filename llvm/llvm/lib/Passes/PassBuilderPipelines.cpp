@@ -135,6 +135,7 @@
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
 #include "llvm/Transforms/Vectorize/SLPVectorizer.h"
 #include "llvm/Transforms/Vectorize/VectorCombine.h"
+#include "llvm/Transforms/AliasHints/AliasHints.h"
 
 using namespace llvm;
 
@@ -1486,6 +1487,16 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   if (!LTOPreLink)
     MPM.addPass(RelLookupTableConverterPass());
 
+  //inserted manually here to work with flang
+  FunctionPassManager OptimizePM2;
+  LoopPassManager LPM2;
+  LPM2.addPass(AliasHintsPass());
+  OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
+      std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
+  // Add the core optimizing pipeline.
+  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(OptimizePM2),
+                                                PTO.EagerlyInvalidateAnalyses));
+
   return MPM;
 }
 
@@ -1602,6 +1613,16 @@ PassBuilder::buildThinLTOPreLinkDefaultPipeline(OptimizationLevel Level) {
   addAnnotationRemarksPass(MPM);
 
   addRequiredLTOPreLinkPasses(MPM);
+
+  //inserted manually here to work with LTO
+  FunctionPassManager OptimizePM2;
+  LoopPassManager LPM2;
+  LPM2.addPass(AliasHintsPass());
+  OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
+      std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
+  // Add the core optimizing pipeline.
+  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(OptimizePM2),
+                                                PTO.EagerlyInvalidateAnalyses));
 
   return MPM;
 }
@@ -1982,6 +2003,16 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
 
   // Emit annotation remarks.
   addAnnotationRemarksPass(MPM);
+
+  //inserted manually here to work with LTO
+  FunctionPassManager OptimizePM2;
+  LoopPassManager LPM2;
+  LPM2.addPass(AliasHintsPass());
+  OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
+      std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
+  // Add the core optimizing pipeline.
+  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(OptimizePM2),
+                                                PTO.EagerlyInvalidateAnalyses));
 
   return MPM;
 }

@@ -101,7 +101,7 @@ using namespace llvm;
 namespace llvm{
 class LPMUpdater;
 class LoopNest;
-class AAMDNodes;
+struct AAMDNodes;
 
 #define PREDICT_ALIAS_ADDRESS_SPACE 420
 #define PREDICT_NO_ALIAS_ADDRESS_SPACE 69
