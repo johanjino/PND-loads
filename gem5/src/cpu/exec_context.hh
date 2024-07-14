@@ -42,14 +42,11 @@
 #ifndef __CPU_EXEC_CONTEXT_HH__
 #define __CPU_EXEC_CONTEXT_HH__
 
-#include "arch/vecregs.hh"
 #include "base/types.hh"
-#include "config/the_isa.hh"
 #include "cpu/base.hh"
 #include "cpu/reg_class.hh"
 #include "cpu/static_inst_fwd.hh"
 #include "cpu/translation.hh"
-#include "debug/Random.hh"
 #include "mem/request.hh"
 
 namespace gem5
@@ -141,8 +138,6 @@ class ExecContext
     initiateMemRead(Addr addr, unsigned int size,
             Request::Flags flags, const std::vector<bool>& byte_enable)
     {
-        // DPRINTF(Random, "PART 2: Wondering if I get in here with
-        //addr: %x \n", addr);
         panic("ExecContext::initiateMemRead() should be overridden\n");
     }
 

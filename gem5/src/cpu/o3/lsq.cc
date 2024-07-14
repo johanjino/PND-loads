@@ -65,7 +65,7 @@ namespace o3
 {
 
 LSQ::DcachePort::DcachePort(LSQ *_lsq, CPU *_cpu) :
-    RequestPort(_cpu->name() + ".dcache_port", _cpu), lsq(_lsq), cpu(_cpu)
+    RequestPort(_cpu->name() + ".dcache_port"), lsq(_lsq), cpu(_cpu)
 {}
 
 LSQ::LSQ(CPU *cpu_ptr, IEW *iew_ptr, const BaseO3CPUParams &params)
@@ -784,7 +784,6 @@ LSQ::pushRequest(const DynInstPtr& inst, bool isLoad, uint8_t *data,
         unsigned int size, Addr addr, Request::Flags flags, uint64_t *res,
         AtomicOpFunctorPtr amo_op, const std::vector<bool>& byte_enable)
 {
-
     // This comming request can be either load, store or atomic.
     // Atomic request has a corresponding pointer to its atomic memory
     // operation
@@ -833,7 +832,7 @@ LSQ::pushRequest(const DynInstPtr& inst, bool isLoad, uint8_t *data,
         request->initiateTranslation();
     }
 
-    /* This is the place where instructions get the effAddr. */
+    /* This is the place were instructions get the effAddr. */
     if (request->isTranslationComplete()) {
         if (request->isMemAccessRequired()) {
             inst->effAddr = request->getVaddr();

@@ -40,7 +40,6 @@
 #include "debug/MMU.hh"
 #include "sim/faults.hh"
 #include "sim/serialize.hh"
-#include "cpu/o3/dyn_inst.hh"
 
 namespace gem5
 {
@@ -159,14 +158,8 @@ EmulationPageTable::translate(const RequestPtr &req)
     Addr paddr;
     assert(pageAlign(req->getVaddr() + req->getSize() - 1) ==
            pageAlign(req->getVaddr()));
-    if (!translate(req->getVaddr(), paddr)){
-        if (req->inst) {
-            printf("Found PND load causing page fault\n");
-            o3::DynInst *load = reinterpret_cast<o3::DynInst *>(req->inst);
-            if (load->inHtmTransactionalState()) printf("is HTM load\n");
-        }
+    if (!translate(req->getVaddr(), paddr))
         return Fault(new GenericPageTableFault(req->getVaddr()));
-    }
     req->setPaddr(paddr);
     if ((paddr & (_pageSize - 1)) + req->getSize() > _pageSize) {
         panic("Request spans page boundaries!\n");

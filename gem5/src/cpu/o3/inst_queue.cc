@@ -105,9 +105,10 @@ InstructionQueue::InstructionQueue(CPU *cpu_ptr, IEW *iew_ptr,
     numPhysRegs = params.numPhysIntRegs + params.numPhysFloatRegs +
                     params.numPhysVecRegs +
                     params.numPhysVecRegs * (
-                            reg_classes.at(VecElemClass).numRegs() /
-                            reg_classes.at(VecRegClass).numRegs()) +
+                            reg_classes.at(VecElemClass)->numRegs() /
+                            reg_classes.at(VecRegClass)->numRegs()) +
                     params.numPhysVecPredRegs +
+                    params.numPhysMatRegs +
                     params.numPhysCCRegs;
 
     //Create an entry for each physical register within the
@@ -164,7 +165,7 @@ InstructionQueue::InstructionQueue(CPU *cpu_ptr, IEW *iew_ptr,
 InstructionQueue::~InstructionQueue()
 {
     dependGraph.reset();
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
     cprintf("Nodes traversed: %i, removed: %i\n",
             dependGraph.nodesTraversed, dependGraph.nodesRemoved);
 #endif
@@ -571,8 +572,8 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
     // Make sure the instruction is valid
     assert(new_inst);
 
-    DPRINTF(IQ, "Adding instruction: %x | [sn:%llu] PC %s to the IQ.\n",
-            new_inst->getEMI(),new_inst->seqNum, new_inst->pcState());
+    DPRINTF(IQ, "Adding instruction [sn:%llu] PC %s to the IQ.\n",
+            new_inst->seqNum, new_inst->pcState());
 
     assert(freeEntries != 0);
 
@@ -855,17 +856,21 @@ InstructionQueue::scheduleReadyInsts()
                     // upon the execution completing.
                     execution->setFreeFU();
                 } else {
-                    // Add the FU onto the list of FU's to be freed next cycle.
-                    fuPool->freeUnitNextCycle(idx);
+                    // If pipelined, get instruction throughput to
+                    // set cycle for release
+                    int issueLat = fuPool->getOpIssueLatency(op_class);
+                    if(issueLat != 1)
+                        fuPool->freeUnitXCycles(idx, issueLat);
+                    else
+                        fuPool->freeUnitNextCycle(idx);
                 }
             }
 
-            DPRINTF(IQ, "Hello: Thread %i: Issuing instruction PC %s "
-                    "[sn:%llu] | inst: %x\n",
+            DPRINTF(IQ, "Thread %i: Issuing instruction PC %s "
+                    "[sn:%llu]\n",
                     tid, issuing_inst->pcState(),
-                    issuing_inst->seqNum, issuing_inst->getEMI());
+                    issuing_inst->seqNum);
 
-            // Pop of the instruction out of the readyInsts Queue
             readyInsts[op_class].pop();
 
             if (!readyInsts[op_class].empty()) {
@@ -892,8 +897,6 @@ InstructionQueue::scheduleReadyInsts()
                 count[tid]--;
                 issuing_inst->clearInIQ();
             } else {
-                //The memory dependence unit, which tracks/predicts memory
-                //dependences between instructions.
                 memDepUnit[tid].issue(issuing_inst);
             }
 
@@ -980,8 +983,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
 
     completed_inst->lastWakeDependents = curTick();
 
-    DPRINTF(IQ, "Waking dependents of completed instruction.: [sn:%llu]\n",
-            completed_inst->seqNum);
+    DPRINTF(IQ, "Waking dependents of completed instruction.\n");
 
     assert(!completed_inst->isSquashed());
 
@@ -1000,16 +1002,10 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         count[tid]--;
     } else if (completed_inst->isReadBarrier() ||
                completed_inst->isWriteBarrier()) {
-        DPRINTF(IQ, "Completed instruction is barrier.\n");
         // Completes a non mem ref barrier
         memDepUnit[tid].completeInst(completed_inst);
     }
-     DPRINTF(IQ, "Checked completed instruction: %x,"
-            "isMemRef %x, isRead/WriteBarrier"
-            "%x/%x\n", completed_inst->getEMI(),
-            completed_inst->isMemRef(),
-            completed_inst->isReadBarrier(),
-            completed_inst->isWriteBarrier() );
+
     for (int dest_reg_idx = 0;
          dest_reg_idx < completed_inst->numDestRegs();
          dest_reg_idx++)
@@ -1040,19 +1036,13 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
                 dest_reg->index(),
                 dest_reg->className());
 
-        // Go through the dependency chain, marking the registers as
-        // ready within the waiting instructions.
+        //Go through the dependency chain, marking the registers as
+        //ready within the waiting instructions.
         DynInstPtr dep_inst = dependGraph.pop(dest_reg->flatIndex());
-        while (dep_inst) {
-            DPRINTF(IQ, "1044: Waking up a dependent instruction, [sn:%llu] "
-                    "PC %s.\n", dep_inst->seqNum, dep_inst->pcState());
 
-            DPRINTF(IQ, "Completed instruction: [sn:%llu] |"
-                "Dependent Instruction [sn:%llu] | Completed"
-                " instruction physical"
-                " address %x | Dep_instruction physical address %x\n",
-                completed_inst->seqNum, dep_inst->seqNum,
-                completed_inst->physEffAddr, dep_inst->physEffAddr);
+        while (dep_inst) {
+            DPRINTF(IQ, "Waking up a dependent instruction, [sn:%llu] "
+                    "PC %s.\n", dep_inst->seqNum, dep_inst->pcState());
 
             // Might want to give more information to the instruction
             // so that it knows which of its source registers is

@@ -49,10 +49,7 @@
 
 #include "arch/generic/tlb.hh"
 #include "base/random.hh"
-#include "base/logging.hh"
-#include "base/trace.hh"
 #include "base/types.hh"
-#include "config/the_isa.hh"
 #include "cpu/base.hh"
 #include "cpu/exetrace.hh"
 #include "cpu/nop_static_inst.hh"
@@ -61,7 +58,6 @@
 #include "cpu/o3/limits.hh"
 #include "debug/Activity.hh"
 #include "debug/Drain.hh"
-#include "debug/FetchInstruction.hh"
 #include "debug/Fetch.hh"
 #include "debug/O3CPU.hh"
 #include "debug/O3PipeView.hh"
@@ -103,7 +99,7 @@ namespace o3
 {
 
 Fetch::IcachePort::IcachePort(Fetch *_fetch, CPU *_cpu) :
-        RequestPort(_cpu->name() + ".icache_port", _cpu), fetch(_fetch)
+        RequestPort(_cpu->name() + ".icache_port"), fetch(_fetch)
 {}
 
 
@@ -187,12 +183,6 @@ Fetch::regProbePoints()
 
 Fetch::FetchStatGroup::FetchStatGroup(CPU *cpu, Fetch *fetch)
     : statistics::Group(cpu, "fetch"),
-    ADD_STAT(icacheStallCycles, statistics::units::Cycle::get(),
-             "Number of cycles fetch is stalled on an Icache miss"),
-    ADD_STAT(insts, statistics::units::Count::get(),
-             "Number of instructions fetch has processed"),
-    ADD_STAT(branches, statistics::units::Count::get(),
-             "Number of branches that fetch encountered"),
     ADD_STAT(predictedBranches, statistics::units::Count::get(),
              "Number of branches that fetch has predicted taken"),
     ADD_STAT(cycles, statistics::units::Cycle::get(),
@@ -229,21 +219,8 @@ Fetch::FetchStatGroup::FetchStatGroup(CPU *cpu, Fetch *fetch)
              "Number of instructions fetched each cycle (Total)"),
     ADD_STAT(idleRate, statistics::units::Ratio::get(),
              "Ratio of cycles fetch was idle",
-             idleCycles / cpu->baseStats.numCycles),
-    ADD_STAT(branchRate, statistics::units::Ratio::get(),
-             "Number of branch fetches per cycle",
-             branches / cpu->baseStats.numCycles),
-    ADD_STAT(rate, statistics::units::Rate<
-                    statistics::units::Count, statistics::units::Cycle>::get(),
-             "Number of inst fetches per cycle",
-             insts / cpu->baseStats.numCycles)
+             idleCycles / cpu->baseStats.numCycles)
 {
-        icacheStallCycles
-            .prereq(icacheStallCycles);
-        insts
-            .prereq(insts);
-        branches
-            .prereq(branches);
         predictedBranches
             .prereq(predictedBranches);
         cycles
@@ -281,10 +258,6 @@ Fetch::FetchStatGroup::FetchStatGroup(CPU *cpu, Fetch *fetch)
             .flags(statistics::pdf);
         idleRate
             .prereq(idleRate);
-        branchRate
-            .flags(statistics::total);
-        rate
-            .flags(statistics::total);
 }
 void
 Fetch::setTimeBuffer(TimeBuffer<TimeStruct> *time_buffer)
@@ -569,7 +542,7 @@ Fetch::lookupAndUpdateNextPC(const DynInstPtr &inst, PCStateBase &next_pc)
     inst->setPredTarg(next_pc);
     inst->setPredTaken(predict_taken);
 
-    ++fetchStats.branches;
+    cpu->fetchStats[tid]->numBranches++;
 
     if (predict_taken) {
         ++fetchStats.predictedBranches;
@@ -743,7 +716,8 @@ Fetch::doSquash(const PCStateBase &new_pc, const DynInstPtr squashInst,
 
     set(pc[tid], new_pc);
     fetchOffset[tid] = 0;
-    if (squashInst && squashInst->pcState().instAddr() == new_pc.instAddr())
+    if (squashInst && squashInst->pcState().instAddr() == new_pc.instAddr() &&
+        !squashInst->isLastMicroop())
         macroop[tid] = squashInst->macroop;
     else
         macroop[tid] = NULL;
@@ -1084,17 +1058,13 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu);
     instruction->setTid(tid);
 
-    if (this_pc.instAddr() == 0x400704)
-        std::cout << "Inst: " << instruction->staticInst->disassemble(this_pc.instAddr()) << "\n";
-
-    if (instruction->isLoad() && pnd_addresses.count(this_pc.instAddr())) { 
-        instruction->setSpecFlag();
-    }
-
     instruction->setThreadState(cpu->thread[tid]);
 
     DPRINTF(Fetch, "[tid:%i] Instruction PC %s created [sn:%lli].\n",
             tid, this_pc, seq);
+
+    DPRINTF(Fetch, "[tid:%i] Instruction is: %s\n", tid,
+            instruction->staticInst->disassemble(this_pc.instAddr()));
 
 #if TRACING_ON
     if (trace) {
@@ -1105,6 +1075,10 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
 #else
     instruction->traceData = NULL;
 #endif
+
+    if (instruction->isLoad() && pnd_addresses.count(this_pc.instAddr())) {
+        instruction->setPND();
+    }
 
     // Add instruction to the CPU's list of instructions.
     instruction->setInstListIt(cpu->addInst(instruction));
@@ -1178,8 +1152,9 @@ Fetch::fetch(bool &status_change)
 
             fetchCacheLine(fetchAddr, tid, this_pc.instAddr());
 
-            if (fetchStatus[tid] == IcacheWaitResponse)
-                ++fetchStats.icacheStallCycles;
+            if (fetchStatus[tid] == IcacheWaitResponse) {
+                cpu->fetchStats[tid]->icacheStallCycles++;
+            }
             else if (fetchStatus[tid] == ItlbWait)
                 ++fetchStats.tlbCycles;
             else
@@ -1275,7 +1250,7 @@ Fetch::fetch(bool &status_change)
                     staticInst = dec_ptr->decode(this_pc);
 
                     // Increment stat of fetched instructions.
-                    ++fetchStats.insts;
+                    cpu->fetchStats[tid]->numInsts++;
 
                     if (staticInst->isMacroop()) {
                         curMacroop = staticInst;
@@ -1605,7 +1580,7 @@ Fetch::profileStall(ThreadID tid)
         ++fetchStats.squashCycles;
         DPRINTF(Fetch, "[tid:%i] Fetch is squashing!\n", tid);
     } else if (fetchStatus[tid] == IcacheWaitResponse) {
-        ++fetchStats.icacheStallCycles;
+        cpu->fetchStats[tid]->icacheStallCycles++;
         DPRINTF(Fetch, "[tid:%i] Fetch is waiting cache response!\n",
                 tid);
     } else if (fetchStatus[tid] == ItlbWait) {
@@ -1654,4 +1629,3 @@ Fetch::IcachePort::recvReqRetry()
 
 } // namespace o3
 } // namespace gem5
-

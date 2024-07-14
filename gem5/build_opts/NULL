@@ -1,2 +1,2 @@
-TARGET_ISA = 'null'
-PROTOCOL='MI_example'
+RUBY=y
+RUBY_PROTOCOL_MI_EXAMPLE=y

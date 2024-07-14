@@ -25,11 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include "learning_gem5/part2/simple_object.hh"
 
-#include "base/logging.hh"
-#include "base/trace.hh"
-#include "debug/SimpleExample.hh"
+#include <iostream>
 
 namespace gem5
 {
@@ -37,8 +36,7 @@ namespace gem5
 SimpleObject::SimpleObject(const SimpleObjectParams &params) :
     SimObject(params)
 {
-    // std::cout << "Hello World! From a SimObject!" << std::endl;
-     DPRINTF(SimpleExample, "Created the simple object\n");
+    std::cout << "Hello World! From a SimObject!" << std::endl;
 }
 
 } // namespace gem5

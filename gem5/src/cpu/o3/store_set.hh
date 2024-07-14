@@ -31,19 +31,11 @@
 
 #include <list>
 #include <map>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include "base/statistics.hh"
 #include "base/types.hh"
 #include "cpu/inst_seq.hh"
-#include "cpu/o3/dyn_inst_ptr.hh"
-#include "cpu/o3/limits.hh"
-#include "debug/MemDepUnit.hh"
-#include "mem/packet.hh"
-#include "mem/port.hh"
-
 
 namespace gem5
 {
@@ -79,13 +71,13 @@ class StoreSet
     StoreSet() { };
 
     /** Creates store set predictor with given table sizes. */
-    StoreSet(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit *mem_dep);
+    StoreSet(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit*_memDep);
 
     /** Default destructor. */
     ~StoreSet();
 
     /** Initializes the store set predictor with the given table sizes. */
-    void init(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit *mem_dep);
+    void init(uint64_t clear_period, int SSIT_size, int LFST_size, MemDepUnit *_memDep);
 
     /** Records a memory ordering violation between the younger load
      * and the older store. */
@@ -125,9 +117,6 @@ class StoreSet
     void dump();
 
   private:
-    /** Tracks if a SSIT hash comes from the PC it was originally written for **/
-    std::map<int, Addr> SSITHashes;
-
     /** Calculates the index into the SSIT based on the PC. */
     inline int calcIndex(Addr PC)
     { return (PC >> offsetBits) & indexMask; }
@@ -139,9 +128,6 @@ class StoreSet
     /** The Store Set ID Table. */
     std::vector<SSID> SSIT;
 
-    // SSIT[SSID] --> SSID = index from calcIndex(instruction_PC)
-    // LFST[InstSeqNum] -->
-    // InstSeqNum (they confusingly call it inst_SSID)= SSIT[SSID]
     /** Bit vector to tell if the SSIT has a valid entry. */
     std::vector<bool> validSSIT;
 

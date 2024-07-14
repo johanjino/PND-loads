@@ -48,7 +48,6 @@
 #include "base/compiler.hh"
 #include "base/loader/symtab.hh"
 #include "base/logging.hh"
-#include "config/the_isa.hh"
 #include "cpu/base.hh"
 #include "cpu/checker/cpu.hh"
 #include "cpu/exetrace.hh"
@@ -157,25 +156,10 @@ Commit::CommitStats::CommitStats(CPU *cpu, Commit *commit)
                "The number of times a branch was mispredicted"),
       ADD_STAT(numCommittedDist, statistics::units::Count::get(),
                "Number of insts commited each cycle"),
-      ADD_STAT(instsCommitted, statistics::units::Count::get(),
-               "Number of instructions committed"),
-      ADD_STAT(opsCommitted, statistics::units::Count::get(),
-               "Number of ops (including micro ops) committed"),
-      ADD_STAT(memRefs, statistics::units::Count::get(),
-               "Number of memory references committed"),
-      ADD_STAT(loads, statistics::units::Count::get(), "Number of loads committed"),
       ADD_STAT(amos, statistics::units::Count::get(),
                "Number of atomic instructions committed"),
       ADD_STAT(membars, statistics::units::Count::get(),
                "Number of memory barriers committed"),
-      ADD_STAT(branches, statistics::units::Count::get(),
-               "Number of branches committed"),
-      ADD_STAT(vectorInstructions, statistics::units::Count::get(),
-               "Number of committed Vector instructions."),
-      ADD_STAT(floating, statistics::units::Count::get(),
-               "Number of committed floating point instructions."),
-      ADD_STAT(integer, statistics::units::Count::get(),
-               "Number of committed integer instructions."),
       ADD_STAT(functionCalls, statistics::units::Count::get(),
                "Number of function calls committed."),
       ADD_STAT(committedInstType, statistics::units::Count::get(),
@@ -193,43 +177,11 @@ Commit::CommitStats::CommitStats(CPU *cpu, Commit *commit)
         .init(0,commit->commitWidth,1)
         .flags(statistics::pdf);
 
-    instsCommitted
-        .init(cpu->numThreads)
-        .flags(total);
-
-    opsCommitted
-        .init(cpu->numThreads)
-        .flags(total);
-
-    memRefs
-        .init(cpu->numThreads)
-        .flags(total);
-
-    loads
-        .init(cpu->numThreads)
-        .flags(total);
-
     amos
         .init(cpu->numThreads)
         .flags(total);
 
     membars
-        .init(cpu->numThreads)
-        .flags(total);
-
-    branches
-        .init(cpu->numThreads)
-        .flags(total);
-
-    vectorInstructions
-        .init(cpu->numThreads)
-        .flags(total);
-
-    floating
-        .init(cpu->numThreads)
-        .flags(total);
-
-    integer
         .init(cpu->numThreads)
         .flags(total);
 
@@ -302,7 +254,7 @@ Commit::setActiveThreads(std::list<ThreadID> *at_ptr)
 }
 
 void
-Commit::setRenameMap(UnifiedRenameMap rm_ptr[])
+Commit::setRenameMap(UnifiedRenameMap::PerThreadUnifiedRenameMap& rm_ptr)
 {
     for (ThreadID tid = 0; tid < numThreads; tid++)
         renameMap[tid] = &rm_ptr[tid];
@@ -829,7 +781,6 @@ Commit::commit()
             commitStatus[tid] != TrapPending &&
             fromIEW->squashedSeqNum[tid] <= youngestSeqNum[tid]) {
 
-            //TODO: when squashing from a branch mispred, flip a bit on loads so we dont update PHAST with them
             if (fromIEW->mispredictInst[tid]) {
                 DPRINTF(Commit,
                     "[tid:%i] Squashing due to branch mispred "
@@ -960,15 +911,14 @@ Commit::commitInsts()
 
     DynInstPtr head_inst;
 
-    ThreadID commit_thread = getCommittingThread();
-
     // Commit as many instructions as possible until the commit bandwidth
     // limit is reached, or it becomes impossible to commit any more.
     while (num_committed < commitWidth) {
-
         // hardware transactionally memory
         // If executing within a transaction,
         // need to handle interrupts specially
+
+        ThreadID commit_thread = getCommittingThread();
 
         // Check for any interrupt that we've already squashed for
         // and start processing it.
@@ -1015,12 +965,6 @@ Commit::commitInsts()
             // Record that the number of ROB entries has changed.
             changedROBNumEntries[tid] = true;
         } else {
-
-            /*
-            * if load:
-            * again search for branches and confirm the prediction was correct, update PHAST
-            */
-
             set(pc[tid], head_inst->pcState());
 
             // Try to commit the head instruction.
@@ -1028,6 +972,8 @@ Commit::commitInsts()
 
             if (commit_success) {
                 ++num_committed;
+                cpu->commitStats[tid]
+                    ->committedInstType[head_inst->opClass()]++;
                 stats.committedInstType[tid][head_inst->opClass()]++;
                 ppCommit->notify(head_inst);
 
@@ -1392,9 +1338,11 @@ Commit::updateComInstStats(const DynInstPtr &inst)
 {
     ThreadID tid = inst->threadNumber;
 
-    if (!inst->isMicroop() || inst->isLastMicroop())
-        stats.instsCommitted[tid]++;
-    stats.opsCommitted[tid]++;
+    if (!inst->isMicroop() || inst->isLastMicroop()) {
+        cpu->commitStats[tid]->numInsts++;
+        cpu->baseStats.numInsts++;
+    }
+    cpu->commitStats[tid]->numOps++;
 
     // To match the old model, don't count nops and instruction
     // prefetches towards the total commit count.
@@ -1405,21 +1353,32 @@ Commit::updateComInstStats(const DynInstPtr &inst)
     //
     //  Control Instructions
     //
-    if (inst->isControl())
-        stats.branches[tid]++;
+    cpu->commitStats[tid]->updateComCtrlStats(inst->staticInst);
 
     //
     //  Memory references
     //
     if (inst->isMemRef()) {
-        stats.memRefs[tid]++;
+        cpu->commitStats[tid]->numMemRefs++;
 
         if (inst->isLoad()) {
-            stats.loads[tid]++;
+            cpu->commitStats[tid]->numLoadInsts++;
+            if (inst->isRMW()) {
+                cpu->commitStats[tid]->numRMWLoadInsts++;
+            }
+            if (inst->isRMWA()) {
+                cpu->commitStats[tid]->numRMWALoadInsts++;
+            }
         }
 
-        if (inst->isAtomic()) {
-            stats.amos[tid]++;
+        if (inst->isStore()) {
+            cpu->commitStats[tid]->numStoreInsts++;
+            if (inst->isRMW()) {
+                cpu->commitStats[tid]->numRMWStoreInsts++;
+            }
+            if (inst->isRMWA()) {
+                cpu->commitStats[tid]->numRMWAStoreInsts++;
+            }
         }
     }
 
@@ -1428,15 +1387,18 @@ Commit::updateComInstStats(const DynInstPtr &inst)
     }
 
     // Integer Instruction
-    if (inst->isInteger())
-        stats.integer[tid]++;
+    if (inst->isInteger()) {
+        cpu->commitStats[tid]->numIntInsts++;
+    }
 
     // Floating Point Instruction
-    if (inst->isFloating())
-        stats.floating[tid]++;
+    if (inst->isFloating()) {
+        cpu->commitStats[tid]->numFpInsts++;
+    }
     // Vector Instruction
-    if (inst->isVector())
-        stats.vectorInstructions[tid]++;
+    if (inst->isVector()) {
+        cpu->commitStats[tid]->numVecInsts++;
+    }
 
     // Function Calls
     if (inst->isCall())
@@ -1453,6 +1415,24 @@ ThreadID
 Commit::getCommittingThread()
 {
     if (numThreads > 1) {
+        // If a thread is exiting, we need to ensure that *all* of its
+        // instructions will be retired in this cycle, because the
+        // thread will be removed from the CPU at the end of this cycle.
+        // To ensure this, we prioritize committing from exiting threads
+        // before we consider other threads using the specified SMT
+        // commit policy.
+        for (ThreadID tid : *activeThreads) {
+            if (cpu->isThreadExiting(tid) &&
+                !rob->isEmpty(tid) &&
+                (commitStatus[tid] == Running ||
+                 commitStatus[tid] == Idle ||
+                 commitStatus[tid] == FetchTrapPending)) {
+                assert(rob->isHeadReady(tid) &&
+                       rob->readHeadInst(tid)->isSquashed());
+                return tid;
+            }
+        }
+
         switch (commitPolicy) {
           case CommitPolicy::RoundRobin:
             return roundRobin();

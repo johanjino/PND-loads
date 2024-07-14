@@ -26,37 +26,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// #include <stdio.h>
+#include <stdio.h>
 
-// int main(int argc, char* argv[])
-// {
-//     printf("Hello world!\n");
-//     return 0;
-// }
-
-// Just changing to fibonacci for fun...
-// #include <stdio.h>
-
-// int fibonacci(int n) {
-//     if (n <= 1) {
-//         return n;
-//     }
-//     return fibonacci(n-1) + fibonacci(n-2);
-// }
-
-// int main(void) {
-//     printf("%i\n", fibonacci(20));
-// }
-
-int values[2];
-
-int main(void) {
-    for (int i=0; i<10; i++){
-        if (i%2==0){
-            values[0] = i;
-        }
-        else{
-            values[1] = i;
-        }
-    }
+int main(int argc, char* argv[])
+{
+    printf("Hello world!\n");
+    return 0;
 }

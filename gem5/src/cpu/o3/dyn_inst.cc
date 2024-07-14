@@ -46,7 +46,6 @@
 #include "debug/DynInst.hh"
 #include "debug/IQ.hh"
 #include "debug/O3PipeView.hh"
-#include "debug/Random.hh"
 
 namespace gem5
 {
@@ -75,7 +74,7 @@ DynInst::DynInst(const Arrays &arrays, const StaticInstPtr &static_inst,
     ++cpu->instcount;
 
     if (cpu->instcount > 1500) {
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
         cpu->dumpInsts();
         dumpSNList();
 #endif
@@ -87,7 +86,7 @@ DynInst::DynInst(const Arrays &arrays, const StaticInstPtr &static_inst,
         seqNum, cpu->name(), cpu->instcount);
 #endif
 
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
     cpu->snList.insert(seqNum);
 #endif
 
@@ -188,6 +187,15 @@ DynInst::operator new(size_t count, Arrays &arrays)
     return buf;
 }
 
+// Because of the custom "new" operator that allocates more bytes than the
+// size of the DynInst object, AddressSanitizer throw new-delete-type-mismatch.
+// Adding a custom delete function is enough to shut down this false positive
+void
+DynInst::operator delete(void *ptr)
+{
+    ::operator delete(ptr);
+}
+
 DynInst::~DynInst()
 {
     /*
@@ -254,13 +262,13 @@ DynInst::~DynInst()
         "DynInst: [sn:%lli] Instruction destroyed. Instcount for %s = %i\n",
         seqNum, cpu->name(), cpu->instcount);
 #endif
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
     cpu->snList.erase(seqNum);
 #endif
 };
 
 
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
 void
 DynInst::dumpSNList()
 {
@@ -404,9 +412,6 @@ DynInst::initiateMemRead(Addr addr, unsigned size, Request::Flags flags,
                                const std::vector<bool> &byte_enable)
 {
     assert(byte_enable.size() == size);
-    DPRINTF(Random, "Part 3: Wondering if I get in here with Addr: "
-    "%x | Size: %x \n", addr, size);
-
     return cpu->pushRequest(
         dynamic_cast<DynInstPtr::PtrType>(this),
         /* ld */ true, nullptr, size, addr, flags, nullptr, nullptr,

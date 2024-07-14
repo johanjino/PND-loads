@@ -53,8 +53,6 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/o3/store_set.hh"
 #include "debug/MemDepUnit.hh"
-#include "mem/packet.hh"
-#include "mem/port.hh"
 
 namespace gem5
 {
@@ -75,7 +73,6 @@ struct BaseO3CPUParams;
 namespace o3
 {
 
-class StoreSet;
 class CPU;
 class InstructionQueue;
 
@@ -164,39 +161,8 @@ class MemDepUnit
     /** Debugging function to dump the lists of instructions. */
     void dumpLists();
 
-    CPU *cp;
-
-    /** The thread id of this memory dependence unit. */
-    int id;
-    struct MemDepUnitStats : public statistics::Group
-    {
-        MemDepUnitStats(statistics::Group *parent);
-        /** Stat for number of inserted loads. */
-        statistics::Scalar insertedLoads;
-        /** Stat for number of inserted stores. */
-        statistics::Scalar insertedStores;
-        /** Stat for number of conflicting loads that had to wait for a
-         *  store. */
-        statistics::Scalar conflictingLoads;
-        /** Stat for number of conflicting stores that had to wait for a
-         *  store. */
-        statistics::Scalar conflictingStores;
-            /** Number of times base case uses storeset */
-        statistics::Scalar baseUsingStoreSetCheck;
-        /** Stat for number of times we bypass the storeset when a predicate
-         *  alias load is inserted. */
-        statistics::Scalar BypassStoreSetCheck;
-
-        statistics::Scalar SSITCollisions;
-        statistics::Scalar SSITOverwrites;
-        statistics::Scalar LFSTInvalidations;
-    } stats;
-
   private:
 
-    /* The number of places to shift addresses in the LSQ before checking
-    for dependency violations */
-    unsigned depCheckShift;
     /** Completes a memory instruction. */
     void completed(const DynInstPtr &inst);
 
@@ -244,7 +210,7 @@ class MemDepUnit
         bool squashed = false;
 
         /** For debugging. */
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
         static int memdep_count;
         static int memdep_insert;
         static int memdep_erase;
@@ -275,9 +241,7 @@ class MemDepUnit
      *  this unit what instruction the newly added instruction is dependent
      *  upon.
      */
-    //The Storeset object...
     StoreSet depPred;
-	//StoreVector depPred;
 
     /** Sequence numbers of outstanding load barriers. */
     std::unordered_set<InstSeqNum> loadBarrierSNs;
@@ -297,6 +261,27 @@ class MemDepUnit
     /** Pointer to the IQ. */
     InstructionQueue *iqPtr;
 
+    /** The thread id of this memory dependence unit. */
+    int id;
+    struct MemDepUnitStats : public statistics::Group
+    {
+        MemDepUnitStats(statistics::Group *parent);
+        /** Stat for number of inserted loads. */
+        statistics::Scalar insertedLoads;
+        /** Stat for number of inserted stores. */
+        statistics::Scalar insertedStores;
+        /** Stat for number of conflicting loads that had to wait for a
+         *  store. */
+        statistics::Scalar conflictingLoads;
+        /** Stat for number of conflicting stores that had to wait for a
+         *  store. */
+        statistics::Scalar conflictingStores;
+
+        statistics::Scalar MDPLookups;
+        statistics::Scalar bypassedMDPLookups;
+        statistics::Scalar LFSTReads;
+        statistics::Scalar LFSTWrites;
+    } stats;
 };
 
 } // namespace o3

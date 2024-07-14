@@ -47,7 +47,6 @@
 
 #include "base/statistics.hh"
 #include "base/types.hh"
-#include "config/the_isa.hh"
 #include "cpu/inst_seq.hh"
 #include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/limits.hh"
@@ -339,6 +338,14 @@ class ROB
         statistics::Scalar reads;
         // The number of rob_writes
         statistics::Scalar writes;
+
+        statistics::Scalar squashedLoads;
+        statistics::Scalar squashedRMWLoads;
+        statistics::Scalar squashedRMWALoads;
+
+        statistics::Scalar squashedStores;
+        statistics::Scalar squashedRMWStores;
+        statistics::Scalar squashedRMWAStores;
     } stats;
 };
 

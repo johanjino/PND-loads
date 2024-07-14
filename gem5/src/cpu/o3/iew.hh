@@ -41,7 +41,6 @@
 #ifndef __CPU_O3_IEW_HH__
 #define __CPU_O3_IEW_HH__
 
-#include <list>
 #include <queue>
 #include <set>
 
@@ -293,11 +292,6 @@ class IEW
      */
     void tick();
 
-    /* Typedef of iterator through the list of instructions
-     (definitely aliased instruction).
-    */
-    typedef typename std::list<DynInstPtr>::iterator DefListIt;
-
   private:
     /** Updates execution stats based on the instruction. */
     void updateExeInstStats(const DynInstPtr &inst);
@@ -356,7 +350,6 @@ class IEW
     /** Debug function to print instructions that are issued this cycle. */
     void printAvailableInsts();
 
-
   public:
     /** Instruction queue. */
     InstructionQueue instQueue;
@@ -370,8 +363,6 @@ class IEW
      * IEW knows if there will be activity on the next cycle.
      */
     bool updateLSQNextCycle;
-
-    Tick powerstat;
 
   private:
     /** Records if there is a fetch redirect on this cycle for each thread. */
@@ -450,24 +441,13 @@ class IEW
         statistics::Scalar iqFullEvents;
         /** Stat for number of times the LSQ becomes full. */
         statistics::Scalar lsqFullEvents;
-        /** Stat for number of times we add to storeset after a violation */
-        statistics::Scalar baseStoreSetViolationAddition;
-        /** Stat for total number of times the CPU does not add
-         * to storeset (due to violation). */
-        statistics::Scalar bypassStoreSetViolationAddition;
         /** Stat for total number of memory ordering violation events. */
         statistics::Scalar memOrderViolationEvents;
-        /** Stat for total number of times a violation occurs but the physical
-         * address isn't the same */
-        statistics::Scalar notExactPhysicalAddrViolation;
-        // /** Stat for total number of incorrect predicted taken branches. */
-        //  statistics::Scalar powerUsedinViolation;
-        /** number of ticks from violations that are added to store set */
+        /** Stat for total number of incorrect predicted taken branches. */
         statistics::Scalar predictedTakenIncorrect;
         /** Stat for total number of incorrect predicted not taken branches. */
         statistics::Scalar predictedNotTakenIncorrect;
-        /** Number of cycles the store queue is accessed. */
-        statistics::Scalar cyclesStoreQueueAccessed;
+        statistics::Scalar PNDLoadViolations;
         /** Stat for total number of mispredicted branches detected at
          *  execute. */
         statistics::Formula branchMispredicts;
@@ -476,25 +456,11 @@ class IEW
         {
             ExecutedInstStats(CPU *cpu);
 
-            /** Stat for total number of executed instructions. */
-            statistics::Scalar numInsts;
-            /** Stat for total number of executed load instructions. */
-            statistics::Vector numLoadInsts;
             /** Stat for total number of squashed instructions skipped at
              *  execute. */
             statistics::Scalar numSquashedInsts;
             /** Number of executed software prefetches. */
             statistics::Vector numSwp;
-            /** Number of executed nops. */
-            statistics::Vector numNop;
-            /** Number of executed meomory references. */
-            statistics::Vector numRefs;
-            /** Number of executed branches. */
-            statistics::Vector numBranches;
-            /** Number of executed store instructions. */
-            statistics::Formula numStoreInsts;
-            /** Number of instructions executed per cycle. */
-            statistics::Formula numRate;
         } executedInstStats;
 
         /** Number of instructions sent to commit. */

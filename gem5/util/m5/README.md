@@ -158,8 +158,6 @@ and then a dot. For instance, to set the cross compiler prefix to
 
 ```shell
 scons x86.CROSS_COMPILE=x86_64-linux-gnu- build/x86/out/m5
-scons arm64.CROSS_COMPILE=aarch64-linux-gnu- build/ARM/out/m5
-
 ```
 
    ABI   | QEMU_ARCH |     CROSS_COMPILE
@@ -412,5 +410,3 @@ subtley broken, when used to target a different ABI. To build these objects
 correctly, we would need to use a proper cross build environment for their
 corresponding languages. Something like this could likely be set up using a
 tool like buildroot.
-
-

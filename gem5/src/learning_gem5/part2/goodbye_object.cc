@@ -90,10 +90,7 @@ GoodbyeObject::fillBuffer()
         // Wait for the next copy for as long as it would have taken
         DPRINTF(HelloExample, "Scheduling another fillBuffer in %d ticks\n",
                 bandwidth * bytes_copied);
-        int rounded_time =   (bandwidth * bytes_copied)-
-                                        int(bandwidth * bytes_copied)%100;
-        // schedule(event, curTick() + bandwidth * bytes_copied);
-        schedule(event, curTick() + rounded_time);
+        schedule(event, curTick() + bandwidth * bytes_copied);
     } else {
         DPRINTF(HelloExample, "Goodbye done copying!\n");
         // Be sure to take into account the time for the last bytes

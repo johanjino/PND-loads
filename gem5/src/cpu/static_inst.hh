@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017, 2020 ARM Limited
+ * Copyright (c) 2017, 2020, 2023 Arm Limited
+ * Copyright (c) 2022-2023 The University of Edinburgh
  * All rights reserved
  *
  * The license below extends only to copyright in the software and shall
@@ -66,16 +67,15 @@ class Packet;
 class ExecContext;
 class ThreadContext;
 
-GEM5_DEPRECATED_NAMESPACE(Loader, loader);
 namespace loader
 {
 class SymbolTable;
 } // namespace loader
 
-namespace Trace
+namespace trace
 {
 class InstRecord;
-} // namespace Trace
+} // namespace trace
 
 /**
  * Base, ISA-independent static instruction class.
@@ -156,6 +156,7 @@ class StaticInst : public RefCounted, public StaticInstFlags
     bool isInteger()      const { return flags[IsInteger]; }
     bool isFloating()     const { return flags[IsFloating]; }
     bool isVector()       const { return flags[IsVector]; }
+    bool isMatrix()       const { return flags[IsMatrix]; }
 
     bool isControl()      const { return flags[IsControl]; }
     bool isCall()         const { return flags[IsCall]; }
@@ -181,7 +182,10 @@ class StaticInst : public RefCounted, public StaticInstFlags
     bool isNonSpeculative() const { return flags[IsNonSpeculative]; }
     bool isQuiesce() const { return flags[IsQuiesce]; }
     bool isUnverifiable() const { return flags[IsUnverifiable]; }
+    bool isPseudo() const { return flags[IsPseudo]; }
     bool isSyscall() const { return flags[IsSyscall]; }
+    bool isRMW() const { return flags[IsRMW]; }
+    bool isRMWA() const { return flags[IsRMWA]; }
     bool isMacroop() const { return flags[IsMacroop]; }
     bool isMicroop() const { return flags[IsMicroop]; }
     bool isDelayedCommit() const { return flags[IsDelayedCommit]; }
@@ -193,16 +197,11 @@ class StaticInst : public RefCounted, public StaticInstFlags
     bool isHtmStart() const { return flags[IsHtmStart]; }
     bool isHtmStop() const { return flags[IsHtmStop]; }
     bool isHtmCancel() const { return flags[IsHtmCancel]; }
+    bool isPND() const { return flags[IsPND]; }
+    void setPND() { flags[IsPND] = true; }
+    void unsetPND() { flags[IsPND] = false; }
 
-    //added flags
-    //(aliased cases already covered in flag isRead/WriteBarrier...)
-    bool isSpecbCheck() const { return flags[IsSpecbCheck]; }
-    bool isDefAlias() const { return flags[IsDefAlias]; }
-    bool isNotAlias() const { return flags[IsNotAlias]; }
-    // Rohan Added
-    void setSpecbCheck() { flags[IsSpecbCheck] = true; }
-    void unsetSpecbCheck() { flags[IsSpecbCheck] = false; }
-    void setDefAlias() { flags[IsDefAlias] = true; }
+    bool isInvalid() const { return flags[IsInvalid]; }
 
     bool
     isHtmCmd() const
@@ -261,6 +260,11 @@ class StaticInst : public RefCounted, public StaticInstFlags
     }
 
     /**
+     * Instruction size in bytes. Necessary for dynamic instruction sizes
+     */
+    size_t _size = 0;
+
+    /**
      * Base mnemonic (e.g., "add").  Used by generateDisassembly()
      * methods.  Also useful to readily identify instructions from
      * within the debugger when #cachedDisassembly has not been
@@ -293,17 +297,17 @@ class StaticInst : public RefCounted, public StaticInstFlags
     virtual ~StaticInst() {};
 
     virtual Fault execute(ExecContext *xc,
-            Trace::InstRecord *traceData) const = 0;
+            trace::InstRecord *traceData) const = 0;
 
     virtual Fault
-    initiateAcc(ExecContext *xc, Trace::InstRecord *traceData) const
+    initiateAcc(ExecContext *xc, trace::InstRecord *traceData) const
     {
         panic("initiateAcc not defined!");
     }
 
     virtual Fault
     completeAcc(Packet *pkt, ExecContext *xc,
-            Trace::InstRecord *trace_data) const
+            trace::InstRecord *trace_data) const
     {
         panic("completeAcc not defined!");
     }
@@ -316,6 +320,17 @@ class StaticInst : public RefCounted, public StaticInstFlags
     {
         panic("buildRetPC not defined!");
     }
+
+    size_t size() const
+    {
+        if (_size == 0) fatal(
+            "Instruction size for this instruction not set! It's size is "
+            "required for the decoupled front-end. Either use the standard "
+            "front-end or this ISA needs to be extended with the instruction "
+            "size. Refer to the X86, Arm or RiscV decoders for an example.");
+        return _size;
+    }
+    virtual void size(size_t newSize) { _size = newSize; }
 
     /**
      * Return the microop that goes with a particular micropc. This should
