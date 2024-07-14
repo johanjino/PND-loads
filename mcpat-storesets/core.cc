@@ -2010,8 +2010,9 @@ void MemDepPredictor::computeEnergy(bool is_tdp)
     	ssit->stats_t.writeAc.access = num_insertions;
     	ssit->rtp_stats = ssit->stats_t;
 
-    	lfst->stats_t.readAc.access  = num_lookups;
-    	lfst->stats_t.writeAc.access = num_insertions + num_lfst_writes;
+      //LFST is only read when a valid SSIT entry exists, so need to track separately
+    	lfst->stats_t.readAc.access  = num_lfst_reads;
+    	lfst->stats_t.writeAc.access = num_lfst_writes;
     	lfst->rtp_stats = lfst->stats_t;
    }
 
