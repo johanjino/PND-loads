@@ -13,24 +13,25 @@ cache_sizes = {
 }
 
 #run from base spec dir
-base_dir = os.getcwd() # = /work/muke/checkpoints/benchmark_name
+base_dir = os.getcwd() # = /work/muke/checkpoints/benchmark
+addr_file_dir = sys.argv[1]
+cpu_model = sys.argv[2]
 spec_path = "/work/muke/spec2017/"
 gem5 = "/work/muke/PND-Loads/gem5/"
-results_dir = "/work/muke/PND-Loads/results/"
+results_dir = "/work/muke/PND-Loads/results/"+addr_file_dir.split("/")[-1]+"/"+cpu_model+"/"
 benchmark = base_dir.split("/")[4]
 run_dir = spec_path+"benchspec/CPU/"+benchmark+"/run/run_peak_refspeed_mytest-64.0000/"
 os.chdir(run_dir)
 specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
 os.chdir(base_dir)
-addr_file = sys.argv[1]
-cpu_model = sys.argv[2]
 random.seed(sum(ord(c) for c in base_dir))
 procs = []
 
 #iterate over all checkpoint.n dirs
 for out_dir in os.listdir(base_dir):
-    command = commands[int(out_dir[-1])]
+    run_number = out_dir[-1]
+    command = commands[int(run_number)]
     command = command.split('>')[0]
     cpt_number = 0
     out_dir = os.path.join(base_dir,out_dir)
@@ -42,10 +43,12 @@ for out_dir in os.listdir(base_dir):
             finished = False
             cpt_number += 1
             binary = run_dir+command.split()[0]
-            outdir = results_dir+cpu_model+benchmark+"/"
-            if addr_file.split("/")[-1] == 'empty': outdir += "base."
-            else: outdir += "pnd."
-            outdir += out_dir[-1]+"/"
+            benchmark_name = benchmark.split("_")[0].split(".")[1]
+            if addr_file_dir.split("/")[-1] == 'base':
+                addr_file = "/work/muke/empty"
+            else:
+                addr_file = addr_file_dir+benchmark
+            outdir = results_dir+benchmark_name+"."+run_number+"/raw/"
             if not os.path.exists(outdir): os.makedirs(outdir) #create the parent directories for gem5 stats dir if needed
             outdir += str(cpt_number)+".out"
             run = "ADDR_FILE="+addr_file+" "+gem5+"build/ARM/gem5.fast --outdir="+outdir+" "+gem5+"configs/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
