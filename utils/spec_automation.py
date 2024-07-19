@@ -6,52 +6,64 @@ import psutil
 import random
 import time
 
-#run from base spec dir
-base_dir = os.getcwd()
-spec_path = "/sim_home/luke/spec2017/"
-gem5 = "/sim_home/luke/PND-Loads/gem5/"
-benchmark = base_dir.split("/")[6]
-specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
-random.seed(sum(ord(c) for c in base_dir))
-commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
-procs = []
-scaled_up = True
-very_scaled = True
+cache_sizes = {
+    "default": "",
+    "scaled": " --l1d_size=128KiB --l1i_size=128KiB --l2_size=2MB",
+    "very_scaled": " --l1d_size=256KiB --l1i_size=256KiB --l2_size=4MB"
+}
 
-# iterate over all items in the current directory
+#run from base spec dir
+base_dir = os.getcwd() # = /work/muke/checkpoints/benchmark_name
+spec_path = "/work/muke/spec2017/"
+gem5 = "/work/muke/PND-Loads/gem5/"
+results_dir = "/work/muke/PND-Loads/results/"
+benchmark = base_dir.split("/")[4]
+run_dir = spec_path+"benchspec/CPU/"+benchmark+"/run/run_peak_refspeed_mytest-64.0000/"
+os.chdir(run_dir)
+specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
+commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if not line.startswith(b"#")]
+os.chdir(base_dir)
+addr_file = sys.argv[1]
+cpu_model = sys.argv[2]
+random.seed(sum(ord(c) for c in base_dir))
+procs = []
+
+#iterate over all checkpoint.n dirs
 for out_dir in os.listdir(base_dir):
-    if os.path.isdir(out_dir) and out_dir.startswith("checkpoints.") and out_dir[-1].isdigit():
-        command = commands[int(out_dir[-1])]
-        command = command.split('>')[0]
-        cpt_number = 0
-        for cpt_dir in os.listdir(os.path.join(base_dir, out_dir)):
+    command = commands[int(out_dir[-1])]
+    command = command.split('>')[0]
+    cpt_number = 0
+    out_dir = os.path.join(base_dir,out_dir)
+    #iterate over checkpoint.n
+    for chkpt_dir in os.listdir(out_dir):
+        #find cpt.m dir
+        if os.path.isdir(os.path.join(out_dir, chkpt_dir)) and chkpt_dir.startswith('cpt.'):
             waited = 0
             finished = False
-            # if this cpt_dir is a directory and its name starts with 'cpt.'
-            if os.path.isdir(os.path.join(base_dir, out_dir, cpt_dir)) and cpt_dir.startswith('cpt.'):
-                cpt_number += 1
-                binary = spec_path+"benchspec/CPU/"+benchmark+"/run/run_peak_refspeed_mytest-64.0000/"+command.split()[0]
-                if sys.argv[1] == 'base':
-                    address_file = "/sim_home/luke/empty"
-                    O3outdir = "base."+out_dir[-1]+"/"+str(cpt_number)+".out"
-                else:
-                    address_file = binary+"_pnd_address"
-                    O3outdir = "pnd."+out_dir[-1]+"/"+str(cpt_number)+".out"
-                run = "ADDR_FILE="+address_file+" "+gem5+"build/ARM/gem5.fast --outdir="+O3outdir+" "+gem5+"configs/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
-                if scaled_up:
-                    if very_scaled:
-                        run += " --l1d_size=256KiB --l1i_size=256KiB --l2_size=4MB"
-                    else:
-                        run += " --l1d_size=128KiB --l1i_size=128KiB --l2_size=2MB"
-                p = Popen(run, shell=True)
-                procs.append(p)
-                while waited < 60*1 and finished == False:
-                    time.sleep(10)
-                    waited += 10
-                    if Popen.poll(p) != None:
-                        finished = True
-                time.sleep(random.uniform(0,1)*60)
-                if psutil.virtual_memory().percent < 80 and psutil.cpu_percent() < 90: continue
-                Popen.wait(p)
+            cpt_number += 1
+            binary = run_dir+command.split()[0]
+            outdir = results_dir+cpu_model+benchmark+"/"
+            if addr_file.split("/")[-1] == 'empty': outdir += "base."
+            else: outdir += "pnd."
+            outdir += out_dir[-1]+"/"
+            if not os.path.exists(outdir): os.makedirs(outdir) #create the parent directories for gem5 stats dir if needed
+            outdir += str(cpt_number)+".out"
+            run = "ADDR_FILE="+addr_file+" "+gem5+"build/ARM/gem5.fast --outdir="+outdir+" "+gem5+"configs/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
+            run += cache_sizes[cpu_model]
+            os.chdir(run_dir)
+            p = Popen(run, shell=True)
+            if p.poll() is not None: exit(1)
+            os.chdir(base_dir)
+            procs.append(p)
+            while waited < 60*1 and finished == False:
+                time.sleep(10)
+                waited += 10
+                if Popen.poll(p) != None:
+                    finished = True
+            time.sleep(random.uniform(0,1)*60)
+            if psutil.virtual_memory().percent < 70 and psutil.cpu_percent() < 90: continue
+            Popen.wait(p)
+
 for p in procs:
-    Popen.wait(p)
+    code = Popen.wait(p)
+    if code is not None and code != 0: exit(1)
