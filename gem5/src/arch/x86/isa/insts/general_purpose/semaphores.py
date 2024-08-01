@@ -34,7 +34,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-microcode = '''
+microcode = """
 def macroop CMPXCHG_R_R {
     sub t0, rax, reg, flags=(OF, SF, ZF, AF, PF, CF)
     mov reg, reg, regm, flags=(CZF,)
@@ -42,6 +42,8 @@ def macroop CMPXCHG_R_R {
 };
 
 def macroop CMPXCHG_M_R {
+    .rmw
+    
     ldst t1, seg, sib, disp
     sub t0, rax, t1, flags=(OF, SF, ZF, AF, PF, CF)
 
@@ -51,6 +53,8 @@ def macroop CMPXCHG_M_R {
 };
 
 def macroop CMPXCHG_P_R {
+    .rmw
+
     rdip t7
     ldst t1, seg, riprel, disp
     sub t0, rax, t1, flags=(OF, SF, ZF, AF, PF, CF)
@@ -61,6 +65,9 @@ def macroop CMPXCHG_P_R {
 };
 
 def macroop CMPXCHG_LOCKED_M_R {
+    .rmw
+    .rmwa
+
     mfence
     ldstl t1, seg, sib, disp
     sub t0, rax, t1, flags=(OF, SF, ZF, AF, PF, CF)
@@ -72,6 +79,9 @@ def macroop CMPXCHG_LOCKED_M_R {
 };
 
 def macroop CMPXCHG_LOCKED_P_R {
+    .rmw
+    .rmwa
+
     rdip t7
     mfence
     ldstl t1, seg, riprel, disp
@@ -84,6 +94,8 @@ def macroop CMPXCHG_LOCKED_P_R {
 };
 
 def macroop XADD_M_R {
+    .rmw
+
     ldst t1, seg, sib, disp
     add t2, t1, reg, flags=(OF,SF,ZF,AF,PF,CF)
     st t2, seg, sib, disp
@@ -91,6 +103,8 @@ def macroop XADD_M_R {
 };
 
 def macroop XADD_P_R {
+    .rmw
+
     rdip t7
     ldst t1, seg, riprel, disp
     add t2, t1, reg, flags=(OF,SF,ZF,AF,PF,CF)
@@ -99,6 +113,9 @@ def macroop XADD_P_R {
 };
 
 def macroop XADD_LOCKED_M_R {
+    .rmw
+    .rmwa
+
     mfence
     ldstl t1, seg, sib, disp
     add t2, t1, reg, flags=(OF,SF,ZF,AF,PF,CF)
@@ -108,6 +125,9 @@ def macroop XADD_LOCKED_M_R {
 };
 
 def macroop XADD_LOCKED_P_R {
+    .rmw
+    .rmwa
+
     rdip t7
     mfence
     ldstl t1, seg, riprel, disp
@@ -123,14 +143,16 @@ def macroop XADD_R_R {
     mov reg, reg, t2
 };
 
-'''
+"""
 
 # Despite the name, this microcode sequence implements both
 # cmpxchg8b and cmpxchg16b, depending on the dynamic value
 # of dataSize.
-cmpxchg8bCode = '''
+cmpxchg8bCode = """
 def macroop CMPXCHG8B_%(suffix)s {
     .adjust_env clampOsz
+    %(rmw)s
+    %(rmwa)s
     %(rdip)s
     %(mfence)s
     lea t1, seg, %(sib)s, disp, dataSize=asz
@@ -153,26 +175,50 @@ doneComparing:
     stsplit%(ul)s (t2, t3), seg, [1, t0, t1], disp=0
     %(mfence)s
 };
-'''
+"""
 
-microcode += cmpxchg8bCode % {"rdip": "", "sib": "sib",
-                              "l": "", "ul": "",
-                              "mfence": "",
-                              "suffix": "M"}
-microcode += cmpxchg8bCode % {"rdip": "rdip t7", "sib": "riprel",
-                              "l": "", "ul": "",
-                              "mfence": "",
-                              "suffix": "P"}
-microcode += cmpxchg8bCode % {"rdip": "", "sib": "sib",
-                              "l": "l", "ul": "ul",
-                              "mfence": "mfence",
-                              "suffix": "LOCKED_M"}
-microcode += cmpxchg8bCode % {"rdip": "rdip t7", "sib": "riprel",
-                              "l": "l", "ul": "ul",
-                              "mfence": "mfence",
-                              "suffix": "LOCKED_P"}
+microcode += cmpxchg8bCode % {
+    "rdip": "",
+    "sib": "sib",
+    "l": "",
+    "ul": "",
+    "mfence": "",
+    "suffix": "M",
+    "rmw" : ".rmw",
+    "rmwa" : "",
+}
+microcode += cmpxchg8bCode % {
+    "rdip": "rdip t7",
+    "sib": "riprel",
+    "l": "",
+    "ul": "",
+    "mfence": "",
+    "suffix": "P",
+    "rmw" : ".rmw",
+    "rmwa" : "",
+}
+microcode += cmpxchg8bCode % {
+    "rdip": "",
+    "sib": "sib",
+    "l": "l",
+    "ul": "ul",
+    "mfence": "mfence",
+    "suffix": "LOCKED_M",
+    "rmw" : ".rmw",
+    "rmwa" : ".rmwa",
+}
+microcode += cmpxchg8bCode % {
+    "rdip": "rdip t7",
+    "sib": "riprel",
+    "l": "l",
+    "ul": "ul",
+    "mfence": "mfence",
+    "suffix": "LOCKED_P",
+    "rmw" : ".rmw",
+    "rmwa" : ".rmwa",
+}
 
-#let {{
+# let {{
 #    class XCHG(Inst):
 #       "GenFault ${new UnimpInstFault}"
-#}};
+# }};

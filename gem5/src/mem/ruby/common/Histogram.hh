@@ -29,9 +29,9 @@
 #ifndef __MEM_RUBY_COMMON_HISTOGRAM_HH__
 #define __MEM_RUBY_COMMON_HISTOGRAM_HH__
 
+#include <cstdint>
 #include <iostream>
 #include <vector>
-#include <cstdint>
 
 #include "mem/ruby/common/TypeDefines.hh"
 

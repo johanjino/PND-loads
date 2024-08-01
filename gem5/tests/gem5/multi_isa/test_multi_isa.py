@@ -36,54 +36,26 @@ isa_map = {
     "riscv": constants.riscv_tag,
 }
 
-length_map = {
-    "sparc": constants.long_tag,
-    "mips": constants.long_tag,
-    "null": constants.quick_tag,
-    "arm": constants.quick_tag,
-    "x86": constants.quick_tag,
-    "power": constants.long_tag,
-    "riscv": constants.long_tag,
-}
 
 for isa in isa_map.keys():
-    gem5_verify_config(
-        name=f"runtime-isa-check_{isa}-compiled-alone",
-        verifiers=(),
-        fixtures=(),
-        config=joinpath(
-            config.base_dir,
-            "tests",
-            "gem5",
-            "configs",
-            "runtime_isa_check.py",
-        ),
-        config_args=["-e", isa],
-        valid_isas=(isa_map[isa],),
-        valid_hosts=constants.supported_hosts,
-        length=length_map[isa],
-    )
-
-    gem5_verify_config(
-        name=f"supported-isas-check_{isa}-compiled-alone",
-        verifiers=(),
-        fixtures=(),
-        config=joinpath(
-            config.base_dir,
-            "tests",
-            "gem5",
-            "configs",
-            "supported_isa_check.py",
-        ),
-        config_args=["-e", isa],
-        valid_isas=(isa_map[isa],),
-        valid_hosts=constants.supported_hosts,
-        length=length_map[isa],
-    )
-
-    # Remove this when the muli-isa work is incorporated. `build/ALL/gem5.opt`
-    # must be compilable.
-    continue
+    if isa in ("x86", "arm", "riscv"):
+        gem5_verify_config(
+            name=f"supported-isas-check_{isa}-compiled-alone",
+            verifiers=(),
+            fixtures=(),
+            config=joinpath(
+                config.base_dir,
+                "tests",
+                "gem5",
+                "multi_isa",
+                "configs",
+                "supported_isa_check.py",
+            ),
+            config_args=["-e", isa],
+            valid_isas=(isa_map[isa],),
+            valid_hosts=constants.supported_hosts,
+            length=constants.long_tag,
+        )
 
     if isa != "null":
         # The null isa is not "supported" in a case where other ISAs are
@@ -96,11 +68,12 @@ for isa in isa_map.keys():
                 config.base_dir,
                 "tests",
                 "gem5",
+                "multi_isa",
                 "configs",
                 "supported_isa_check.py",
             ),
             config_args=["-e", isa],
             valid_isas=(constants.all_compiled_tag,),
             valid_hosts=constants.supported_hosts,
-            length=constants.long_tag,
+            length=constants.quick_tag,
         )

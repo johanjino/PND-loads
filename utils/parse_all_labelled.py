@@ -2,7 +2,7 @@ import subprocess
 import os
 import sys
 
-spec_dir = "/sim_home/luke/spec2017/benchspec/CPU/"
+spec_dir = "/work/muke/spec2017/benchspec/CPU/"
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "625.x264_s", "631.deepsjeng_s",
            "641.leela_s", "657.xz_s", 
@@ -31,5 +31,5 @@ for bench in benches:
 
     labelled_binary = "../labelled/run_peak_refspeed_mytest-64.0000/"+binary
 
-    p = subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/parse_labelled_binary.py "+labelled_binary+" "+binary, shell=True)
+    p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/parse_labelled_binary.py "+labelled_binary+" "+binary, shell=True)
     p.wait()

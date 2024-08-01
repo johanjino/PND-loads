@@ -51,7 +51,6 @@
 #include "arch/generic/debugfaults.hh"
 #include "arch/generic/vec_reg.hh"
 #include "base/circular_queue.hh"
-#include "config/the_isa.hh"
 #include "cpu/base.hh"
 #include "cpu/inst_seq.hh"
 #include "cpu/o3/comm.hh"
@@ -539,11 +538,6 @@ class LSQUnit
         /** Distribution of cycle latency between the first time a load
          * is issued and its completion */
         statistics::Distribution loadToUse;
-
-        /** Number of store entries searched by a load looking for a forward
-         *  in the SQ */
-        statistics::Scalar numStoresSearched;
-
     } stats;
 
   public:
@@ -559,16 +553,10 @@ class LSQUnit
     /** Returns the sequence number of the head load instruction. */
     InstSeqNum getLoadHeadSeqNum();
 
-    /** Get the instruction of the head of the load queue */
-    DynInstPtr getLoadHeadInst();
-
     /** Returns the index of the head store instruction. */
     int getStoreHead() { return storeQueue.head(); }
     /** Returns the sequence number of the head store instruction. */
     InstSeqNum getStoreHeadSeqNum();
-
-    /** Returns the sequence number of the dependent  store instruction. */
-    InstSeqNum getDepStoreSeqNum(DynInstPtr load_inst);
 
     /** Returns whether or not the LSQ unit is stalled. */
     bool isStalled()  { return stalled; }

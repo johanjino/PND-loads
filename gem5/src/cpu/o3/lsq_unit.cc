@@ -39,12 +39,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include "cpu/o3/lsq_unit.hh"
 
 #include "arch/generic/debugfaults.hh"
 #include "base/str.hh"
-#include "config/the_isa.hh"
 #include "cpu/checker/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/limits.hh"
@@ -52,12 +50,8 @@
 #include "debug/Activity.hh"
 #include "debug/HtmCpu.hh"
 #include "debug/IEW.hh"
-#include "debug/LSQUNIThitexternalsnoopviolation.hh"
-#include "debug/LSQUNITisnotLoadviolation.hh"
 #include "debug/LSQUnit.hh"
-#include "debug/LSQUnitInstruction.hh"
 #include "debug/O3PipeView.hh"
-#include "debug/ViolationEvent.hh"
 #include "mem/packet.hh"
 #include "mem/request.hh"
 
@@ -276,9 +270,7 @@ LSQUnit::LSQUnitStats::LSQUnitStats(statistics::Group *parent)
                "Number of times an access to memory failed due to the cache "
                "being blocked"),
       ADD_STAT(loadToUse, "Distribution of cycle latency between the "
-                "first time a load is issued and its completion"),
-      ADD_STAT(numStoresSearched, statistics::units::Count::get(), "Number of store entries searched by a "
-               "load looking for a forward in the SQ")
+                "first time a load is issued and its completion")
 {
     loadToUse
         .init(0, 299, 10)
@@ -459,7 +451,7 @@ LSQUnit::checkSnoop(PacketPtr pkt)
     LSQRequest *request = iter->request();
 
     // Check that this snoop didn't just invalidate our lock flag
-    if (ld_inst->effAddrValid() &&
+    if (ld_inst->effAddrValid() && request &&
         request->isCacheBlockHit(invalidate_addr, cacheBlockMask)
         && ld_inst->memReqFlags & Request::LLSC) {
         ld_inst->tcBase()->getIsaPtr()->handleLockedSnoopHit(ld_inst.get());
@@ -471,7 +463,7 @@ LSQUnit::checkSnoop(PacketPtr pkt)
         ld_inst = iter->instruction();
         assert(ld_inst);
         request = iter->request();
-        if (!ld_inst->effAddrValid() || ld_inst->strictlyOrdered())
+        if (!ld_inst->effAddrValid() || ld_inst->strictlyOrdered() || !request)
             continue;
 
         DPRINTF(LSQUnit, "-- inst [sn:%lli] to pktAddr:%#x\n",
@@ -528,23 +520,16 @@ LSQUnit::checkViolations(typename LoadQueue::iterator& loadIt,
      */
     while (loadIt != loadQueue.end()) {
         DynInstPtr ld_inst = loadIt->instruction();
-
-        // ADD condition to skip instruction checkign for NOT ALIASED CASE
-        // and store executing....
         if (!ld_inst->effAddrValid() || ld_inst->strictlyOrdered()) {
-            DPRINTF(LSQUnit, "Incrementing load iterator queue... \n");
             ++loadIt;
             continue;
         }
 
         Addr ld_eff_addr1 = ld_inst->effAddr >> depCheckShift;
-        Addr ld_eff_addr2 = (ld_inst->effAddr + ld_inst->effSize - 1) >> depCheckShift;
+        Addr ld_eff_addr2 =
+            (ld_inst->effAddr + ld_inst->effSize - 1) >> depCheckShift;
 
         if (inst_eff_addr2 >= ld_eff_addr1 && inst_eff_addr1 <= ld_eff_addr2) {
-            DPRINTF(ViolationEvent, "Load effective addr1 %x "
-                        "| addr2 %x : InstAddr1 %x"
-                        " | InstAddr2 %x \n",inst_eff_addr1, inst_eff_addr2,
-                        ld_eff_addr1, ld_eff_addr2);
             if (inst->isLoad()) {
                 // If this load is to the same block as an external snoop
                 // invalidate that we've observed then the load needs to be
@@ -552,15 +537,11 @@ LSQUnit::checkViolations(typename LoadQueue::iterator& loadIt,
                 if (ld_inst->hitExternalSnoop()) {
                     if (!memDepViolator ||
                             ld_inst->seqNum < memDepViolator->seqNum) {
-
-                       DPRINTF(LSQUnit, "Detected fault with inst [sn:%lli] "
+                        DPRINTF(LSQUnit, "Detected fault with inst [sn:%lli] "
                                 "and [sn:%lli] at address %#x\n",
                                 inst->seqNum, ld_inst->seqNum, ld_eff_addr1);
                         memDepViolator = ld_inst;
 
-                        // DPRINTF(LSQUNIThitexternalsnoopviolation,
-                        //         "LSQUNIThitexternalsnoopviolation:"
-                        //         "mem order violation here. \n");
                         ++stats.memOrderViolation;
 
                         return std::make_shared<GenericISA::M5PanicFault>(
@@ -580,17 +561,12 @@ LSQUnit::checkViolations(typename LoadQueue::iterator& loadIt,
                 // A load/store incorrectly passed this store.
                 // Check if we already have a violator, or if it's newer
                 // squash and refetch.
-                DPRINTF(LSQUNITisnotLoadviolation, "LSQUNITisnotLoadviolation:"
-                        "mem order violation: memDepViolator: %x | "
-                        "ld_inst: %x \n",memDepViolator, ld_inst);
-
-            if (memDepViolator && ld_inst->seqNum > memDepViolator->seqNum)
+                if (memDepViolator && ld_inst->seqNum > memDepViolator->seqNum)
                     break;
 
                 DPRINTF(LSQUnit, "Detected fault with inst [sn:%lli] and "
                         "[sn:%lli] at address %#x\n",
                         inst->seqNum, ld_inst->seqNum, ld_eff_addr1);
-
                 memDepViolator = ld_inst;
 
                 ++stats.memOrderViolation;
@@ -618,9 +594,9 @@ LSQUnit::executeLoad(const DynInstPtr &inst)
 
     DPRINTF(LSQUnit, "Executing load PC %s, [sn:%lli]\n",
             inst->pcState(), inst->seqNum);
-    //assert if not already squashed...
+
     assert(!inst->isSquashed());
-    //initiate instruction access
+
     load_fault = inst->initiateAcc();
 
     if (load_fault == NoFault && !inst->readMemAccPredicate()) {
@@ -668,7 +644,7 @@ LSQUnit::executeLoad(const DynInstPtr &inst)
         if (inst->effAddrValid()) {
             auto it = inst->lqIt;
             ++it;
-            //P
+
             if (checkLoads)
                 return checkViolations(it, inst);
         }
@@ -698,7 +674,6 @@ LSQUnit::executeStore(const DynInstPtr &store_inst)
 
     if (store_inst->isTranslationDelayed() &&
         store_fault == NoFault)
-
         return store_fault;
 
     if (!store_inst->readPredicate()) {
@@ -707,7 +682,7 @@ LSQUnit::executeStore(const DynInstPtr &store_inst)
         store_inst->forwardOldRegs();
         return store_fault;
     }
-    //If the storeQueue size is 0 then we are going to return store_fault=store_inst->initiateAcc()
+
     if (storeQueue[store_idx].size() == 0) {
         DPRINTF(LSQUnit,"Fault on Store PC %s, [sn:%lli], Size = 0\n",
                 store_inst->pcState(), store_inst->seqNum);
@@ -736,7 +711,6 @@ LSQUnit::executeStore(const DynInstPtr &store_inst)
         ++storesToWB;
     }
 
-    DPRINTF(LSQUnit, "Checking for violations \n");
     return checkViolations(loadIt, store_inst);
 
 }
@@ -1339,8 +1313,6 @@ LSQUnit::cacheLineSize()
     return cpu->cacheLineSize();
 }
 
-
-//The load_idx=isnt->lqIdx from the LSQ::pushRequest
 Fault
 LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 {
@@ -1379,13 +1351,10 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
     }
 
     DPRINTF(LSQUnit, "Read called, load idx: %i, store idx: %i, "
-            "storeHead: %i addr: %#x%s | Instruction is: %#x \n",
+            "storeHead: %i addr: %#x%s\n",
             load_idx - 1, load_inst->sqIt._idx, storeQueue.head() - 1,
             request->mainReq()->getPaddr(), request->isSplit() ? " split" :
-            "", load_inst->getEMI());
-
-    //The above load_inst->getEMI() is my (Rohan's) addition
-    //DPRINTF(LSQUnitInstruction, "Load instruction is: %x \n", load_inst->getEMI());
+            "");
 
     if (request->mainReq()->isLLSC()) {
         // Disable recording the result temporarily.  Writing to misc
@@ -1420,7 +1389,6 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
     while (store_it != storeWBIt && !load_inst->isDataPrefetch()) {
         // Move the index to one younger
         store_it--;
-        if (!load_inst->isSpecbCheck()) ++stats.numStoresSearched;
         assert(store_it->valid());
         assert(store_it->instruction()->seqNum < load_inst->seqNum);
         int store_size = store_it->size();
@@ -1430,7 +1398,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
         // considered for forwarding
         if (store_size != 0 && !store_it->instruction()->strictlyOrdered() &&
             !(store_it->request()->mainReq() &&
-            store_it->request()->mainReq()->isCacheMaintenance())) {
+              store_it->request()->mainReq()->isCacheMaintenance())) {
             assert(store_it->instruction()->effAddrValid());
 
             // Check if the store data is within the lower and upper bounds of
@@ -1440,21 +1408,14 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
             auto st_s = store_it->instruction()->effAddr;
             auto st_e = st_s + store_size;
 
-            auto req_s_dep = (request->mainReq()->getVaddr()) >> depCheckShift;
-            auto req_e_dep = (req_s + request->mainReq()->getSize()) >> depCheckShift;
-            auto st_s_dep = (store_it->instruction()->effAddr) >> depCheckShift;
-            auto st_e_dep = (st_s + store_size) >> depCheckShift;
-
             bool store_has_lower_limit = req_s >= st_s;
             bool store_has_upper_limit = req_e <= st_e;
             bool lower_load_has_store_part = req_s < st_e;
             bool upper_load_has_store_part = req_e > st_s;
 
-            auto coverage = AddrRangeCoverage::NoAddrRangeCoverage;
-
-	    /*
+	    /** uncomment to throw a mem order violation when a PND load finds a matching SQ entry
             //check for forwarding violation caused by PND load
-            if (load_inst->isSpecbCheck() && !store_it->instruction()->isAtomic() &&
+            if (load_inst->isPND() && !store_it->instruction()->isAtomic() &&
                 ((st_e_dep >= req_s_dep && st_s_dep <= req_e_dep) ||
                 ((store_has_lower_limit && lower_load_has_store_part) ||
                 (store_has_upper_limit && upper_load_has_store_part) ||
@@ -1469,8 +1430,8 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
             }
 	    */
 
+            auto coverage = AddrRangeCoverage::NoAddrRangeCoverage;
 
-            //THE CASE IF WE CAN FORWARD the value of the STORE to the LOAD
             // If the store entry is not atomic (atomic does not have valid
             // data), the store has all of the data needed, and
             // the load is not LLSC, then
@@ -1487,22 +1448,23 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                 // This is the partial store-load forwarding case where a store
                 // has only part of the load's data and the load isn't LLSC
                 (!request->mainReq()->isLLSC() &&
-                ((store_has_lower_limit && lower_load_has_store_part) ||
-                (store_has_upper_limit && upper_load_has_store_part) ||
-                (lower_load_has_store_part && upper_load_has_store_part))) ||
+                 ((store_has_lower_limit && lower_load_has_store_part) ||
+                  (store_has_upper_limit && upper_load_has_store_part) ||
+                  (lower_load_has_store_part && upper_load_has_store_part))) ||
                 // The load is LLSC, and the store has all or part of the
                 // load's data
                 (request->mainReq()->isLLSC() &&
-                ((store_has_lower_limit || upper_load_has_store_part) &&
-                (store_has_upper_limit || lower_load_has_store_part))) ||
+                 ((store_has_lower_limit || upper_load_has_store_part) &&
+                  (store_has_upper_limit || lower_load_has_store_part))) ||
                 // The store entry is atomic and has all or part of the load's
                 // data
                 (store_it->instruction()->isAtomic() &&
-                ((store_has_lower_limit || upper_load_has_store_part) &&
-                (store_has_upper_limit || lower_load_has_store_part)))) {
+                 ((store_has_lower_limit || upper_load_has_store_part) &&
+                  (store_has_upper_limit || lower_load_has_store_part)))) {
 
                 coverage = AddrRangeCoverage::PartialAddrRangeCoverage;
             }
+
             if (coverage == AddrRangeCoverage::FullAddrRangeCoverage) {
                 // Get shift amount for offset into the store's data.
                 int shift_amt = request->mainReq()->getVaddr() -
@@ -1541,21 +1503,21 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                     assert (!storeQueue[store_it._idx].completed());
                     assert (
                         storeQueue[store_it._idx].instruction()->
-                        inHtmTransactionalState());
+                          inHtmTransactionalState());
                     assert (
                         load_inst->getHtmTransactionUid() ==
                         storeQueue[store_it._idx].instruction()->
-                        getHtmTransactionUid());
+                          getHtmTransactionUid());
                     data_pkt->setHtmTransactional(
                         load_inst->getHtmTransactionUid());
                     DPRINTF(HtmCpu, "HTM LD (ST2LDF) "
-                    "pc=0x%lx - vaddr=0x%lx - "
-                    "paddr=0x%lx - htmUid=%u\n",
-                    load_inst->pcState().instAddr(),
-                    data_pkt->req->hasVaddr() ?
+                      "pc=0x%lx - vaddr=0x%lx - "
+                      "paddr=0x%lx - htmUid=%u\n",
+                      load_inst->pcState().instAddr(),
+                      data_pkt->req->hasVaddr() ?
                         data_pkt->req->getVaddr() : 0lu,
-                    data_pkt->getAddr(),
-                    load_inst->getHtmTransactionUid());
+                      data_pkt->getAddr(),
+                      load_inst->getHtmTransactionUid());
                 }
 
                 if (request->isAnyOutstandingRequest()) {
@@ -1565,6 +1527,8 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                     // first time this load got executed. Signal the senderSate
                     // that response packets should be discarded.
                     request->discard();
+                    // Avoid checking snoops on this discarded request.
+                    load_entry.setRequest(nullptr);
                 }
 
                 WritebackEvent *wb = new WritebackEvent(load_inst, data_pkt,
@@ -1588,13 +1552,12 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                     continue;
                 }
 
-                // Here is where stalling of the load happens...
                 // Must stall load and force it to retry, so long as it's the
                 // oldest load that needs to do so.
                 if (!stalled ||
                     (stalled &&
-                    load_inst->seqNum <
-                    loadQueue[stallingLoadIdx].instruction()->seqNum)) {
+                     load_inst->seqNum <
+                     loadQueue[stallingLoadIdx].instruction()->seqNum)) {
                     stalled = true;
                     stallingStoreIsn = store_it->instruction()->seqNum;
                     stallingLoadIdx = load_idx;
@@ -1606,6 +1569,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
                 load_inst->clearIssued();
                 load_inst->effAddrValid(false);
                 ++stats.rescheduledLoads;
+
                 // Do not generate a writeback event as this instruction is not
                 // complete.
                 DPRINTF(LSQUnit, "Load-store forwarding mis-match. "
@@ -1691,14 +1655,6 @@ LSQUnit::getLoadHeadSeqNum()
         return 0;
 }
 
-DynInstPtr
-LSQUnit::getLoadHeadInst(){
-    if (loadQueue.front().valid())
-        return loadQueue.front().instruction();
-    else
-        return nullptr;
-}
-
 InstSeqNum
 LSQUnit::getStoreHeadSeqNum()
 {
@@ -1706,32 +1662,6 @@ LSQUnit::getStoreHeadSeqNum()
         return storeQueue.front().instruction()->seqNum;
     else
         return 0;
-}
-
-InstSeqNum
-LSQUnit::getDepStoreSeqNum(DynInstPtr load_inst)
-{
-    Addr load_eff_addr1 = load_inst->effAddr >> depCheckShift;
-    Addr load_eff_addr2 = (load_inst->effAddr +
-                    load_inst->effSize - 1) >> depCheckShift;
-    StoreQueue::iterator it = storeQueue.begin();
-        while (it != storeQueue.end()) {
-            assert(it->instruction());
-            Addr store_eff_addr1 = it->instruction()->effAddr >> depCheckShift;
-            Addr store_eff_addr2 = (it->instruction()->effAddr +
-            it->instruction()->effSize - 1) >> depCheckShift;
-            assert(it->instruction());
-            if (store_eff_addr2 >= load_eff_addr1 &&
-                store_eff_addr1 <= load_eff_addr2 &&
-                (load_inst->seqNum - it->instruction()->seqNum) < 5){
-
-                // storeQueue.back()->seqNum
-                return it->instruction()->seqNum;
-            }
-            ++it;
-        }
-    return 0;
-
 }
 
 } // namespace o3

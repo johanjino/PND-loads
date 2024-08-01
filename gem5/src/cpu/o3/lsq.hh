@@ -541,7 +541,7 @@ class LSQ
         {
             flags.set(Flag::WritebackDone);
             /* If the lsq resources are already free */
-            if (isReleased()) {
+            if (_numOutstandingPackets == 0 && isReleased()) {
                 delete this;
             }
         }
@@ -734,20 +734,11 @@ class LSQ
     /** Returns the sequence number of the head of the load queue. */
     InstSeqNum getLoadHeadSeqNum(ThreadID tid);
 
-    /** Get the instruction of the head of the load queue */
-    DynInstPtr getLoadHeadInst(ThreadID tid);
-
     /** Returns the head index of the store queue. */
     int getStoreHead(ThreadID tid);
 
     /** Returns the sequence number of the head of the store queue. */
     InstSeqNum getStoreHeadSeqNum(ThreadID tid);
-
-    /** Returns the sequence number of the tail of the store queue. */
-    InstSeqNum getStoreTailSeqNum(ThreadID tid);
-
-    /** Returns the sequence number of the dependent  store instruction. */
-    InstSeqNum getDepStoreSeqNum(ThreadID tid, DynInstPtr load_inst);
 
     /** Returns the number of instructions in all of the queues. */
     int getCount();

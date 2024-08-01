@@ -47,7 +47,6 @@
 
 #include <queue>
 
-#include "config/the_isa.hh"
 #include "cpu/checker/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/fu_pool.hh"
@@ -56,17 +55,8 @@
 #include "debug/Activity.hh"
 #include "debug/Drain.hh"
 #include "debug/IEW.hh"
-#include "debug/IEWFetchDirectLsqviolation.hh"
-#include "debug/IEWInstruction.hh"
-#include "debug/IEWlsqviolation.hh"
 #include "debug/O3PipeView.hh"
-#include "debug/Speculate.hh"
-#include "debug/ViolationEvent.hh"
-#include "debug/flagcheck.hh"
 #include "params/BaseO3CPU.hh"
-#include "base/types.hh"
-
-extern std::map<uint64_t, uint8_t> pnd_violation_count;
 
 namespace gem5
 {
@@ -122,7 +112,6 @@ IEW::IEW(CPU *_cpu, const BaseO3CPUParams &params)
     updateLSQNextCycle = false;
 
     skidBufferMax = (renameToIEWDelay + 1) * params.renameWidth;
-
 }
 
 std::string
@@ -176,17 +165,8 @@ IEW::IEWStats::IEWStats(CPU *cpu)
              "Number of times the IQ has become full, causing a stall"),
     ADD_STAT(lsqFullEvents, statistics::units::Count::get(),
              "Number of times the LSQ has become full, causing a stall"),
-    ADD_STAT(baseStoreSetViolationAddition, statistics::units::Count::get(),
-             "number of times violations are added to store set"),
-    ADD_STAT(bypassStoreSetViolationAddition, statistics::units::Count::get(),
-             "number of times the CPU does not add"
-             " to storeset (due to violation)"),
     ADD_STAT(memOrderViolationEvents, statistics::units::Count::get(),
              "Number of memory order violations"),
-    ADD_STAT(notExactPhysicalAddrViolation, statistics::units::Count::get(),
-             "This stat should be zero - granularity should be smaller"),
-    // ADD_STAT(powerUsedinViolation, statistics::units::Count::get(),
-    //          "number of ticks from violations that are added to store set"),
     ADD_STAT(predictedTakenIncorrect, statistics::units::Count::get(),
              "Number of branches that were predicted taken incorrectly"),
     ADD_STAT(predictedNotTakenIncorrect, statistics::units::Count::get(),
@@ -194,6 +174,8 @@ IEW::IEWStats::IEWStats(CPU *cpu)
     ADD_STAT(branchMispredicts, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute",
              predictedTakenIncorrect + predictedNotTakenIncorrect),
+    ADD_STAT(PNDLoadViolations, statistics::units::Count::get(),
+             "Number of mem order violations triggered by a PND load"),
     executedInstStats(cpu),
     ADD_STAT(instsToCommit, statistics::units::Count::get(),
              "Cumulative count of insts sent to commit"),
@@ -203,8 +185,6 @@ IEW::IEWStats::IEWStats(CPU *cpu)
              "Number of instructions producing a value"),
     ADD_STAT(consumerInst, statistics::units::Count::get(),
              "Number of instructions consuming a value"),
-    ADD_STAT(cyclesStoreQueueAccessed, statistics::units::Count::get(),
-             "Number of cycles the store queue is accessed"),
     ADD_STAT(wbRate, statistics::units::Rate<
                 statistics::units::Count, statistics::units::Cycle>::get(),
              "Insts written-back per cycle"),
@@ -239,51 +219,13 @@ IEW::IEWStats::IEWStats(CPU *cpu)
 
 IEW::IEWStats::ExecutedInstStats::ExecutedInstStats(CPU *cpu)
     : statistics::Group(cpu),
-    ADD_STAT(numInsts, statistics::units::Count::get(),
-             "Number of executed instructions"),
-    ADD_STAT(numLoadInsts, statistics::units::Count::get(),
-             "Number of load instructions executed"),
     ADD_STAT(numSquashedInsts, statistics::units::Count::get(),
              "Number of squashed instructions skipped in execute"),
     ADD_STAT(numSwp, statistics::units::Count::get(),
-             "Number of swp insts executed"),
-    ADD_STAT(numNop, statistics::units::Count::get(),
-             "Number of nop insts executed"),
-    ADD_STAT(numRefs, statistics::units::Count::get(),
-             "Number of memory reference insts executed"),
-    ADD_STAT(numBranches, statistics::units::Count::get(),
-             "Number of branches executed"),
-    ADD_STAT(numStoreInsts, statistics::units::Count::get(),
-             "Number of stores executed"),
-    ADD_STAT(numRate, statistics::units::Rate<
-                statistics::units::Count, statistics::units::Cycle>::get(),
-             "Inst execution rate", numInsts / cpu->baseStats.numCycles)
+             "Number of swp insts executed")
 {
-    numLoadInsts
-        .init(cpu->numThreads)
-        .flags(statistics::total);
-
     numSwp
         .init(cpu->numThreads)
-        .flags(statistics::total);
-
-    numNop
-        .init(cpu->numThreads)
-        .flags(statistics::total);
-
-    numRefs
-        .init(cpu->numThreads)
-        .flags(statistics::total);
-
-    numBranches
-        .init(cpu->numThreads)
-        .flags(statistics::total);
-
-    numStoreInsts
-        .flags(statistics::total);
-    numStoreInsts = numRefs - numLoadInsts;
-
-    numRate
         .flags(statistics::total);
 }
 
@@ -791,7 +733,7 @@ void
 IEW::sortInsts()
 {
     int insts_from_rename = fromRename->size;
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
     for (ThreadID tid = 0; tid < numThreads; tid++)
         assert(insts[tid].empty());
 #endif
@@ -1025,19 +967,18 @@ IEW::dispatchInsts(ThreadID tid)
 
             toRename->iewInfo[tid].dispatchedToSQ++;
         } else if (inst->isLoad()) {
-                DPRINTF(IEW, "[tid:%i] Issue: Memory instruction "
+            DPRINTF(IEW, "[tid:%i] Issue: Memory instruction "
                     "encountered, adding to LSQ.\n", tid);
 
-                // Reserve a spot in the load store queue for this
-                // memory access.
-                ldstQueue.insertLoad(inst);
+            // Reserve a spot in the load store queue for this
+            // memory access.
+            ldstQueue.insertLoad(inst);
 
-                ++iewStats.dispLoadInsts;
+            ++iewStats.dispLoadInsts;
 
-                add_to_iq = true;
+            add_to_iq = true;
 
-                toRename->iewInfo[tid].dispatchedToLQ++;
-                
+            toRename->iewInfo[tid].dispatchedToLQ++;
         } else if (inst->isStore()) {
             DPRINTF(IEW, "[tid:%i] Issue: Memory instruction "
                     "encountered, adding to LSQ.\n", tid);
@@ -1076,7 +1017,7 @@ IEW::dispatchInsts(ThreadID tid)
 
             instQueue.recordProducer(inst);
 
-            iewStats.executedInstStats.numNop[tid]++;
+            cpu->executeStats[tid]->numNop++;
 
             add_to_iq = false;
         } else {
@@ -1084,7 +1025,7 @@ IEW::dispatchInsts(ThreadID tid)
             add_to_iq = true;
         }
 
-        if (add_to_iq && (inst->isNonSpeculative())) {
+        if (add_to_iq && inst->isNonSpeculative()) {
             DPRINTF(IEW, "[tid:%i] Issue: Nonspeculative instruction "
                     "encountered, skipping.\n", tid);
 
@@ -1101,8 +1042,9 @@ IEW::dispatchInsts(ThreadID tid)
 
         // If the instruction queue is not full, then add the
         // instruction.
-        if (add_to_iq)
+        if (add_to_iq) {
             instQueue.insert(inst);
+        }
 
         insts_to_dispatch.pop();
 
@@ -1174,7 +1116,6 @@ IEW::executeInsts()
     // Execute/writeback any instructions that are available.
     int insts_to_execute = fromIssue->size;
     int inst_num = 0;
-    bool store_queue_accessed_this_cycle = false;
     for (; inst_num < insts_to_execute;
           ++inst_num) {
 
@@ -1182,9 +1123,8 @@ IEW::executeInsts()
 
         DynInstPtr inst = instQueue.getInstToExecute();
 
-        DPRINTF(IEWInstruction, "Execute: Processing PC %s, "
-        "[tid:%i] [sn:%llu] | Instruction: %x \n",
-        inst->pcState(), inst->threadNumber,inst->seqNum, inst->getEMI());
+        DPRINTF(IEW, "Execute: Processing PC %s, [tid:%i] [sn:%llu].\n",
+                inst->pcState(), inst->threadNumber,inst->seqNum);
 
         // Notify potential listeners that this instruction has started
         // executing
@@ -1233,9 +1173,6 @@ IEW::executeInsts()
                     continue;
                 }
             } else if (inst->isLoad()) {
-
-                if (!inst->isSpecbCheck()) store_queue_accessed_this_cycle = true;
-
                 // Loads will mark themselves as executed, and their writeback
                 // event adds the instruction to the queue to commit
                 fault = ldstQueue.executeLoad(inst);
@@ -1253,10 +1190,7 @@ IEW::executeInsts()
                 if (inst->isDataPrefetch() || inst->isInstPrefetch()) {
                     inst->fault = NoFault;
                 }
-
-
             } else if (inst->isStore()) {
-                store_queue_accessed_this_cycle = true;
                 fault = ldstQueue.executeStore(inst);
 
                 if (inst->isTranslationDelayed() &&
@@ -1284,10 +1218,10 @@ IEW::executeInsts()
                 // Store conditionals will mark themselves as
                 // executed, and their writeback event will add the
                 // instruction to the queue to commit.
-            }
-            else {
+            } else {
                 panic("Unexpected memory type!\n");
             }
+
         } else {
             // If the instruction has already faulted, then skip executing it.
             // Such case can happen when it faulted during ITLB translation.
@@ -1302,11 +1236,7 @@ IEW::executeInsts()
             inst->setExecuted();
 
             instToCommit(inst);
-
         }
-
-        if (store_queue_accessed_this_cycle)
-            iewStats.cyclesStoreQueueAccessed++;
 
         updateExeInstStats(inst);
 
@@ -1351,9 +1281,6 @@ IEW::executeInsts()
                     iewStats.predictedNotTakenIncorrect++;
                 }
             } else if (ldstQueue.violation(tid)) {
-                //we find the matching store here, so we have to save it to compare against
-                //at commit. could attach it to the violator
-
                 assert(inst->isMemRef());
                 // If there was an ordering violation, then get the
                 // DynInst that caused the violation.  Note that this
@@ -1361,42 +1288,21 @@ IEW::executeInsts()
                 DynInstPtr violator;
                 violator = ldstQueue.getMemDepViolator(tid);
 
-                DPRINTF(ViolationEvent, "LDSTQ detected a violation. "
-                        "Violator PC: %s "
-                        "[sn:%lli], inst PC: %s [sn:%lli]. Addr is: %x |",
+                if (violator->isPND()) ++iewStats.PNDLoadViolations;
+
+                DPRINTF(IEW, "LDSTQ detected a violation. Violator PC: %s "
+                        "[sn:%lli], inst PC: %s [sn:%lli]. Addr is: %#x.\n",
                         violator->pcState(), violator->seqNum,
                         inst->pcState(), inst->seqNum, inst->physEffAddr);
 
                 fetchRedirect[tid] = true;
 
-                if (violator->physEffAddr!=inst->physEffAddr){
-                    ++iewStats.notExactPhysicalAddrViolation;
-                }
-
                 // Tell the instruction queue that a violation has occured.
-                /* In the case of a speculate (predict not alias instruction)
-                we do not add the instruction to store-set.
-                */
-                if (violator->isSpecbCheck()){
-                    DPRINTF(Speculate, "Speculate instruction handling");
-                    //COMPILER ORACLE
-					/*
-                    pnd_violation_count[violator->pcState().instAddr()] += 1;
-                    if (pnd_violation_count[violator->pcState().instAddr()] > 2)
-                        violator->unsetSpecFlag();
-					*/
-                    ++iewStats.bypassStoreSetViolationAddition;
-                }
-                else{
-                    ++iewStats.baseStoreSetViolationAddition;
-                    instQueue.violation(inst, violator);
-                }
+                instQueue.violation(inst, violator);
+
                 // Squash.
                 squashDueToMemOrder(violator, tid);
 
-                DPRINTF(IEWFetchDirectLsqviolation,
-                    "mem order violation here, count: %d. \n",
-                    iewStats.memOrderViolationEvents.value());
                 ++iewStats.memOrderViolationEvents;
             }
         } else {
@@ -1413,8 +1319,7 @@ IEW::executeInsts()
                         inst->physEffAddr);
                 DPRINTF(IEW, "Violation will not be handled because "
                         "already squashing\n");
-                DPRINTF(IEWlsqviolation, "IEWlsqviolation: "
-                "mem order violation here. \n");
+
                 ++iewStats.memOrderViolationEvents;
             }
         }
@@ -1501,6 +1406,9 @@ IEW::tick()
 
     sortInsts();
 
+    // Evaluate function units.
+    fuPool->evaluateUnits();
+
     // Free function units marked as being freed this cycle.
     fuPool->processFreeUnits();
 
@@ -1566,7 +1474,6 @@ IEW::tick()
 
             updateLSQNextCycle = true;
             instQueue.commit(fromCommit->commitInfo[tid].doneSeqNum,tid);
-
         }
 
         if (fromCommit->commitInfo[tid].nonSpecSeqNum != 0) {
@@ -1623,7 +1530,7 @@ IEW::updateExeInstStats(const DynInstPtr& inst)
 {
     ThreadID tid = inst->threadNumber;
 
-    iewStats.executedInstStats.numInsts++;
+    cpu->executeStats[tid]->numInsts++;
 
 #if TRACING_ON
     if (debug::O3PipeView) {
@@ -1634,17 +1541,18 @@ IEW::updateExeInstStats(const DynInstPtr& inst)
     //
     //  Control operations
     //
-    if (inst->isControl())
-        iewStats.executedInstStats.numBranches[tid]++;
+    if (inst->isControl()) {
+        cpu->executeStats[tid]->numBranches++;
+    }
 
     //
     //  Memory operations
     //
     if (inst->isMemRef()) {
-        iewStats.executedInstStats.numRefs[tid]++;
+        cpu->executeStats[tid]->numMemRefs++;
 
         if (inst->isLoad()) {
-            iewStats.executedInstStats.numLoadInsts[tid]++;
+            cpu->executeStats[tid]->numLoadInsts++;
         }
     }
 }
@@ -1661,6 +1569,9 @@ IEW::checkMisprediction(const DynInstPtr& inst)
         if (inst->mispredicted()) {
             fetchRedirect[tid] = true;
 
+            DPRINTF(IEW, "[tid:%i] [sn:%llu] Execute: "
+                    "Branch mispredict detected.\n",
+                    tid, inst->seqNum);
             DPRINTF(IEW, "[tid:%i] [sn:%llu] Predicted target was PC: %s\n",
                     tid, inst->seqNum, inst->readPredTarg());
             DPRINTF(IEW, "[tid:%i] [sn:%llu] Execute: "

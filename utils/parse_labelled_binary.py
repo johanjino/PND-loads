@@ -22,9 +22,10 @@ for addr in addrs:
         opcode = inst['opcode'].strip()
     except KeyError:
         continue
-    if not opcode.startswith('ldr') and not opcode.startswith('ldur') and not opcode.startswith('ldp'):
+    if not opcode.startswith('ldr') and not opcode.startswith('ldur') and not opcode.startswith('ldp') and not opcode.startswith('ld1'):
         if opcode != "invalid":
             print("Warning: found a non-load instruction: ", opcode)
+            print(inst)
         continue
     pnd_addrs.append(int(addr,16))
 

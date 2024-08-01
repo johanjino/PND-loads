@@ -26,9 +26,14 @@
 
 from abc import ABCMeta
 
+from m5.objects import (
+    SimObject,
+    System,
+)
+
+from ...utils.override import overrides
 from .abstract_board import AbstractBoard
 
-from m5.objects import System
 
 class AbstractSystemBoard(System, AbstractBoard):
 
@@ -37,14 +42,24 @@ class AbstractSystemBoard(System, AbstractBoard):
     """
 
     __metaclass__ = ABCMeta
+
     def __init__(
         self,
         clk_freq: str,
         processor: "AbstractProcessor",
         memory: "AbstractMemorySystem",
         cache_hierarchy: "AbstractCacheHierarchy",
+
+        exit_on_dump_stats: bool = False,
+        exit_on_dump_reset_stats: bool = False,
+        exit_on_reset_stats: bool = False
     ):
-        System.__init__(self)
+        System.__init__(
+            self,
+            exit_on_dump_stats=exit_on_dump_stats,
+            exit_on_dump_reset_stats=exit_on_dump_reset_stats,
+            exit_on_reset_stats=exit_on_reset_stats
+        )
         AbstractBoard.__init__(
             self,
             clk_freq=clk_freq,
@@ -52,3 +67,12 @@ class AbstractSystemBoard(System, AbstractBoard):
             memory=memory,
             cache_hierarchy=cache_hierarchy,
         )
+
+    @overrides(SimObject)
+    def createCCObject(self):
+        """We override this function as it is called in ``m5.instantiate``. This
+        means we can insert a check to ensure the ``_connect_things`` function
+        has been run.
+        """
+        super()._connect_things_check()
+        super().createCCObject()

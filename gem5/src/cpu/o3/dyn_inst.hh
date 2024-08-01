@@ -50,7 +50,6 @@
 
 #include "base/refcnt.hh"
 #include "base/trace.hh"
-#include "config/the_isa.hh"
 #include "cpu/checker/cpu.hh"
 #include "cpu/exec_context.hh"
 #include "cpu/exetrace.hh"
@@ -96,6 +95,7 @@ class DynInst : public ExecContext, public RefCounted
     };
 
     static void *operator new(size_t count, Arrays &arrays);
+    static void  operator delete(void* ptr);
 
     /** BaseDynInst constructor given a binary instruction. */
     DynInst(const Arrays &arrays, const StaticInstPtr &staticInst,
@@ -138,7 +138,7 @@ class DynInst : public ExecContext, public RefCounted
     Fault fault = NoFault;
 
     /** InstRecord that tracks this instructions. */
-    Trace::InstRecord *traceData = nullptr;
+    trace::InstRecord *traceData = nullptr;
 
   protected:
     enum Status
@@ -452,7 +452,7 @@ class DynInst : public ExecContext, public RefCounted
     }
 
   public:
-#ifdef DEBUG
+#ifdef GEM5_DEBUG
     void dumpSNList();
 #endif
 
@@ -574,6 +574,8 @@ class DynInst : public ExecContext, public RefCounted
     bool isQuiesce() const { return staticInst->isQuiesce(); }
     bool isUnverifiable() const { return staticInst->isUnverifiable(); }
     bool isSyscall() const { return staticInst->isSyscall(); }
+    bool isRMW() const { return staticInst->isRMW(); }
+    bool isRMWA() const { return staticInst->isRMWA(); }
     bool isMacroop() const { return staticInst->isMacroop(); }
     bool isMicroop() const { return staticInst->isMicroop(); }
     bool isDelayedCommit() const { return staticInst->isDelayedCommit(); }
@@ -584,11 +586,9 @@ class DynInst : public ExecContext, public RefCounted
     bool isHtmStop() const { return staticInst->isHtmStop(); }
     bool isHtmCancel() const { return staticInst->isHtmCancel(); }
     bool isHtmCmd() const { return staticInst->isHtmCmd(); }
-     //added flags
-    bool isSpecbCheck() const { return staticInst->isSpecbCheck(); }
-    void setSpecFlag() { staticInst->setSpecbCheck(); }
-    void unsetSpecFlag() { staticInst->unsetSpecbCheck(); }
-    void setDefAliasFlag() { return; }
+    bool isPND() const { return staticInst->isPND(); }
+    void setPND() { staticInst->setPND(); }
+    void unsetPND() { staticInst->unsetPND(); }
 
     uint64_t
     getHtmTransactionUid() const override
@@ -718,10 +718,10 @@ class DynInst : public ExecContext, public RefCounted
     /** @{ */
     template<typename T>
     void
-    setResult(T &&t)
+    setResult(const RegClass &reg_class, T &&t)
     {
         if (instFlags[RecordResult]) {
-            instResult.emplace(std::forward<T>(t));
+            instResult.emplace(reg_class, std::forward<T>(t));
         }
     }
     /** @} */
@@ -891,11 +891,6 @@ class DynInst : public ExecContext, public RefCounted
     {
         return *pc;
     }
-
-    /*Get the EMI (Rohan added) */
-    uint64_t getEMI() const {return staticInst->getEMI();}
-
-    std::string getName() const { return staticInst->getName(); }
 
     /** Set the PC state of this instruction. */
     void pcState(const PCStateBase &val) override { set(pc, val); }
@@ -1088,38 +1083,19 @@ class DynInst : public ExecContext, public RefCounted
         for (int idx = 0; idx < numDestRegs(); idx++) {
             PhysRegIdPtr prev_phys_reg = prevDestIdx(idx);
             const RegId& original_dest_reg = staticInst->destRegIdx(idx);
-            switch (original_dest_reg.classValue()) {
-              case IntRegClass:
-              case FloatRegClass:
-              case CCRegClass:
+            const auto bytes = original_dest_reg.regClass().regBytes();
+
+            // Registers which aren't renamed don't need to be forwarded.
+            if (!original_dest_reg.isRenameable())
+                continue;
+
+            if (bytes == sizeof(RegVal)) {
                 setRegOperand(staticInst.get(), idx,
-                        cpu->getReg(prev_phys_reg));
-                break;
-              case VecRegClass:
-                {
-                    TheISA::VecRegContainer val;
-                    cpu->getReg(prev_phys_reg, &val);
-                    setRegOperand(staticInst.get(), idx, &val);
-                }
-                break;
-              case VecElemClass:
-                setRegOperand(staticInst.get(), idx,
-                        cpu->getReg(prev_phys_reg));
-                break;
-              case VecPredRegClass:
-                {
-                    TheISA::VecPredRegContainer val;
-                    cpu->getReg(prev_phys_reg, &val);
-                    setRegOperand(staticInst.get(), idx, &val);
-                }
-                break;
-              case InvalidRegClass:
-              case MiscRegClass:
-                // no need to forward misc reg values
-                break;
-              default:
-                panic("Unknown register class: %d",
-                        (int)original_dest_reg.classValue());
+                        cpu->getReg(prev_phys_reg, threadNumber));
+            } else {
+                uint8_t val[original_dest_reg.regClass().regBytes()];
+                cpu->getReg(prev_phys_reg, val, threadNumber);
+                setRegOperand(staticInst.get(), idx, val);
             }
         }
     }
@@ -1145,7 +1121,7 @@ class DynInst : public ExecContext, public RefCounted
         const PhysRegIdPtr reg = renamedSrcIdx(idx);
         if (reg->is(InvalidRegClass))
             return 0;
-        return cpu->getReg(reg);
+        return cpu->getReg(reg, threadNumber);
     }
 
     void
@@ -1154,13 +1130,13 @@ class DynInst : public ExecContext, public RefCounted
         const PhysRegIdPtr reg = renamedSrcIdx(idx);
         if (reg->is(InvalidRegClass))
             return;
-        cpu->getReg(reg, val);
+        cpu->getReg(reg, val, threadNumber);
     }
 
     void *
     getWritableRegOperand(const StaticInst *si, int idx) override
     {
-        return cpu->getWritableReg(renamedDestIdx(idx));
+        return cpu->getWritableReg(renamedDestIdx(idx), threadNumber);
     }
 
     /** @todo: Make results into arrays so they can handle multiple dest
@@ -1172,8 +1148,8 @@ class DynInst : public ExecContext, public RefCounted
         const PhysRegIdPtr reg = renamedDestIdx(idx);
         if (reg->is(InvalidRegClass))
             return;
-        cpu->setReg(reg, val);
-        setResult(val);
+        cpu->setReg(reg, val, threadNumber);
+        setResult(reg->regClass(), val);
     }
 
     void
@@ -1182,8 +1158,8 @@ class DynInst : public ExecContext, public RefCounted
         const PhysRegIdPtr reg = renamedDestIdx(idx);
         if (reg->is(InvalidRegClass))
             return;
-        cpu->setReg(reg, val);
-        //TODO setResult
+        cpu->setReg(reg, val, threadNumber);
+        setResult(reg->regClass(), val);
     }
 };
 
