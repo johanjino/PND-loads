@@ -50,13 +50,15 @@ for bench in benches:
 #generate differences between labelled and base
 if addr_file_type == "base": exit(0) #nothing to compare to
 
+prefix = "system.switch_cpus."
+
 stats = {
-    "CPI", "iew.memOrderViolationEvents",
-    "MemDepUnit__0.MDPLookups", "executeStats0.numInsts",
+    "CPI", prefix+"iew.memOrderViolationEvents",
+    prefix+"MemDepUnit__0.MDPLookups", prefix+"executeStats0.numInsts",
 }
 stats_to_diff = {
-    "CPI", "iew.memOrderViolationEvents",
-    "MemDepUnit__0.MDPLookups",
+    "CPI", prefix+"iew.memOrderViolationEvents",
+    prefix+"MemDepUnit__0.MDPLookups",
 }
 
 def get_values(results):
@@ -84,16 +86,16 @@ for f in os.listdir(os.getcwd()):
         pnd_result = get_values(f+"/results.txt")
         differences.write("\tBase CPI: "+str(base_result['CPI']+"\n"))
         differences.write("\tPND CPI: "+str(pnd_result['CPI']+"\n"))
-        differences.write("\tBase Lookups Per KInst: "+str(base_result['MemDepUnit__0.MDPLookups']/(base_result['executeStats0.numInsts']*1000))+"\n")
-        differences.write("\tPND Lookups Per KInst: "+str(pnd_result['MemDepUnit__0.MDPLookups']/(pnd_result['executeStats0.numInsts']*1000))+"\n")
-        differences.write("\tBase Violations Per MInst: "+str(base_result['memOrderViolationEvents']/(base_result['executeStats0.numInsts']*1000000))+"\n")
-        differences.write("\tPND Violations Per MInst: "+str(pnd_result['memOrderViolationEvents']/(pnd_result['executeStats0.numInsts']*1000000))+"\n")
+        differences.write("\tBase Lookups Per KInst: "+str(base_result[prefix+'MemDepUnit__0.MDPLookups']/(base_result[prefix+'executeStats0.numInsts']*1000))+"\n")
+        differences.write("\tPND Lookups Per KInst: "+str(pnd_result[prefix+'MemDepUnit__0.MDPLookups']/(pnd_result[prefix+'executeStats0.numInsts']*1000))+"\n")
+        differences.write("\tBase Violations Per MInst: "+str(base_result[prefix+'iew.memOrderViolationEvents']/(base_result[prefix+'executeStats0.numInsts']*1000000))+"\n")
+        differences.write("\tPND Violations Per MInst: "+str(pnd_result[prefix+'iew.memOrderViolationEvents']/(pnd_result[prefix+'executeStats0.numInsts']*1000000))+"\n")
         for field in pnd_result:
             if field not in stats_to_diff: continue
             base_value = base_result[field]
             pnd_value = pnd_result[field]
             difference = ((pnd_value - base_value) / base_value) * 100
-            if "." in field: field = field.split(".")[1]
+            if "." in field: field = field.split(".")[-1]
             differences.write("\t"+field+": "+str(difference)+"\n")
         differences.write("\n")
 

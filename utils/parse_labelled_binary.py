@@ -3,6 +3,9 @@ import sys
 
 label_binary = sys.argv[1]
 verify_binary = sys.argv[2]
+addr_file_type = sys.argv[3]
+bench = verify_binary.split("/")[-4]
+addr_file_dir = "/work/muke/PND-Loads/addr_files/"+addr_file_type+"/"
 
 r2 = r2pipe.open(label_binary)
 
@@ -33,7 +36,7 @@ print()
 print(len(pnd_addrs))
 print()
 
-address_file = open(verify_binary+"_pnd_address", "w")
+address_file = open(addr_file_dir+bench, "w")
 for addr in pnd_addrs:
     address_file.write(str(addr)+"\n")
 address_file.close()
