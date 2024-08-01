@@ -22,15 +22,14 @@ if len(sys.argv) > 2:
 
 for bench in benches:
 
-    name = bench.split(".")[1].split("_")[0]
+    name = bench.split(".")[1].split("_")[0]+"s_peak.mytest-64"
+    if bench == "602.gcc_s":
+        name = "sgcc_peak.mytest-64"
 
     os.chdir(spec_dir+bench+"/run/run_peak_refspeed_mytest-64.0000")
 
-    binary = name+"_s_peak.mytest-64"
-    if bench == "602.gcc_s":
-        binary = "sgcc_peak.mytest-64"
-
-    labelled_binary = "../labelled/run_peak_refspeed_mytest-64.0000/"+binary
+    binary = spec_dir+bench+"/run/run_peak_refspeed_mytest-64.0000/"+name
+    labelled_binary = spec_dir+bench+"/run/labelled/run_peak_refspeed_mytest-64.0000/"+name
 
     p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/parse_labelled_binary.py "+labelled_binary+" "+binary+" "+addr_file_type, shell=True)
     p.wait()
