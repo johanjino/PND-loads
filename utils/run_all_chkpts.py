@@ -4,23 +4,33 @@ import sys
 
 addr_file_type = sys.argv[1]
 cpu_model = sys.argv[2]
+run_pnd = True
+run_base = True if sys.argv[3] == 'with_base' else False
+if addr_file_type == "base":
+    run_base = True
+    run_pnd = False
+if run_base: print("Running with base model")
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 chkpt_dir = "/work/muke/checkpoints/"
 results_dir = "/work/muke/PND-Loads/results/"+addr_file_type+"/"+cpu_model+"/"
+base_results_dir = "/work/muke/PND-Loads/results/base/"+cpu_model+"/"
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
            "641.leela_s", "657.xz_s", "602.gcc_s",
            "620.omnetpp_s"]
 
+# TODO: separate out the base run and make it transparant, can just run the script twice
 #run checkpoints
 processes = []
 for bench in benches:
     os.chdir(chkpt_dir+bench)
 
     #TODO: check return codes
-    processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+addr_file_dir+addr_file_type+"/ "+cpu_model, shell=True))
+    if run_pnd:
+        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+addr_file_dir+addr_file_type+"/ "+cpu_model, shell=True))
 
-    processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py /work/muke/PND-Loads/addr_files/base "+cpu_model, shell=True))
+    if run_base:
+        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py base "+cpu_model, shell=True))
 
 for p in processes:
     p.wait()
@@ -33,9 +43,58 @@ for bench in benches:
         if os.path.exists(results_dir+name+'.'+str(i)):
             raw_results_dir = results_dir+name+'.'+str(i)+"/raw/"
             os.chdir(raw_results_dir)
-            p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/aggregate_stats.py", shell=True)
+            p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/aggregate_stats.py "+bench+" "+str(i), shell=True)
             p.wait()
             subprocess.Popen("cp results.txt ../", shell=True)
 
+#generate differences between labelled and base
+if addr_file_type == "base": exit(0) #nothing to compare to
+
+stats = {
+    "CPI", "iew.memOrderViolationEvents",
+    "MemDepUnit__0.MDPLookups", "executeStats0.numInsts",
+}
+stats_to_diff = {
+    "CPI", "iew.memOrderViolationEvents",
+    "MemDepUnit__0.MDPLookups",
+}
+
+def get_values(results):
+    values = {}
+    results = open(results, "r").readlines()
+    for line in results:
+        name = line.split()[0]
+        value = line.split()[1]
+        if name in stats:
+            values[name] = float(value)
+    return values
+
+os.chdir(base_results_dir)
+base_results = {}
+for f in os.listdir(os.getcwd()):
+    if os.path.isdir(f):
+        base_results[f] = get_values(f+"/results.txt")
+
 os.chdir(results_dir)
-subprocess.Popen("python3 /sim_home/luke/PND-Loads/utils/cpi_cmp.py")
+differences = open("differences", "w")
+for f in os.listdir(os.getcwd()):
+    if os.path.isdir(f):
+        differences.write(f+":\n")
+        base_result = base_results[f]
+        pnd_result = get_values(f+"/results.txt")
+        differences.write("\tBase CPI: "+str(base_result['CPI']+"\n"))
+        differences.write("\tPND CPI: "+str(pnd_result['CPI']+"\n"))
+        differences.write("\tBase Lookups Per KInst: "+str(base_result['MemDepUnit__0.MDPLookups']/(base_result['executeStats0.numInsts']*1000))+"\n")
+        differences.write("\tPND Lookups Per KInst: "+str(pnd_result['MemDepUnit__0.MDPLookups']/(pnd_result['executeStats0.numInsts']*1000))+"\n")
+        differences.write("\tBase Violations Per MInst: "+str(base_result['memOrderViolationEvents']/(base_result['executeStats0.numInsts']*1000000))+"\n")
+        differences.write("\tPND Violations Per MInst: "+str(pnd_result['memOrderViolationEvents']/(pnd_result['executeStats0.numInsts']*1000000))+"\n")
+        for field in pnd_result:
+            if field not in stats_to_diff: continue
+            base_value = base_result[field]
+            pnd_value = pnd_result[field]
+            difference = ((pnd_value - base_value) / base_value) * 100
+            if "." in field: field = field.split(".")[1]
+            differences.write("\t"+field+": "+str(difference)+"\n")
+        differences.write("\n")
+
+differences.close()
