@@ -57,16 +57,18 @@ for out_dir in os.listdir(base_dir):
             run += cache_sizes[cpu_model]
             os.chdir(run_dir)
             p = Popen(run, shell=True)
-            if p.poll() is not None: exit(1)
+            if p.poll() is not None: 
+                print("gem5 run crashed on launch!")
+                exit(1)
             os.chdir(base_dir)
             procs.append(p)
-            while waited < 60*1 and finished == False:
+            while waited < 60*2 and finished == False:
                 time.sleep(10)
                 waited += 10
                 if Popen.poll(p) != None:
                     finished = True
             time.sleep(random.uniform(0,1)*60)
-            if psutil.virtual_memory().percent < 70 and psutil.cpu_percent() < 90: continue
+            if psutil.virtual_memory().percent < 70 and psutil.cpu_percent() < 80: continue
             Popen.wait(p)
 
 for p in procs:
