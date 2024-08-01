@@ -9,6 +9,7 @@ benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "620.omnetpp_s", "602.gcc_s"]
            #"638.imagick_s", "644.nab_s"]
 addr_file_type = sys.argv[1]
+os.makedirs("/work/muke/PND-Loads/addr_files/"+addr_file_type, exist_ok=True)
 
 if len(sys.argv) > 2:
     sub_benches = []
@@ -22,7 +23,7 @@ if len(sys.argv) > 2:
 
 for bench in benches:
 
-    name = bench.split(".")[1].split("_")[0]+"s_peak.mytest-64"
+    name = bench.split(".")[1].split("_")[0]+"_s_peak.mytest-64"
     if bench == "602.gcc_s":
         name = "sgcc_peak.mytest-64"
 
