@@ -1,0 +1,30 @@
+import os
+import argparse
+import subprocess
+
+addr_file_dir = "/work/muke/PND-Loads/addr_files/"
+cpu_model_dir = "/work/muke/PND-Loads/cpu_models/"
+gem5_dir = "/work/muke/PND-Loads/dev-gem5/"
+
+parser = argparse.ArgumentParser(prog='run_models', description='run over multiple addr files and cpu models')
+
+parser.add_argument('--addr-types', type=str, required=True)
+parser.add_argument('--cpu-models', type=str, required=True)
+parser.add_argument('--with-base', required=True, action='store_true')
+args = parser.parse_args()
+
+addr_types = args.addr_files.split(',')
+cpu_models = args.cpu_models.split(',')
+with_base = " without_base"
+if args.with_base:
+    with_base = " with_base"
+
+os.chdir(gem5_dir)
+for model in cpu_models:
+    cp = subprocess.Popen("cp "+cpu_model_dir+model+".py src/cpu/o3/BaseO3CPU.py")
+    if type(cp) != subprocess.CompletedProcess: cp.wait()
+    scons = subprocess.Popen("scons build/ARM/gem5.fast -j 28 --with-lto", shell=True)
+    scons.wait()
+    for addr_type in addr_types:
+       run = subprocess.Popen("/work/muke/PND-Loads/utils/run_all_chkpts.py "+addr_type+" "+model+with_base)
+       run.wait()
