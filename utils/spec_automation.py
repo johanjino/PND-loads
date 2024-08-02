@@ -15,12 +15,13 @@ cache_sizes = {
 #run from base spec dir
 base_dir = os.getcwd() # = /work/muke/checkpoints/benchmark
 base_run = False
-addr_file_dir = sys.argv[1]
-if addr_file_dir == "base": base_run = True
+addr_file_type = sys.argv[1]
+if addr_file_type == "base": base_run = True
 cpu_model = sys.argv[2]
 spec_path = "/work/muke/spec2017/"
 gem5 = "/work/muke/PND-Loads/dev-gem5/"
-results_dir = "/work/muke/PND-Loads/results/"+addr_file_dir.split("/")[-1]+"/"+cpu_model+"/"
+results_dir = "/work/muke/PND-Loads/results/"+addr_file_type+"/"+cpu_model+"/"
+addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 benchmark = base_dir.split("/")[4]
 run_dir = spec_path+"benchspec/CPU/"+benchmark+"/run/run_peak_refspeed_mytest-64.0000/"
 os.chdir(run_dir)
@@ -49,13 +50,14 @@ for out_dir in os.listdir(base_dir):
             if base_run:
                 addr_file = "/work/muke/empty"
             else:
-                addr_file = addr_file_dir+benchmark
+                addr_file = addr_file_dir+addr_file_type+"/"+benchmark
             outdir = results_dir+benchmark_name+"."+run_number+"/raw/"
             if not os.path.exists(outdir): os.makedirs(outdir) #create the parent directories for gem5 stats dir if needed
             outdir += str(cpt_number)+".out"
             run = "ADDR_FILE="+addr_file+" "+gem5+"build/ARM/gem5.fast --outdir="+outdir+" "+gem5+"configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
             run += cache_sizes[cpu_model]
             os.chdir(run_dir)
+            while psutil.virtual_memory().percent > 70 and psutil.cpu_percent() > 70: sleep(10)
             p = Popen(run, shell=True)
             if p.poll() is not None: 
                 print("gem5 run crashed on launch!")
@@ -68,7 +70,7 @@ for out_dir in os.listdir(base_dir):
                 if Popen.poll(p) != None:
                     finished = True
             time.sleep(random.uniform(0,1)*60)
-            if psutil.virtual_memory().percent < 70 and psutil.cpu_percent() < 80: continue
+            if psutil.virtual_memory().percent < 70 and psutil.cpu_percent() < 70: continue
             Popen.wait(p)
 
 for p in procs:
