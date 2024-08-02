@@ -426,8 +426,8 @@
                 "progress_interval": 0,
                 "pwr_gating_latency": 300,
                 "simpoint_start_insts": [
-                    0,
-                    100000000
+                    10000000,
+                    110000000
                 ],
                 "simulate_data_stalls": false,
                 "simulate_inst_stalls": false,
@@ -2339,8 +2339,8 @@
                 "renameToROBDelay": 1,
                 "renameWidth": 12,
                 "simpoint_start_insts": [
-                    0,
-                    100000000
+                    10000000,
+                    110000000
                 ],
                 "smtCommitPolicy": "RoundRobin",
                 "smtFetchPolicy": "RoundRobin",

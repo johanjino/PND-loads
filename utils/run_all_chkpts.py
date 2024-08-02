@@ -19,7 +19,17 @@ benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "641.leela_s", "657.xz_s", "602.gcc_s",
            "620.omnetpp_s"] #"638.imagick_s", "644.nab_s"]
 
-# TODO: separate out the base run and make it transparant, can just run the script twice
+if len(sys.argv) > 4:
+    sub_benches = []
+    for bench in sys.argv[4:]:
+        if bench in benches:
+            sub_benches.append(bench)
+        else:
+            print("Unknown benchmark: ", bench)
+            exit(1)
+    benches = sub_benches
+
+
 #run checkpoints
 processes = []
 for bench in benches:
@@ -27,7 +37,7 @@ for bench in benches:
 
     #TODO: check return codes
     if run_pnd:
-        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+addr_file_dir+addr_file_type+"/ "+cpu_model, shell=True))
+        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+addr_file_type+" "+cpu_model, shell=True))
 
     if run_base:
         processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py base "+cpu_model, shell=True))
@@ -38,10 +48,15 @@ for p in processes:
 #aggregate stats
 for bench in benches:
     name = bench.split(".")[1].split("_")[0]
-
+    
     for i in (0,1,2):
         if os.path.exists(results_dir+name+'.'+str(i)):
             raw_results_dir = results_dir+name+'.'+str(i)+"/raw/"
+            os.chdir(raw_results_dir)
+            p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/aggregate_stats.py "+bench+" "+str(i), shell=True)
+            p.wait()
+            subprocess.Popen("cp results.txt ../", shell=True)
+            raw_results_dir = base_results_dir+name+'.'+str(i)+"/raw/"
             os.chdir(raw_results_dir)
             p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/aggregate_stats.py "+bench+" "+str(i), shell=True)
             p.wait()
@@ -74,18 +89,18 @@ def get_values(results):
 os.chdir(base_results_dir)
 base_results = {}
 for f in os.listdir(os.getcwd()):
-    if os.path.isdir(f):
+    if os.path.isdir(f) and os.path.exists(f+"/results.txt"):
         base_results[f] = get_values(f+"/results.txt")
 
 os.chdir(results_dir)
 differences = open("differences", "w")
 for f in os.listdir(os.getcwd()):
-    if os.path.isdir(f):
+    if os.path.isdir(f) and os.path.exists(f+"/results.txt"):
         differences.write(f+":\n")
         base_result = base_results[f]
         pnd_result = get_values(f+"/results.txt")
-        differences.write("\tBase CPI: "+str(base_result['CPI']+"\n"))
-        differences.write("\tPND CPI: "+str(pnd_result['CPI']+"\n"))
+        differences.write("\tBase CPI: "+str(base_result['CPI'])+"\n")
+        differences.write("\tPND CPI: "+str(pnd_result['CPI'])+"\n")
         differences.write("\tBase Lookups Per KInst: "+str(base_result[prefix+'MemDepUnit__0.MDPLookups']/(base_result[prefix+'executeStats0.numInsts']*1000))+"\n")
         differences.write("\tPND Lookups Per KInst: "+str(pnd_result[prefix+'MemDepUnit__0.MDPLookups']/(pnd_result[prefix+'executeStats0.numInsts']*1000))+"\n")
         differences.write("\tBase Violations Per MInst: "+str(base_result[prefix+'iew.memOrderViolationEvents']/(base_result[prefix+'executeStats0.numInsts']*1000000))+"\n")

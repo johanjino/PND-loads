@@ -36,12 +36,14 @@ for dirname in os.listdir("."):
             #regex would catch empty lines but we want to count number of begin/end markers for correctness checking
             if len(line.strip()) == 0: continue
             if not ignores.match(line):
-                statKind = statLine.match(line).group(1)
-                statValue = statLine.match(line).group(2)
+                try:
+                    statKind = statLine.match(line).group(1)
+                    statValue = statLine.match(line).group(2)
+                except AttributeError:
+                    continue
                 #ignore atomic cpu stats
                 if "system.cpu." in statKind: continue
                 if statValue == 'nan':
-                    print("%s is nan. Setting it to 0" % statKind)
                     statValue = '0'
                 stats[statKind] = float(statValue) * weight
             else:
