@@ -1,56 +1,73 @@
+import subprocess
 import os
+import sys
 
-stats = {"CPI", "numStoresSearched",
-          "StoreSet__0.SSITCollisions",
-          "memOrderViolationEvents",
-          "StoreSet__0.LFSTInvalidations","cyclesStoreQueueAccessed","baseUsingStoreSetCheck",
-         "loadToUse::mean", "loadToUse::stdev", "Lookupreduction", "instsIssued"}
+addr_file_type = sys.argv[1]
+cpu_model = sys.argv[2]
+run_pnd = True
+run_base = True if sys.argv[3] == 'with_base' else False
+if addr_file_type == "base":
+    run_base = True
+    run_pnd = False
+if run_base: print("Running with base model")
+addr_file_dir = "/work/muke/PND-Loads/addr_files/"
+chkpt_dir = "/work/muke/checkpoints/"
+results_dir = "/work/muke/PND-Loads/results/"+addr_file_type+"/"+cpu_model+"/"
+base_results_dir = "/work/muke/PND-Loads/results/base/"+cpu_model+"/"
+benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
+           "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
+           "641.leela_s", "657.xz_s", "602.gcc_s",
+           "620.omnetpp_s"] #"638.imagick_s", "644.nab_s"]
+
+if addr_file_type == "base": exit(0) #nothing to compare to
+
+prefix = "system.switch_cpus."
+
+stats = {
+    "CPI", prefix+"iew.memOrderViolationEvents",
+    prefix+"MemDepUnit__0.MDPLookups", prefix+"executeStats0.numInsts",
+}
+stats_to_diff = {
+    "CPI", prefix+"iew.memOrderViolationEvents",
+    prefix+"MemDepUnit__0.MDPLookups",
+}
 
 def get_values(results):
     values = {}
     results = open(results, "r").readlines()
     for line in results:
-        fields = line.split()
-        name = ''.join(fields[:-1])
-        if len(name.split('.')) == 2:
-            if name == 'lsq0.memOrderViolationEvents': continue #want iew
-            name = name.split('.')[1]
-        value = fields[-1]
-        if name in values and float(value) == 0: continue
+        name = line.split()[0]
+        value = line.split()[1]
         if name in stats:
             values[name] = float(value)
     return values
 
-differences = open("differences", "w")
-processed_benchmarks = set()
+os.chdir(base_results_dir)
+base_results = {}
 for f in os.listdir(os.getcwd()):
-    if os.path.isdir(f) or not f.endswith(".txt") or f == "differences" or f == "cpi_differences": continue
-    benchmark = f.split('_')[0]
-    number = ""
-    if f.count('.') == 2: #has multiple workloads
-        number = "."+f.split('.')[1]
+    if os.path.isdir(f):
+        base_results[f] = get_values(f+"/results.txt")
 
-    if benchmark+number in processed_benchmarks: continue
-    processed_benchmarks.add(benchmark+number)
-
-    base_results = benchmark+"_base"+number+".txt"
-    pna_results = benchmark+"_pnd"+number+".txt"
-    base = get_values(base_results)
-    pna = get_values(pna_results)
-
-    differences.write(benchmark+number+":\n")
-    differences.write("\tLookup Reduction: "+str(pna['Lookupreduction'] * 100)+"\n")
-    differences.write("\tBase CPI: "+str(base['CPI'])+"\n")
-    differences.write("\tPND CPI: "+str(pna['CPI'])+"\n")
-    differences.write("\tBase Lookups: "+str((base['baseUsingStoreSetCheck']/base['instsIssued'])*1000)+"\n")
-    differences.write("\tPND Lookups: "+str((pna['baseUsingStoreSetCheck']/pna['instsIssued'])*1000)+"\n")
-    differences.write("\tBase Violations: "+str((base['memOrderViolationEvents']/base['instsIssued'])*1000000)+"\n")
-    differences.write("\tPND Violations: "+str((pna['memOrderViolationEvents']/pna['instsIssued'])*1000000)+"\n")
-    for field in base:
-        if field == 'Lookupreduction' or field == 'baseUsingStoreSetCheck': continue
-        base_value = base[field]
-        pna_value = pna[field]
-        difference = ((pna_value - base_value) / base_value) * 100
-        differences.write("\t"+field+": "+str(difference)+"\n")
+os.chdir(results_dir)
+differences = open("differences", "w")
+for f in os.listdir(os.getcwd()):
+    if os.path.isdir(f):
+        differences.write(f+":\n")
+        base_result = base_results[f]
+        pnd_result = get_values(f+"/results.txt")
+        differences.write("\tBase CPI: "+str(base_result['CPI']+"\n"))
+        differences.write("\tPND CPI: "+str(pnd_result['CPI']+"\n"))
+        differences.write("\tBase Lookups Per KInst: "+str(base_result[prefix+'MemDepUnit__0.MDPLookups']/(base_result[prefix+'executeStats0.numInsts']*1000))+"\n")
+        differences.write("\tPND Lookups Per KInst: "+str(pnd_result[prefix+'MemDepUnit__0.MDPLookups']/(pnd_result[prefix+'executeStats0.numInsts']*1000))+"\n")
+        differences.write("\tBase Violations Per MInst: "+str(base_result[prefix+'iew.memOrderViolationEvents']/(base_result[prefix+'executeStats0.numInsts']*1000000))+"\n")
+        differences.write("\tPND Violations Per MInst: "+str(pnd_result[prefix+'iew.memOrderViolationEvents']/(pnd_result[prefix+'executeStats0.numInsts']*1000000))+"\n")
+        for field in pnd_result:
+            if field not in stats_to_diff: continue
+            base_value = base_result[field]
+            pnd_value = pnd_result[field]
+            difference = ((pnd_value - base_value) / base_value) * 100
+            if "." in field: field = field.split(".")[-1]
+            differences.write("\t"+field+": "+str(difference)+"\n")
+        differences.write("\n")
 
 differences.close()
