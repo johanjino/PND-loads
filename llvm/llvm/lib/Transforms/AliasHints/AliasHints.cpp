@@ -228,6 +228,7 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     }
     for (auto Store: all_stores){
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
+        if (!AA.isMustAlias(Store->getPointerOperand(), Load->getPointerOperand())) continue;
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         if (!isProblematicDep(Load, Dep.get(), LI, SE, AA)) continue;
@@ -253,13 +254,13 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
             return AliasHint::Unchanged;
         }
     }
-	/*
+/*
     for (auto Call: all_calls){
         if (!withinSameVersion(Load, Call, VersionPairs, LI)) continue;
         ModRefInfo res = AA.getModRefInfo(Load, Call);
         if (isModSet(res)) return AliasHint::Unchanged;
     }
-	*/
+*/
     return AliasHint::PredictNone;
 }
 

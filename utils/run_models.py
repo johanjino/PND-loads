@@ -10,14 +10,10 @@ parser = argparse.ArgumentParser(prog='run_models', description='run over multip
 
 parser.add_argument('--addr-types', type=str, required=True)
 parser.add_argument('--cpu-models', type=str, required=True)
-parser.add_argument('--with-base', required=True, action='store_true')
 args = parser.parse_args()
 
 addr_types = args.addr_files.split(',')
 cpu_models = args.cpu_models.split(',')
-with_base = " without_base"
-if args.with_base:
-    with_base = " with_base"
 
 os.chdir(gem5_dir)
 for model in cpu_models:
@@ -26,5 +22,5 @@ for model in cpu_models:
     scons = subprocess.Popen("scons build/ARM/gem5.fast -j 28 --with-lto", shell=True)
     scons.wait()
     for addr_type in addr_types:
-       run = subprocess.Popen("/work/muke/PND-Loads/utils/run_all_chkpts.py "+addr_type+" "+model+with_base)
+       run = subprocess.Popen("/work/muke/PND-Loads/utils/run_all_chkpts.py "+addr_type+" "+model+" without_base")
        run.wait()
