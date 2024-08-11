@@ -10,10 +10,12 @@ cache_sizes = {
     "default": "",
     "scaled": " --l1d_size=128KiB --l1i_size=128KiB --l2_size=2MB",
     "very_scaled": " --l1d_size=256KiB --l1i_size=256KiB --l2_size=4MB",
-    "x925": " --l1d_size=64KiB --l1i_size=64KiB --l2_size=3MB",
+    "x925": " --l1d_size=64KiB --l1i_size=64KiB --l2_size=4MB",
+    "x925-2": " --l1d_size=128KiB --l1i_size=128KiB --l2_size=16MB",
     "a725": " --l1d_size=64KiB --l1i_size=64KiB --l2_size=1MB",
     "a14": " --l1d_size=128KiB --l1i_size=64KiB --l2_size=4MB",
-    "m4": " --l1d_size=192KiB --l1i_size=128KiB --l2_size=16MB",
+    "m4": " --l1d_size=128KiB --l1i_size=128KiB --l2_size=16MB",
+    "m4-2": " --l1d_size=256KiB --l1i_size=128KiB --l2_size=16MB",
 }
 
 #run from base spec dir

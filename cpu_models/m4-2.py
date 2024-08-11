@@ -86,10 +86,10 @@ class BaseO3CPU(BaseCPU):
     renameToFetchDelay = Param.Cycles(1, "Rename to fetch delay")
     iewToFetchDelay = Param.Cycles(1, "Issue/Execute/Writeback to fetch delay")
     commitToFetchDelay = Param.Cycles(1, "Commit to fetch delay")
-    fetchWidth = Param.Unsigned(5, "Fetch width")
-    fetchBufferSize = Param.Unsigned(32, "Fetch buffer size in bytes")
+    fetchWidth = Param.Unsigned(10, "Fetch width")
+    fetchBufferSize = Param.Unsigned(64, "Fetch buffer size in bytes")
     fetchQueueSize = Param.Unsigned(
-        64, "Fetch queue size in micro-ops per-thread"
+        128, "Fetch queue size in micro-ops per-thread"
     )
 
     renameToDecodeDelay = Param.Cycles(1, "Rename to decode delay")
@@ -98,14 +98,14 @@ class BaseO3CPU(BaseCPU):
     )
     commitToDecodeDelay = Param.Cycles(1, "Commit to decode delay")
     fetchToDecodeDelay = Param.Cycles(1, "Fetch to decode delay")
-    decodeWidth = Param.Unsigned(5, "Decode width")
+    decodeWidth = Param.Unsigned(10, "Decode width")
 
     iewToRenameDelay = Param.Cycles(
         1, "Issue/Execute/Writeback to rename delay"
     )
     commitToRenameDelay = Param.Cycles(1, "Commit to rename delay")
     decodeToRenameDelay = Param.Cycles(1, "Decode to rename delay")
-    renameWidth = Param.Unsigned(5, "Rename width")
+    renameWidth = Param.Unsigned(10, "Rename width")
 
     commitToIEWDelay = Param.Cycles(
         1, "Commit to Issue/Execute/Writeback delay"
@@ -116,17 +116,17 @@ class BaseO3CPU(BaseCPU):
     issueToExecuteDelay = Param.Cycles(
         1, "Issue to execute delay (internal to the IEW stage)"
     )
-    dispatchWidth = Param.Unsigned(5, "Dispatch width")
-    issueWidth = Param.Unsigned(12, "Issue width")
-    wbWidth = Param.Unsigned(12, "Writeback width")
+    dispatchWidth = Param.Unsigned(10, "Dispatch width")
+    issueWidth = Param.Unsigned(19, "Issue width")
+    wbWidth = Param.Unsigned(19, "Writeback width")
     fuPool = Param.FUPool(DefaultFUPool(), "Functional Unit pool")
 
     iewToCommitDelay = Param.Cycles(
         1, "Issue/Execute/Writeback to commit delay"
     )
     renameToROBDelay = Param.Cycles(1, "Rename to reorder buffer delay")
-    commitWidth = Param.Unsigned(5, "Commit width")
-    squashWidth = Param.Unsigned(5, "Squash width")
+    commitWidth = Param.Unsigned(10, "Commit width")
+    squashWidth = Param.Unsigned(10, "Squash width")
     trapLatency = Param.Cycles(13, "Trap latency")
     fetchTrapLatency = Param.Cycles(1, "Fetch trap latency")
 
@@ -137,7 +137,7 @@ class BaseO3CPU(BaseCPU):
         5, "Time buffer size for forward communication"
     )
 
-    LQEntries = Param.Unsigned(128, "Number of load queue entries")
+    LQEntries = Param.Unsigned(132, "Number of load queue entries")
     SQEntries = Param.Unsigned(72, "Number of store queue entries")
     LSQDepCheckShift = Param.Unsigned(
         4, "Number of places to shift addr before check"
@@ -158,20 +158,20 @@ class BaseO3CPU(BaseCPU):
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers")
 
     numPhysIntRegs = Param.Unsigned(
-        224, "Number of physical integer registers"
+        918, "Number of physical integer registers"
     )
     numPhysFloatRegs = Param.Unsigned(
-        224, "Number of physical floating point registers"
+        918, "Number of physical floating point registers"
     )
-    numPhysVecRegs = Param.Unsigned(224, "Number of physical vector registers")
+    numPhysVecRegs = Param.Unsigned(918, "Number of physical vector registers")
     numPhysVecPredRegs = Param.Unsigned(
-        64, "Number of physical predicate registers"
+        128, "Number of physical predicate registers"
     )
     numPhysMatRegs = Param.Unsigned(8, "Number of physical matrix registers")
     # most ISAs don't use condition-code regs, so default is 0
     numPhysCCRegs = Param.Unsigned(0, "Number of physical cc registers")
-    numIQEntries = Param.Unsigned(152, "Number of instruction queue entries")
-    numROBEntries = Param.Unsigned(224, "Number of reorder buffer entries")
+    numIQEntries = Param.Unsigned(559, "Number of instruction queue entries")
+    numROBEntries = Param.Unsigned(918, "Number of reorder buffer entries")
 
     smtNumFetchingThreads = Param.Unsigned(1, "SMT Number of Fetching Threads")
     smtFetchPolicy = Param.SMTFetchPolicy("RoundRobin", "SMT Fetch policy")

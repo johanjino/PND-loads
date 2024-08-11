@@ -2,19 +2,16 @@ import subprocess
 import os
 import sys
 
-addr_file_type = sys.argv[1]
-cpu_model = sys.argv[2]
-run_pnd = True
+cpu_model_1 = sys.argv[1]
+cpu_model_2 = sys.argv[2]
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 chkpt_dir = "/work/muke/checkpoints/"
-results_dir = "/work/muke/PND-Loads/results/"+addr_file_type+"/"+cpu_model+"/"
-base_results_dir = "/work/muke/PND-Loads/results/base/"+cpu_model+"/"
+results_dir = "/work/muke/PND-Loads/results/base/"+cpu_model_1+"/"
+results_dir_2 = "/work/muke/PND-Loads/results/base/"+cpu_model_2+"/"
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
            "641.leela_s", "657.xz_s", "602.gcc_s",
            "620.omnetpp_s"] #"638.imagick_s", "644.nab_s"]
-
-if addr_file_type == "base": exit(0) #nothing to compare to
 
 prefix = "system.switch_cpus."
 
@@ -37,7 +34,7 @@ def get_values(results):
             values[name] = float(value)
     return values
 
-os.chdir(base_results_dir)
+os.chdir(results_dir_2)
 base_results = {}
 for f in os.listdir(os.getcwd()):
     if os.path.isdir(f):
@@ -50,8 +47,8 @@ for f in os.listdir(os.getcwd()):
         differences.write(f+":\n")
         base_result = base_results[f]
         pnd_result = get_values(f+"/results.txt")
-        differences.write("\tBase CPI: "+str(base_result['CPI']+"\n"))
-        differences.write("\tPND CPI: "+str(pnd_result['CPI']+"\n"))
+        differences.write("\tBase CPI: "+str(base_result['CPI'])+"\n")
+        differences.write("\tPND CPI: "+str(pnd_result['CPI'])+"\n")
         differences.write("\tBase Lookups Per KInst: "+str(base_result[prefix+'MemDepUnit__0.MDPLookups']/(base_result[prefix+'executeStats0.numInsts']*1000))+"\n")
         differences.write("\tPND Lookups Per KInst: "+str(pnd_result[prefix+'MemDepUnit__0.MDPLookups']/(pnd_result[prefix+'executeStats0.numInsts']*1000))+"\n")
         differences.write("\tBase Violations Per MInst: "+str(base_result[prefix+'iew.memOrderViolationEvents']/(base_result[prefix+'executeStats0.numInsts']*1000000))+"\n")
