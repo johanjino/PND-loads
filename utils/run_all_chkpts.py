@@ -1,6 +1,7 @@
 import subprocess
 import os
 import sys
+import matplotlib.pyplot as plt
 
 addr_file_type = sys.argv[1]
 cpu_model = sys.argv[2]
@@ -115,3 +116,20 @@ for f in os.listdir(os.getcwd()):
         differences.write("\n")
 
 differences.close()
+
+#plot
+cpis = []
+names = []
+for f in os.listdir(os.getcwd()):
+    if os.path.isdir(f) and os.path.exists(f+"/results.txt"):
+        base_result = base_results[f]
+        pnd_result = get_values(f+"/results.txt")
+        base_cpi = base_result['CPI']
+        pnd_cpi = pnd_result['CPI']
+        difference = ((pnd_cpi - base_cpi) / base_cpi) * 100
+        cpis.append(differences)
+        names.append(f)
+
+fig, ax = plt.subplots()
+ax.bar(names, cpis)
+plt.savefig("/work/muke/graphs/cpi/"+addr_file_type+"_"+cpu_model+".png", dpi=300)
