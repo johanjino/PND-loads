@@ -46,6 +46,7 @@
 #include "cpu/o3/iew.hh"
 
 #include <queue>
+#include <map>
 
 #include "cpu/checker/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
@@ -57,6 +58,8 @@
 #include "debug/IEW.hh"
 #include "debug/O3PipeView.hh"
 #include "params/BaseO3CPU.hh"
+
+extern std::map<uint64_t, uint8_t> pnd_violation_count;
 
 namespace gem5
 {
@@ -1295,11 +1298,22 @@ IEW::executeInsts()
 
                 fetchRedirect[tid] = true;
 
+                Addr violator_pc = violator->pcState().instAddr();
+
                 if (!violator->isPND()) {
                     // Tell the instruction queue that a violation has occured.
                     instQueue.violation(inst, violator);
                 }
-                else ++iewStats.PNDLoadViolations;
+                else if (pnd_violation_count.find(violator_pc) == pnd_violation_count.end()) {
+                    pnd_violation_count[violator_pc] = 1;
+                    ++iewStats.PNDLoadViolations;
+                }
+                else {
+                    pnd_violation_count[violator_pc] += 1;
+                    if (pnd_violation_count[violator_pc] > 2)
+                        violator->unsetPND();
+                    ++iewStats.PNDLoadViolations;
+                }
 
                 // Squash.
                 squashDueToMemOrder(violator, tid);

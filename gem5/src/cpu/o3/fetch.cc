@@ -69,6 +69,7 @@
 #include "sim/full_system.hh"
 #include "sim/system.hh"
 
+std::map<uint64_t, uint8_t> pnd_violation_count;
 std::unordered_set<uint64_t> pnd_addresses;
 static void load_addresses(){
     std::string filename = std::string(std::getenv("ADDR_FILE"));
@@ -1076,7 +1077,9 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
     instruction->traceData = NULL;
 #endif
 
-    if (instruction->isLoad() && pnd_addresses.count(this_pc.instAddr())) {
+    if (instruction->isLoad() && pnd_addresses.count(this_pc.instAddr()) &&
+        (pnd_violation_count.find(this_pc.instAddr()) == pnd_violation_count.end() ||
+        pnd_violation_count[this_pc.instAddr()] <= 2)) {
         instruction->setPND();
     }
 
