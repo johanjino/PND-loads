@@ -34,6 +34,8 @@
 #include "debug/StoreSet.hh"
 #include "cpu/o3/inst_queue.hh"
 
+extern std::map<uint64_t, uint8_t> pnd_violation_count;
+
 namespace gem5
 {
 
@@ -362,6 +364,8 @@ StoreSet::clear()
     }
 
     storeList.clear();
+
+    pnd_violation_count.clear()
 }
 
 void
