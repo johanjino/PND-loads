@@ -1288,8 +1288,6 @@ IEW::executeInsts()
                 DynInstPtr violator;
                 violator = ldstQueue.getMemDepViolator(tid);
 
-                if (violator->isPND()) ++iewStats.PNDLoadViolations;
-
                 DPRINTF(IEW, "LDSTQ detected a violation. Violator PC: %s "
                         "[sn:%lli], inst PC: %s [sn:%lli]. Addr is: %#x.\n",
                         violator->pcState(), violator->seqNum,
@@ -1297,8 +1295,11 @@ IEW::executeInsts()
 
                 fetchRedirect[tid] = true;
 
-                // Tell the instruction queue that a violation has occured.
-                instQueue.violation(inst, violator);
+                if (!violator->isPND()) {
+                    // Tell the instruction queue that a violation has occured.
+                    instQueue.violation(inst, violator);
+                }
+                else ++iewStats.PNDLoadViolations;
 
                 // Squash.
                 squashDueToMemOrder(violator, tid);
