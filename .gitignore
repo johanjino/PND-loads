@@ -6,6 +6,7 @@
 a.out
 gem5-oracle
 dev-gem5/
+gem5-gen/
 utils/venv
 fs/
 benchmarks/forwarding_micro

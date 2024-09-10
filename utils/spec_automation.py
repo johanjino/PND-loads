@@ -21,12 +21,13 @@ cache_sizes = {
 #run from base spec dir
 base_dir = os.getcwd() # = /work/muke/checkpoints/benchmark
 base_run = False
-addr_file_type = sys.argv[1]
+run_type = sys.argv[1]
+addr_file_type = sys.argv[2]
 if addr_file_type == "base": base_run = True
-cpu_model = sys.argv[2]
+cpu_model = sys.argv[3]
 spec_path = "/work/muke/spec2017/"
 gem5 = "/work/muke/PND-Loads/dev-gem5/"
-results_dir = "/work/muke/PND-Loads/results/"+addr_file_type+"/"+cpu_model+"/"
+results_dir = "/work/muke/results/"+run_type+"/"+addr_file_type+"/"+cpu_model+"/"
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 benchmark = base_dir.split("/")[4]
 run_dir = spec_path+"benchspec/CPU/"+benchmark+"/run/run_peak_refspeed_mytest-64.0000/"
@@ -70,7 +71,7 @@ for out_dir in os.listdir(base_dir):
                 exit(1)
             os.chdir(base_dir)
             procs.append(p)
-            while waited < 60*2 and finished == False:
+            while waited < 10 and finished == False:
                 time.sleep(10)
                 waited += 10
                 if Popen.poll(p) != None:

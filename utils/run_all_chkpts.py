@@ -4,26 +4,27 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
-addr_file_type = sys.argv[1]
-cpu_model = sys.argv[2]
+run_type = sys.argv[1]
+addr_file_type = sys.argv[2]
+cpu_model = sys.argv[3]
 run_pnd = True
-run_base = True if sys.argv[3] == 'with_base' else False
+run_base = True if sys.argv[4] == 'with_base' else False
 if addr_file_type == "base":
     run_base = True
     run_pnd = False
 if run_base: print("Running with base model")
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 chkpt_dir = "/work/muke/checkpoints/"
-results_dir = "/work/muke/PND-Loads/results/"+addr_file_type+"/"+cpu_model+"/"
-base_results_dir = "/work/muke/PND-Loads/results/base/"+cpu_model+"/"
+results_dir = "/work/muke/results/"+run_type+"/"+addr_file_type+"/"+cpu_model+"/"
+base_results_dir = "/work/muke/results/"+run_type+"/base/"+cpu_model+"/"
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",
            "623.xalancbmk_s", "625.x264_s", "631.deepsjeng_s",
            "641.leela_s", "657.xz_s", "602.gcc_s",
            "620.omnetpp_s", "644.nab_s"] #"638.imagick_s"]
 
-if len(sys.argv) > 4:
+if len(sys.argv) > 5:
     sub_benches = []
-    for bench in sys.argv[4:]:
+    for bench in sys.argv[5:]:
         if bench in benches:
             sub_benches.append(bench)
         else:

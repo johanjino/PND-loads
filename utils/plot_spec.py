@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
 import argparse
+import os
 
-benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "gcc.0", "gcc.1", "gcc.2", "mcf.0", "lbm.0", "omnetpp.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "xz.0", "xz.1"]
+benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "gcc.0", "gcc.1", "gcc.2", "mcf.0", "lbm.0", "omnetpp.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "nab.0", "xz.0", "xz.1"]
 
 parser = argparse.ArgumentParser(prog='plot spec', description='plot graphs')
 
@@ -19,7 +20,7 @@ benches = {}
 field = "CPI"
 results = {b:{} for b in benchmark_names}
 for model in cpu_models:
-    results_dir = "/work/muke/PND-Loads/results/"+addr_types[0]+"/"+model
+    results_dir = os.getcwd()+"/"+addr_types[0]+"/"+model
     stats = open(results_dir+"/differences", "r")
     for line in stats:
         if line.strip()[:-1] in benchmark_names:
@@ -48,9 +49,9 @@ for i in range(len(benchmark_names)):
     plt.axvline(x=i-(0.75*bar_width), color='grey', linestyle=':', linewidth=1)
 
 plt.tick_params(axis='x',labelsize=14, rotation=60)
-plt.tick_params(axis='y',labelsize=12)
+plt.tick_params(axis='y',labelsize=16)
 plt.xticks(np.arange(len(benchmark_names)) + bar_width / 2, benchmark_names)
 ax.set_ylabel('Percent Change', fontsize=18)
 ax.set_title('CPI Difference - '+addr_types[0].replace('_',' '), fontsize=18)
 plt.tight_layout()
-plt.savefig('/work/muke/graphs/cpi/'+addr_types[0]+".png", dpi=300)
+plt.savefig(os.getcwd()+"/graphs/"+addr_types[0]+".png", dpi=300)

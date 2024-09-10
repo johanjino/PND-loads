@@ -148,12 +148,12 @@ class BaseO3CPU(BaseCPU):
         "loads & stores or just stores",
     )
     store_set_clear_period = Param.Unsigned(
-        64*244,
+        128*244,
         "Number of load/store insts before the dep predictor "
         "should be invalidated",
     )
-    LFSTSize = Param.Unsigned(64, "Last fetched store table size")
-    SSITSize = Param.Unsigned(64, "Store set ID table size")
+    LFSTSize = Param.Unsigned(128, "Last fetched store table size")
+    SSITSize = Param.Unsigned(128, "Store set ID table size")
 
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers")
 
@@ -187,7 +187,12 @@ class BaseO3CPU(BaseCPU):
     smtROBThreshold = Param.Int(100, "SMT ROB Threshold Sharing Parameter")
     smtCommitPolicy = Param.CommitPolicy("RoundRobin", "SMT Commit Policy")
 
+    """
     branchPred = Param.BranchPredictor(
-        TournamentBP(numThreads=Parent.numThreads), "Branch Predictor"
+        ITTAGE(numThreads=Parent.numThreads), "Branch Predictor"
+    )
+    """
+    branchPred = Param.BranchPredictor(
+        TAGE(numThreads=Parent.numThreads, tage=LTAGE_TAGE(), indirectBranchPred=ITTAGE()), "Branch Predictor"
     )
     needsTSO = Param.Bool(False, "Enable TSO Memory model")

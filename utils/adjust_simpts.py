@@ -2,7 +2,7 @@ import sys
 
 simpt_file = open(sys.argv[1]).readlines()
 weight_file = open(sys.argv[2]).readlines()
-last_simpt = int(sys.argv[3])
+last_simpt = int(sys.argv[3]) #0 indexed
 interval = 100e6
 warmup = 10e6
 

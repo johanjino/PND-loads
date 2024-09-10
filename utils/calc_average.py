@@ -25,7 +25,7 @@ if sys.argv[1] == 'cpi':
 elif sys.argv[1] == 'lookups':
     lookup_reductions = []
     for line in differences:
-        if line.strip().startswith("Lookup Reduction"):
+        if line.strip().startswith("MDPLookups"):
             reduction = abs(float(line.split(':')[1]))
             lookup_reductions.append(reduction)
 
