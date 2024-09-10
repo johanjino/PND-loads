@@ -181,6 +181,7 @@ class MemDepUnit
         statistics::Scalar bypassedMDPLookups;
         statistics::Scalar LFSTReads;
         statistics::Scalar LFSTWrites;
+        statistics::Scalar hits;
     } stats;
 
   private:

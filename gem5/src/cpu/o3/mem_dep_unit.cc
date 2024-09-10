@@ -120,7 +120,9 @@ MemDepUnit::MemDepUnitStats::MemDepUnitStats(statistics::Group *parent)
       ADD_STAT(LFSTReads, statistics::units::Count::get(),
                "Number of reads made to the LFST table."),
       ADD_STAT(LFSTWrites, statistics::units::Count::get(),
-               "Number of writes made to the LFST table.")
+               "Number of writes made to the LFST table."),
+      ADD_STAT(hits, statistics::units::Count::get(),
+               "Number of hits!")
 {
 }
 
@@ -231,8 +233,10 @@ MemDepUnit::insert(const DynInstPtr &inst)
         ++stats.bypassedMDPLookups;
     } else {
         InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
-        if (dep != 0)
+        if (dep != 0) {
+            ++stats.hits;
             producing_stores.push_back(dep);
+        }
         ++stats.MDPLookups;
     }
 

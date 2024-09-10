@@ -1304,6 +1304,8 @@ IEW::executeInsts()
                     // Tell the instruction queue that a violation has occured.
                     instQueue.violation(inst, violator);
                 }
+                //else ++iewStats.PNDLoadViolations;
+                //COMPILER ORACLE
                 else if (pnd_violation_count.find(violator_pc) == pnd_violation_count.end()) {
                     pnd_violation_count[violator_pc] = 1;
                     ++iewStats.PNDLoadViolations;
