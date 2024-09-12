@@ -333,9 +333,9 @@ def parseSimpointAnalysisFile(options, testsys):
         line = simpoint_file.readline()
         if not line:
             break
-        m = re.match(r"(\d+)\s+(\d+)", line)
+        m = re.match("([0-9\.e\-]+)\s+(\d+)", line)
         if m:
-            interval = int(m.group(1))
+            interval = float(m.group(1))
         else:
             fatal("unrecognized line in simpoint file!")
 
@@ -379,9 +379,8 @@ def parseSimpointAnalysisFile(options, testsys):
     return (simpoints, interval_length)
 
 
-def takeSimpointCheckpoints(simpoints, interval_length, cptdir):
+def takeSimpointCheckpoints(simpoints, interval_length, cptdir, offset, index):
     num_checkpoints = 0
-    index = 0
     last_chkpnt_inst_count = -1
     for simpoint in simpoints:
         interval, weight, starting_inst_count, actual_warmup_length = simpoint
@@ -408,7 +407,7 @@ def takeSimpointCheckpoints(simpoints, interval_length, cptdir):
                     "cpt.simpoint_%02d_inst_%d_weight_%f_interval_%d_warmup_%d"
                     % (
                         index,
-                        starting_inst_count,
+                        starting_inst_count+offset,
                         weight,
                         interval_length,
                         actual_warmup_length,
@@ -417,7 +416,7 @@ def takeSimpointCheckpoints(simpoints, interval_length, cptdir):
             )
             print(
                 "Checkpoint #%d written. start inst:%d weight:%f"
-                % (num_checkpoints, starting_inst_count, weight)
+                % (num_checkpoints, starting_inst_count+offset, weight)
             )
             num_checkpoints += 1
             last_chkpnt_inst_count = starting_inst_count
@@ -793,7 +792,10 @@ def run(options, root, testsys, cpu_class):
 
     # Take SimPoint checkpoints
     elif options.take_simpoint_checkpoints != None:
-        takeSimpointCheckpoints(simpoints, interval_length, cptdir)
+        if options.checkpoint_restore:
+            takeSimpointCheckpoints(simpoints, interval_length, cptdir, options.simpoint_offset, options.last_simpoint+1)
+        else:
+            takeSimpointCheckpoints(simpoints, interval_length, cptdir, options.simpoint_offset, 0)
 
     # Restore from SimPoint checkpoints
     elif options.restore_simpoint_checkpoint:
