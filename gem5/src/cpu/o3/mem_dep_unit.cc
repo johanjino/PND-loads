@@ -500,13 +500,15 @@ MemDepUnit::wakeDependents(const DynInstPtr &inst)
         woken_inst->memDeps -= 1;
 
         //NO MDP
-        InstSeqNum dep = iqPtr->iewStage->ldstQueue.findUnresolvedStore(id, woken_inst->inst);
-        if (dep != 0) {
-            MemDepHashIt hash_it = memDepHash.find(dep);
-            if (hash_it != memDepHash.end()) {
-                auto store_entry = (*hash_it).second;
-                store_entry->dependInsts.push_back(woken_inst);
-                woken_inst->memDeps += 1;
+        if (!woken_inst->inst->isPND()) {
+            InstSeqNum dep = iqPtr->iewStage->ldstQueue.findUnresolvedStore(id, woken_inst->inst);
+            if (dep != 0) {
+                MemDepHashIt hash_it = memDepHash.find(dep);
+                if (hash_it != memDepHash.end()) {
+                    auto store_entry = (*hash_it).second;
+                    store_entry->dependInsts.push_back(woken_inst);
+                    woken_inst->memDeps += 1;
+                }
             }
         }
 

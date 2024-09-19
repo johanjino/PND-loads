@@ -40,10 +40,10 @@ for bench in benches:
 
     #TODO: check return codes
     if run_pnd:
-        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+addr_file_type+" "+cpu_model, shell=True))
+        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" " +addr_file_type+" "+cpu_model, shell=True))
 
     if run_base:
-        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py base "+cpu_model, shell=True))
+        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" base "+cpu_model, shell=True))
 
 for p in processes:
     p.wait()
