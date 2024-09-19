@@ -277,6 +277,9 @@ class InstructionQueue
     /** Debug function to print all instructions. */
     void printInsts();
 
+    /** Pointer to IEW stage. */
+    IEW *iewStage;
+
   private:
     /** Does the actual squashing. */
     void doSquash(ThreadID tid);
@@ -290,9 +293,6 @@ class InstructionQueue
 
     /** Cache interface. */
     memory::MemInterface *dcacheInterface;
-
-    /** Pointer to IEW stage. */
-    IEW *iewStage;
 
     /** The memory dependence unit, which tracks/predicts memory dependences
      *  between instructions.

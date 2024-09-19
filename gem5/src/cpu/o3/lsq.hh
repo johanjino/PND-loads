@@ -740,6 +740,8 @@ class LSQ
     /** Returns the sequence number of the head of the store queue. */
     InstSeqNum getStoreHeadSeqNum(ThreadID tid);
 
+    InstSeqNum findUnresolvedStore(ThreadID tid, DynInstPtr inst);
+
     /** Returns the number of instructions in all of the queues. */
     int getCount();
     /** Returns the number of instructions in the queues of one thread. */
