@@ -1315,16 +1315,13 @@ LSQUnit::cacheLineSize()
 
 InstSeqNum LSQUnit::findUnresolvedStore(DynInstPtr inst) {
     auto store_it = inst->sqIt;
-    while (store_it != storeWBIt) {
+    while (store_it > storeWBIt) {
         store_it--;
         assert(store_it->valid());
-        assert(store_it->instruction()->seqNum < load_inst->seqNum);
+        assert(store_it->instruction()->seqNum < inst->seqNum);
         int store_size = store_it->size(); //if size is 0 store has unknown address
-        if (store_size == 0 && !store_it->instruction()->strictlyOrdered() &&
-            !(store_it->request()->mainReq() &&
-              store_it->request()->mainReq()->isCacheMaintenance())) {
+        if (store_size == 0 && !store_it->instruction()->strictlyOrdered())
             return store_it->instruction()->seqNum;
-        }
     }
     return 0;
 }
