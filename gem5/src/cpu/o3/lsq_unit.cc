@@ -1313,6 +1313,21 @@ LSQUnit::cacheLineSize()
     return cpu->cacheLineSize();
 }
 
+InstSeqNum LSQUnit::findUnresolvedStore(SQIterator sqIt) {
+    while (sqIt != storeWBIt) {
+        sqIt--;
+        assert(sqIt->valid());
+        assert(sqIt->instruction()->seqNum < load_inst->seqNum);
+        int store_size = sqIt->size(); //if size is 0 store has unknown address
+        if (store_size == 0 && !sqIt->instruction()->strictlyOrdered() &&
+            !(sqIt->request()->mainReq() &&
+              sqIt->request()->mainReq()->isCacheMaintenance())) {
+            return sqIt->instruction()->seqNum;
+        }
+    }
+    return 0;
+}
+
 Fault
 LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 {

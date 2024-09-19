@@ -36,6 +36,8 @@
 #include "base/debug.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/inst_queue.hh"
+#include "cpu/o3/iew.hh"
+#include "cpu/o3/lsq_unit.hh"
 #include "cpu/o3/limits.hh"
 #include "debug/MemDepUnit.hh"
 #include "params/BaseO3CPU.hh"
@@ -232,10 +234,11 @@ MemDepUnit::insert(const DynInstPtr &inst)
     } else if (inst->isPND()) {
         ++stats.bypassedMDPLookups;
     } else {
-        InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
+        //NO MDP
+        InstSeqNum dep = iqPtr->iewStage->ldstQueue->findUnresolvedStore(inst->sqIt());
+        // InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
         if (dep != 0) {
             producing_stores.push_back(dep);
-            ++stats.hits;
         }
         ++stats.MDPLookups;
     }
