@@ -43,7 +43,7 @@ for c, model in enumerate(cpu_models):
             elif value < 0: value -= 0.025
             ax.text(bar.get_x() + bar.get_width() / 2+(bar_width/len(cpu_models)) - 0.05, value, str(round(value,1))+"%", ha='center', va='bottom' if value >=0 else 'top', rotation=90)
 
-ax.legend(labels=cpu_models, fontsize=16)#, loc='center left')
+ax.legend(labels=cpu_models, fontsize=16, loc='lower right')
 
 for i in range(len(benchmark_names)):
     plt.axvline(x=i-(0.75*bar_width), color='grey', linestyle=':', linewidth=1)
@@ -53,5 +53,6 @@ plt.tick_params(axis='y',labelsize=16)
 plt.xticks(np.arange(len(benchmark_names)) + bar_width / 2, benchmark_names)
 ax.set_ylabel('Percent Change', fontsize=18)
 ax.set_title('CPI Difference - '+addr_types[0].replace('_',' '), fontsize=18)
+ax.set_ylim(top=9, bottom=-16)
 plt.tight_layout()
 plt.savefig(os.getcwd()+"/graphs/"+addr_types[0]+".png", dpi=300)

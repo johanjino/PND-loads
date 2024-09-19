@@ -234,8 +234,8 @@ MemDepUnit::insert(const DynInstPtr &inst)
     } else {
         InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
         if (dep != 0) {
-            ++stats.hits;
             producing_stores.push_back(dep);
+            ++stats.hits;
         }
         ++stats.MDPLookups;
     }

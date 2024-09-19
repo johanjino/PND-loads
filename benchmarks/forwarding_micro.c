@@ -4,23 +4,17 @@
 int main(int argc, char **argv)  {
 
     int n = atoi(argv[1]);
-    volatile int **forward = malloc(sizeof(int *));
-    //volatile int **pnd = malloc(sizeof(int *));
-    volatile int *pnd;
-    int *m = malloc(n*sizeof(int));
-    *forward = (int *)0x423423;
+    volatile int *load = malloc(sizeof(int));
+    *load = n*3;
+    int *store = malloc(2*n*sizeof(int));
     asm volatile (
         "dsb sy\n\t"
         "isb\n\t"
     );
     double offset = 3.14965 * (n-1);
     double factor = 2.73234 * n;
-    *forward = (int *)(m + (uintptr_t)(offset/factor/factor));
-    /* *forward = m; */
-    //*pnd = *forward;
-    pnd = *forward;
-
-    volatile int y = *pnd;
+    *(int *)(store + (uintptr_t)(offset/factor/factor)) = n;
+    volatile int y = *load;
 
     if (y % n == 0)
         return 1;
