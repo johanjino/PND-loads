@@ -26,7 +26,7 @@ addr_file_type = sys.argv[2]
 if addr_file_type == "base": base_run = True
 cpu_model = sys.argv[3]
 spec_path = "/work/muke/spec2017/"
-gem5 = "/work/muke/PND-Loads/dev-gem5/"
+gem5 = "/work/muke/PND-Loads/gem5/"
 results_dir = "/work/muke/results/"+run_type+"/"+addr_file_type+"/"+cpu_model+"/"
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 benchmark = base_dir.split("/")[4]

@@ -6,7 +6,7 @@ import time
 
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 cpu_model_dir = "/work/muke/PND-Loads/cpu_models/"
-gem5_dir = "/work/muke/PND-Loads/dev-gem5/"
+gem5_dir = "/work/muke/PND-Loads/gem5/"
 
 parser = argparse.ArgumentParser(prog='run_models', description='run over multiple addr files and cpu models')
 
