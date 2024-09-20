@@ -3,6 +3,8 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+import psutil
+import time
 
 run_type = sys.argv[1]
 addr_file_type = sys.argv[2]
@@ -40,13 +42,16 @@ for bench in benches:
 
     #TODO: check return codes
     if run_pnd:
+        while psutil.virtual_memory().percent > 60 and psutil.cpu_ercent() > 90: time.sleep(60)
         processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" " +addr_file_type+" "+cpu_model, shell=True))
 
     if run_base:
+        while psutil.virtual_memory().percent > 60 and psutil.cpu_ercent() > 90: time.sleep(60)
         processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" base "+cpu_model, shell=True))
 
 for p in processes:
     p.wait()
+    if code is not None and code != 0: print(p.arg); exit(1)
 
 #aggregate stats
 for bench in benches:

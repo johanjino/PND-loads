@@ -1,6 +1,8 @@
 import os
 import argparse
 import subprocess
+import psutil
+import time
 
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
 cpu_model_dir = "/work/muke/PND-Loads/cpu_models/"
@@ -30,20 +32,14 @@ os.chdir(gem5_dir)
 #run all models on base first to generate comparison results
 if 'base' in addr_types:
     for model in cpu_models:
-        cp = subprocess.Popen("cp "+cpu_model_dir+model+".py src/cpu/o3/BaseO3CPU.py", shell=True)
-        if type(cp) != subprocess.CompletedProcess: cp.wait()
-        scons = subprocess.Popen("scons build/ARM/gem5.fast -j 31 --with-lto", shell=True)
-        scons.wait()
-        run = subprocess.Popen("python3 /work/muke/PND-Loads/utils/run_all_chkpts.py "+run_type+" base "+model+" with_base "+benches , shell=True)
-        run.wait()
+        cp = subprocess.run("cp "+cpu_model_dir+model+".py src/cpu/o3/BaseO3CPU.py", shell=True, check=True)
+        scons = subprocess.run("scons build/ARM/gem5.fast -j 31 --with-lto", shell=True, check=True)
+        run = subprocess.run("python3 /work/muke/PND-Loads/utils/run_all_chkpts.py "+run_type+" base "+model+" with_base "+benches , shell=True, check=True)
 
 addr_types = [a for a in addr_types if a != 'base']
 
 for model in cpu_models:
-    cp = subprocess.Popen("cp "+cpu_model_dir+model+".py src/cpu/o3/BaseO3CPU.py", shell=True)
-    if type(cp) != subprocess.CompletedProcess: cp.wait()
-    scons = subprocess.Popen("scons build/ARM/gem5.fast -j 31 --with-lto", shell=True)
-    scons.wait()
+    cp = subprocess.run("cp "+cpu_model_dir+model+".py src/cpu/o3/BaseO3CPU.py", shell=True, check=True)
+    scons = subprocess.run("scons build/ARM/gem5.fast -j 31 --with-lto", shell=True, check=True)
     for addr_type in addr_types:
-       run = subprocess.Popen("python3 /work/muke/PND-Loads/utils/run_all_chkpts.py "+run_type+" "+addr_type+" "+model+" without_base "+benches, shell=True)
-       run.wait()
+       run = subprocess.run("python3 /work/muke/PND-Loads/utils/run_all_chkpts.py "+run_type+" "+addr_type+" "+model+" without_base "+benches, shell=True, check=True)
