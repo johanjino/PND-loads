@@ -40,18 +40,19 @@ processes = []
 for bench in benches:
     os.chdir(chkpt_dir+bench)
 
-    #TODO: check return codes
     if run_pnd:
-        while psutil.virtual_memory().percent > 60 and psutil.cpu_ercent() > 90: time.sleep(60)
-        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" " +addr_file_type+" "+cpu_model, shell=True))
+        while psutil.virtual_memory().percent > 60 and psutil.cpu_ercent() > 90: time.sleep(60*5)
+        p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" " +addr_file_type+" "+cpu_model, shell=True)
+        processes.append(p)
 
     if run_base:
-        while psutil.virtual_memory().percent > 60 and psutil.cpu_ercent() > 90: time.sleep(60)
-        processes.append(subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" base "+cpu_model, shell=True))
+        while psutil.virtual_memory().percent > 60 and psutil.cpu_ercent() > 90: time.sleep(60*5)
+        p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/spec_automation.py "+run_type+" base "+cpu_model, shell=True)
+        processes.append(p)
 
 for p in processes:
     p.wait()
-    if code is not None and code != 0: print(p.arg); exit(1)
+    if code is not None and code != 0: print(p.args); exit(1)
 
 #aggregate stats
 for bench in benches:

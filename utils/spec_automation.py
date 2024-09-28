@@ -64,7 +64,7 @@ for out_dir in os.listdir(base_dir):
             run = "ADDR_FILE="+addr_file+" "+gem5+"build/ARM/gem5.fast --outdir="+outdir+" "+gem5+"configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r "+str(cpt_number)+" --checkpoint-dir "+out_dir+" --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c "+binary+" --options=\""+' '.join(command.split()[1:])+"\""
             run += cache_sizes[cpu_model]
             os.chdir(run_dir)
-            while psutil.virtual_memory().percent > 60 and psutil.cpu_percent() > 90: time.sleep(10)
+            while psutil.virtual_memory().percent > 60 and psutil.cpu_percent() > 90: time.sleep(60*5)
             p = Popen(run, shell=True)
             os.chdir(base_dir)
             procs.append(p)
@@ -73,10 +73,11 @@ for out_dir in os.listdir(base_dir):
                 waited += 10
                 if Popen.poll(p) != None:
                     finished = True
+                    if Popen.wait(p) != 0: print(p.args); exit(1)
             time.sleep(random.uniform(0,1)*60)
             if psutil.virtual_memory().percent < 60 and psutil.cpu_percent() < 90: continue
-            Popen.wait(p)
+            if Popen.wait(p) != 0: print(p.args); exit(1)
 
 for p in procs:
     code = Popen.wait(p)
-    if code is not None and code != 0: print(p.arg); exit(1)
+    if code is not None and code != 0: print(p.args); exit(1)
