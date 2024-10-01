@@ -16,7 +16,7 @@ for line in gem5.stdout:
     if "Violation" in line:
         addr = line.split(":")[1]
         violation_count[addr] += 1
-        addr2line = subprocess.run("addr2line -f -e "+binary+" "+addr, shell=True, capture_output=True, text=True)
+        addr2line = subprocess.run("aarch64-linux-gnu-addr2line -f -e "+binary+" "+addr, shell=True, capture_output=True, text=True)
         func = addr2line.stdout.split("\n")[0]
         line_number = int(addr2line.stdout.split("\n")[1].split(":")[1])
         addr_info[addr] = (func, line_number)
