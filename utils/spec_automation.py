@@ -14,6 +14,7 @@ cache_sizes = {
     "x925-2": " --l1d_size=128KiB --l1i_size=128KiB --l2_size=16MB",
     "a725": " --l1d_size=64KiB --l1i_size=64KiB --l2_size=1MB",
     "a14": " --l1d_size=128KiB --l1i_size=64KiB --l2_size=4MB",
+    "a14-tournament": " --l1d_size=128KiB --l1i_size=64KiB --l2_size=4MB",
     "m4": " --l1d_size=128KiB --l1i_size=128KiB --l2_size=16MB",
     "m4-2": " --l1d_size=256KiB --l1i_size=128KiB --l2_size=16MB",
 }

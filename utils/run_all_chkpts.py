@@ -51,7 +51,7 @@ for bench in benches:
         processes.append(p)
 
 for p in processes:
-    p.wait()
+    code = p.wait()
     if code is not None and code != 0: print(p.args); exit(1)
 
 #aggregate stats
