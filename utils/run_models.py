@@ -33,6 +33,8 @@ os.chdir(gem5_dir)
 if 'base' in addr_types:
     for model in cpu_models:
         cp = subprocess.run("cp "+cpu_model_dir+model+".py src/cpu/o3/BaseO3CPU.py", shell=True, check=True)
+        fu_config = model.split('-')[0]+"-fu.py"
+        cp = subprocess.run("cp "+cpu_model_dir+fu_config+" src/cpu/o3/FuncUnitConfig.py", shell=True, check=True)
         scons = subprocess.run("scons build/ARM/gem5.fast -j 31 --with-lto", shell=True, check=True)
         run = subprocess.run("python3 /work/muke/PND-Loads/utils/run_all_chkpts.py "+run_type+" base "+model+" with_base "+benches , shell=True, check=True)
 
@@ -40,6 +42,8 @@ addr_types = [a for a in addr_types if a != 'base']
 
 for model in cpu_models:
     cp = subprocess.run("cp "+cpu_model_dir+model+".py src/cpu/o3/BaseO3CPU.py", shell=True, check=True)
+    fu_config = model.split('-')[0]+"-fu.py"
+    cp = subprocess.run("cp "+cpu_model_dir+fu_config+" src/cpu/o3/FuncUnitConfig.py", shell=True, check=True)
     scons = subprocess.run("scons build/ARM/gem5.fast -j 31 --with-lto", shell=True, check=True)
     for addr_type in addr_types:
        run = subprocess.run("python3 /work/muke/PND-Loads/utils/run_all_chkpts.py "+run_type+" "+addr_type+" "+model+" without_base "+benches, shell=True, check=True)

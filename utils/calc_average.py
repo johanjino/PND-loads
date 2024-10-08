@@ -20,6 +20,8 @@ if sys.argv[1] == 'cpi':
     base_mean = gmean(base_cpis)
     pnd_mean = gmean(pnd_cpis)
     change = ((pnd_mean-base_mean)/base_mean)*100
+    print("Average Base CPI: ", base_mean)
+    print("Average PND CPI: ", pnd_mean)
     print("Average CPI Change: ", change)
 
 elif sys.argv[1] == 'lookups':
