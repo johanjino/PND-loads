@@ -4,7 +4,7 @@ import numpy as np
 import argparse
 import sys
 
-benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "mcf.0", "lbm.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "nab.0", "xz.0", "xz.1", "omnetpp.0", "gcc.0", "gcc.1", "gcc.2"]
+benchmark_names = ["perlbench.0", "perlbench.1", "perlbench.2", "gcc.0", "gcc.1", "gcc.2", "mcf.0", "lbm.0", "omnetpp.0", "xalancbmk.0", "x264.0", "x264.1", "x264.2", "deepsjeng.0", "leela.0", "nab.0", "xz.0", "xz.1"]
 
 parser = argparse.ArgumentParser(prog='plot spec', description='plot graphs')
 
