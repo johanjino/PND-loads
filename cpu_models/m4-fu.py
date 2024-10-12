@@ -145,7 +145,8 @@ class WritePort(FUDesc):
     count = 0
 
 
-class RdWrPort(FUDesc): opList = [
+class RdWrPort(FUDesc): 
+    opList = [
         OpDesc(opClass="MemRead"),
         OpDesc(opClass="MemWrite"),
         OpDesc(opClass="FloatMemRead"),

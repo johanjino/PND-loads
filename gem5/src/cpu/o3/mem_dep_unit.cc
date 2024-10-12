@@ -235,8 +235,8 @@ MemDepUnit::insert(const DynInstPtr &inst)
         ++stats.bypassedMDPLookups;
     } else {
         //NO MDP
-        InstSeqNum dep = iqPtr->iewStage->ldstQueue.findUnresolvedStore(id, inst, 0);
-        //InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
+        //InstSeqNum dep = iqPtr->iewStage->ldstQueue.findUnresolvedStore(id, inst, 0);
+        InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
         if (dep != 0) {
             producing_stores.push_back(dep);
         }
@@ -500,6 +500,7 @@ MemDepUnit::wakeDependents(const DynInstPtr &inst)
         woken_inst->memDeps -= 1;
 
         //NO MDP
+        /*
         if (!woken_inst->inst->isPND()) {
             InstSeqNum dep = iqPtr->iewStage->ldstQueue.findUnresolvedStore(id, woken_inst->inst, inst_entry->inst->seqNum);
             if (dep != 0) {
@@ -511,6 +512,7 @@ MemDepUnit::wakeDependents(const DynInstPtr &inst)
                 }
             }
         }
+        */
 
         if ((woken_inst->memDeps == 0) &&
             woken_inst->regsReady &&
