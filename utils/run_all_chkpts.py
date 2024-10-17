@@ -110,10 +110,10 @@ for f in os.listdir(os.getcwd()):
         pnd_result = get_values(f+"/results.txt")
         differences.write("\tBase CPI: "+str(base_result['CPI'])+"\n")
         differences.write("\tPND CPI: "+str(pnd_result['CPI'])+"\n")
-        differences.write("\tBase Lookups Per KInst: "+str(base_result[prefix+'MemDepUnit__0.MDPLookups']/(base_result[prefix+'executeStats0.numInsts']*1000))+"\n")
-        differences.write("\tPND Lookups Per KInst: "+str(pnd_result[prefix+'MemDepUnit__0.MDPLookups']/(pnd_result[prefix+'executeStats0.numInsts']*1000))+"\n")
-        differences.write("\tBase Violations Per MInst: "+str(base_result[prefix+'iew.memOrderViolationEvents']/(base_result[prefix+'executeStats0.numInsts']*1000000))+"\n")
-        differences.write("\tPND Violations Per MInst: "+str(pnd_result[prefix+'iew.memOrderViolationEvents']/(pnd_result[prefix+'executeStats0.numInsts']*1000000))+"\n")
+        differences.write("\tBase Lookups Per KInst: "+str(1024*base_result[prefix+'MemDepUnit__0.MDPLookups']/base_result[prefix+'executeStats0.numInsts'])+"\n")
+        differences.write("\tPND Lookups Per KInst: "+str(1024*pnd_result[prefix+'MemDepUnit__0.MDPLookups']/pnd_result[prefix+'executeStats0.numInsts'])+"\n")
+        differences.write("\tBase Violations Per MInst: "+str(1024*1024*base_result[prefix+'iew.memOrderViolationEvents']/base_result[prefix+'executeStats0.numInsts'])+"\n")
+        differences.write("\tPND Violations Per MInst: "+str(1024*1024*pnd_result[prefix+'iew.memOrderViolationEvents']/pnd_result[prefix+'executeStats0.numInsts'])+"\n")
         for field in pnd_result:
             if field not in stats_to_diff: continue
             base_value = base_result[field]

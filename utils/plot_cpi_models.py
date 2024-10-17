@@ -40,7 +40,7 @@ for c, model in enumerate(cpu_models):
     bars = ax.bar(np.arange(len(benchmark_names))+(bar_width*c)-(bar_width/len(cpu_models)), [results[name][model] for name in benchmark_names], width=bar_width)
     for bar in bars:
         value = bar.get_height()
-        if abs(round(value,1)) > 0.1:
+        if abs(round(value,1)) >= 0.5:
             if value > 0: value += 0.025
             elif value < 0: value -= 0.025
             ax.text(bar.get_x() + bar.get_width() / 2+(bar_width/len(cpu_models)) - 0.05, value, str(round(value,1))+"%", ha='center', va='bottom' if value >=0 else 'top', rotation=90)
@@ -55,6 +55,6 @@ plt.tick_params(axis='y',labelsize=16)
 plt.xticks(np.arange(len(benchmark_names)) + bar_width / 2, benchmark_names)
 ax.set_ylabel('Percent Change', fontsize=18)
 ax.set_title('CPI Difference - '+addr_type.replace('_',' '), fontsize=18)
-ax.set_ylim(top=9, bottom=-16)
+#ax.set_ylim(top=9, bottom=-16)
 plt.tight_layout()
 plt.savefig("/work/muke/results/"+run_type+"/graphs/"+addr_type+".png", dpi=300)

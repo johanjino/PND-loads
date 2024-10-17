@@ -23,13 +23,11 @@ if field != "lookups" and field != "violations":
     exit(1)
 field = field[0].upper()+field[1:]
 
-#model_dir = "/work/muke/PND-Loads/cpu_models/"
-model_dir = "~/Programming/PND-Loads/cpu_models/"
+model_dir = "/work/muke/PND-Loads/cpu_models/"
 benches = {}
 pnd_results = {b:{} for b in benchmark_names}
 base_results = {b:{} for b in benchmark_names}
-#results_dir = "/work/muke/results/"+run_type+"/"+addr_type+"/"+cpu_model
-results_dir = "/home/muke/results/"+run_type+"/"+addr_type+"/"+cpu_model
+results_dir = "/work/muke/results/"+run_type+"/"+addr_type+"/"+cpu_model
 stats = open(results_dir+"/differences", "r")
 for line in stats:
     if line.strip()[:-1] in benchmark_names:
@@ -65,26 +63,17 @@ positions1 = np.arange(len(benchmark_names))
 ax.bar(positions1, base_values, width=bar_width, label='Base')
 pnd_bars = ax.bar(positions1+bar_width, pnd_values, width=bar_width, label='PND')
 
-# Set the y-limit to start at the smallest value in the data
-#ax.set_ylim(bottom=min(values))
-
-# # Set the y-axis to logarithmic scale
-#ax.set_yscale('log')
-
-# # Round y-axis ticks up to next order of magnitude
-# y_max = np.ceil(np.log10(max(values)))
-# ax.set_yticks(10 ** np.arange(0, y_max+1))
-
-# Add labels and title
-
-# for i, bar in enumerate(pnd_bars):
-#     value = percent_diff[i]
-#     ax.text(bar.get_x() + bar.get_width() / 2, value, str(round(value,3))+"%", ha='center', va='bottom')
-
-if field == "Lookups": adjustment = 0.000009
-else: adjustment = 0.000000000035
+if field == "Lookups": 
+    mcf_adjustment = 0.000025
+    mcf_adjustment = 25
+    adjustment = 30
+else: 
+    mcf_adjustment = 150
+    adjustment = 105
 for i, value in enumerate(percent_diff):
-    ax.text(positions1[i] + bar_width+0.05, pnd_values[i]+adjustment, str(round(value,1))+"%", ha='center', va='top', fontsize=12)
+    if benchmark_names[i] == "mcf.0": adj = mcf_adjustment
+    else: adj = adjustment
+    ax.text(positions1[i] + bar_width+0.05, pnd_values[i]+adj, str(round(value,1))+"%", ha='center', va='top', fontsize=12, rotation=90)
 
 measurment = 'Lookups per KiloInst' if field == 'Lookups' else 'Violations per MegaInst'
 ax.set_ylabel(measurment, fontsize=18)
@@ -92,8 +81,8 @@ ax.legend(labels=['Unlabelled Run', 'Labelled Run'], fontsize=16)
 title = 'MDP Lookup Reduction' if field == 'Lookups' else 'Memory Order Violation Difference'
 ax.set_title(title, fontsize=18)
 ax.set_xticks(positions1, benchmark_names)
+ax.set_ylim(0, max(max(pnd_values),max(base_values))+adjustment)
 plt.tick_params(axis='x',labelsize=14, rotation=60)
 plt.tick_params(axis='y',labelsize=16)
 plt.tight_layout()
-plt.show()
-#plt.savefig("/home/muke/Documents/papers/PND-ARCS/figures/lookups-small.png", dpi=600)
+plt.savefig(results_dir+"/../../graphs/"+field+".png", dpi=600)
