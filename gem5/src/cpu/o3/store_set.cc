@@ -251,7 +251,7 @@ StoreSet::insertStore(Addr store_PC, InstSeqNum store_seq_num, ThreadID tid)
     } else {
         store_SSID = SSIT[index];
 
-        if (intended_index[store_index] != store_PC)
+        if (intended_index[index] != store_PC)
             ++(memDep->stats).SSITCollisions;
 
         assert(store_SSID < LFSTSize);

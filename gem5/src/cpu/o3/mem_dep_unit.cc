@@ -124,7 +124,7 @@ MemDepUnit::MemDepUnitStats::MemDepUnitStats(statistics::Group *parent)
       ADD_STAT(LFSTWrites, statistics::units::Count::get(),
                "Number of writes made to the LFST table."),
       ADD_STAT(hits, statistics::units::Count::get(),
-               "Number of hits!")
+               "Number of hits!"),
       ADD_STAT(SSITCollisions, statistics::units::Count::get(),
                "Number of hash collisions in the SSIT")
 {
