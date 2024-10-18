@@ -137,6 +137,8 @@ class StoreSet
     /** Bit vector to tell if the LFST has a valid entry. */
     std::vector<bool> validLFST;
 
+    std::map<SSID, Addr> intended_index;
+
     /** Map of stores that have been inserted into the store set, but
      * not yet issued or squashed.
      */

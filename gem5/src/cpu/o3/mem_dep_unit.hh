@@ -182,6 +182,7 @@ class MemDepUnit
         statistics::Scalar LFSTReads;
         statistics::Scalar LFSTWrites;
         statistics::Scalar hits;
+        statistics::Scalar SSITCollisions;
     } stats;
 
   private:
