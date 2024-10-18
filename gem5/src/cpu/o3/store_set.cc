@@ -396,6 +396,8 @@ StoreSet::clear()
 
     storeList.clear();
 
+    intended_index.clear();
+
     pnd_violation_count.clear();
 }
 
