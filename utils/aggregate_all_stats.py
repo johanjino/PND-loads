@@ -36,6 +36,7 @@ prefix = "system.switch_cpus."
 stats = {
     "CPI", prefix+"iew.memOrderViolationEvents",
     prefix+"MemDepUnit__0.MDPLookups", prefix+"executeStats0.numInsts",
+    prefix+"MemDepUnit__0.SSITCollisions"
 }
 stats_to_diff = {
     "CPI", prefix+"iew.memOrderViolationEvents",
@@ -71,6 +72,8 @@ for f in os.listdir(os.getcwd()):
         differences.write("\tPND Lookups Per KInst: "+str(1024*pnd_result[prefix+'MemDepUnit__0.MDPLookups']/pnd_result[prefix+'executeStats0.numInsts'])+"\n")
         differences.write("\tBase Violations Per MInst: "+str(1024*1024*base_result[prefix+'iew.memOrderViolationEvents']/base_result[prefix+'executeStats0.numInsts'])+"\n")
         differences.write("\tPND Violations Per MInst: "+str(1024*1024*pnd_result[prefix+'iew.memOrderViolationEvents']/pnd_result[prefix+'executeStats0.numInsts'])+"\n")
+        differences.write("\tBase Collisions Per KInst: "+str(1024*base_result[prefix+'MemDepUnit__0.SSITCollisions']/base_result[prefix+'executeStats0.numInsts'])+"\n")
+        differences.write("\tPND Collisions Per KInst: "+str(1024*pnd_result[prefix+'MemDepUnit__0.SSITCollisions']/pnd_result[prefix+'executeStats0.numInsts'])+"\n")
         for field in pnd_result:
             if field not in stats_to_diff: continue
             base_value = base_result[field]
