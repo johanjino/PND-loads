@@ -18,7 +18,7 @@ run_type = args.run_type.split(',')[0]
 addr_type = args.addr_types.split(',')[0]
 cpu_model = args.cpu_models.split(',')[0]
 field = args.field.split(',')[0]
-if field != "lookups" and field != "violations":
+if field != "lookups" and field != "violations" and field != "collisions":
     print("invalid field")
     exit(1)
 field = field[0].upper()+field[1:]
@@ -52,6 +52,7 @@ for name in benchmark_names:
 
 fig, ax = plt.subplots()
 fig.set_size_inches(12,12,forward=True)
+renderer = fig.canvas.get_renderer()
 
 # Set every other bar to a different color
 color_sequence = ['#1f77b4', '#ff7f0e'] * 5
@@ -73,7 +74,12 @@ else:
 for i, value in enumerate(percent_diff):
     if benchmark_names[i] == "mcf.0": adj = mcf_adjustment
     else: adj = adjustment
-    ax.text(positions1[i] + bar_width+0.05, pnd_values[i]+adj, str(round(value,1))+"%", ha='center', va='top', fontsize=12, rotation=90)
+    text = ax.text(positions1[i] + bar_width+0.05, pnd_values[i], str(round(value,1))+"%", ha='center', va='top', fontsize=12, rotation=90)
+    bbox = text.get_window_extent(renderer=renderer)
+    bbox_data = ax.transData.inverted().transform_bbox(bbox)
+    text_height = bbox_data.height
+    text.set_y(pnd_values[i] + text_height)
+
 
 measurment = 'Lookups per KiloInst' if field == 'Lookups' else 'Violations per MegaInst'
 ax.set_ylabel(measurment, fontsize=18)
