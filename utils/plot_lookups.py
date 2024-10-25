@@ -65,29 +65,36 @@ ax.bar(positions1, base_values, width=bar_width, label='Base')
 pnd_bars = ax.bar(positions1+bar_width, pnd_values, width=bar_width, label='PND')
 
 if field == "Lookups": 
-    mcf_adjustment = 0.000025
     mcf_adjustment = 25
     adjustment = 30
-else: 
-    mcf_adjustment = 150
-    adjustment = 105
+elif field == "Violations": 
+    #mcf_adjustment = 150
+    #adjustment = 105
+    mcf_adjustment = 90
+    adjustment = 65
+elif field == "Collisions":
+    mcf_adjustment = 30
+    adjustment = 30
 for i, value in enumerate(percent_diff):
+    bar = pnd_bars[i]
     if benchmark_names[i] == "mcf.0": adj = mcf_adjustment
     else: adj = adjustment
-    text = ax.text(positions1[i] + bar_width+0.05, pnd_values[i], str(round(value,1))+"%", ha='center', va='top', fontsize=12, rotation=90)
-    bbox = text.get_window_extent(renderer=renderer)
-    bbox_data = ax.transData.inverted().transform_bbox(bbox)
-    text_height = bbox_data.height
-    text.set_y(pnd_values[i] + text_height)
+    text = ax.text(positions1[i] + bar_width+0.05, pnd_values[i] + adj, str(round(value,1))+"%", ha='center', va='top', fontsize=12, rotation=90)
 
 
-measurment = 'Lookups per KiloInst' if field == 'Lookups' else 'Violations per MegaInst'
+measurments = {'Lookups': 'Lookups per KiloInst',
+                'Violations': 'Violations per MegaInst',
+                'Collisions': 'Collisions per KiloInst'}
+titles = {'Lookups': 'MDP Lookup Reduction',
+            'Violations': 'Memory Order Violation Difference',
+            'Collisions': 'SSIT Index Collision Reduction'}
+measurment = measurments[field]
+title = titles[field]
 ax.set_ylabel(measurment, fontsize=18)
 ax.legend(labels=['Unlabelled Run', 'Labelled Run'], fontsize=16)
-title = 'MDP Lookup Reduction' if field == 'Lookups' else 'Memory Order Violation Difference'
 ax.set_title(title, fontsize=18)
 ax.set_xticks(positions1, benchmark_names)
-ax.set_ylim(0, max(max(pnd_values),max(base_values))+adjustment)
+ax.set_ylim(0, max(max(pnd_values),max(base_values))+mcf_adjustment)
 plt.tick_params(axis='x',labelsize=14, rotation=60)
 plt.tick_params(axis='y',labelsize=16)
 plt.tight_layout()
