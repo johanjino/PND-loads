@@ -45,6 +45,7 @@ for c, model in enumerate(cpu_models):
             elif value < 0: value -= 0.025
             ax.text(bar.get_x() + bar.get_width() / 2+(bar_width/len(cpu_models)) - 0.05, value, str(round(value,1))+"%", ha='center', va='bottom' if value >=0 else 'top', rotation=90)
 
+cpu_models = [c[0].upper()+c[1:] for c in cpu_models]
 ax.legend(labels=cpu_models, fontsize=16, loc='lower right')
 
 for i in range(len(benchmark_names)):

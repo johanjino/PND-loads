@@ -85,8 +85,9 @@ for i, value in enumerate(percent_diff):
 measurments = {'Lookups': 'Lookups per KiloInst',
                 'Violations': 'Violations per MegaInst',
                 'Collisions': 'Collisions per KiloInst'}
+cpu_model = cpu_model[0].upper()+cpu_model[1:]
 titles = {'Lookups': 'MDP Lookup Reduction',
-            'Violations': 'Memory Order Violation Difference',
+            'Violations': 'Memory Order Violation Difference - '+cpu_model,
             'Collisions': 'SSIT Index Collision Reduction'}
 measurment = measurments[field]
 title = titles[field]
