@@ -192,7 +192,11 @@ class BaseO3CPU(BaseCPU):
         TournamentPredictor(numThreads=Parent.numThreads), "Branch Predictor"
     )
     """
+    # branchPred = Param.BranchPredictor(
+    #     TAGE(numThreads=Parent.numThreads, tage=LTAGE_TAGE(), indirectBranchPred=ITTAGE()), "Branch Predictor"
+    # )
+
     branchPred = Param.BranchPredictor(
-        TAGE(numThreads=Parent.numThreads, tage=LTAGE_TAGE(), indirectBranchPred=ITTAGE()), "Branch Predictor"
+        TAGE_SC_L_8KB(numThreads=Parent.numThreads, indirectBranchPred=ITTAGE()), "Branch Predictor"
     )
     needsTSO = Param.Bool(False, "Enable TSO Memory model")
