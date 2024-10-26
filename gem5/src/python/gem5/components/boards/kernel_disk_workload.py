@@ -34,6 +34,7 @@ from typing import (
 )
 
 import m5
+from m5.util import warn
 
 from ...resources.resource import (
     BootloaderResource,
@@ -126,16 +127,15 @@ class KernelDiskWorkload:
     ) -> str:
         """
         Get the default kernel root value to be passed to the kernel. This is
-        determined by the value implemented in the ``get_disk_device()``
-        function, and the disk image partition, obtained from
-        ``get_disk_root_partition()``
+        determined by the user-passed or board-default ``disk_device``, and
+        the disk image partition obtained from ``get_disk_root_partition()``.
 
         :param disk_image: The disk image to be added to the system.
 
         :returns: The default value for the ``root`` argument to be passed to the
                   kernel.
         """
-        return self.get_disk_device() + (
+        return (self._disk_device or self.get_disk_device()) + (
             self.get_disk_root_partition(disk_image) or ""
         )
 
@@ -181,6 +181,10 @@ class KernelDiskWorkload:
         # Abstract board. This function will not work otherwise.
         assert isinstance(self, AbstractBoard)
 
+        if self.is_workload_set():
+            warn("Workload has been set more than once!")
+        self.set_is_workload_set(True)
+
         # Set the disk device
         self._disk_device = disk_device
 
@@ -196,11 +200,7 @@ class KernelDiskWorkload:
             " ".join(kernel_args or self.get_default_kernel_args())
         ).format(
             root_value=self.get_default_kernel_root_val(disk_image=disk_image),
-            disk_device=(
-                self._disk_device
-                if self._disk_device
-                else self.get_disk_device()
-            ),
+            disk_device=self._disk_device or self.get_disk_device(),
         )
 
         # Setting the bootloader information for ARM board. The current

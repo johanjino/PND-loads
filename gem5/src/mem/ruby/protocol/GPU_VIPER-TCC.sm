@@ -655,10 +655,12 @@ machine(MachineType:TCC, "TCC Cache")
 
   action(p_profileMiss, "pm", desc="Profile cache miss") {
       L2cache.profileDemandMiss();
+      DPRINTF(RubyHitMiss, "in TCC miss at %#lx\n", address);
   }
 
   action(p_profileHit, "ph", desc="Profile cache hit") {
       L2cache.profileDemandHit();
+      DPRINTF(RubyHitMiss, "in TCC hit at %#lx\n", address);
   }
 
   action(t_allocateTBE, "t", desc="allocate TBE Entry") {
@@ -1160,7 +1162,6 @@ machine(MachineType:TCC, "TCC Cache")
   transition(I, WrVicBlkBack, W) {TagArrayRead, TagArrayWrite, DataArrayWrite} {
     p_profileMiss;
     a_allocateBlock;
-    ut_updateTag;
     swb_sendWBAck;
     wdb_writeDirtyBytes;
     p_popRequestQueue;
@@ -1255,7 +1256,6 @@ machine(MachineType:TCC, "TCC Cache")
 
   transition(IV, Data, V) {TagArrayRead, TagArrayWrite, DataArrayWrite} {
     a_allocateBlock;
-    ut_updateTag;
     wcb_writeCacheBlock;
     sdr_sendDataResponse;
     wada_wakeUpAllDependentsAddr;
