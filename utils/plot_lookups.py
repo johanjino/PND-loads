@@ -68,10 +68,10 @@ if field == "Lookups":
     mcf_adjustment = 25
     adjustment = 30
 elif field == "Violations": 
-    #mcf_adjustment = 150
-    #adjustment = 105
-    mcf_adjustment = 90
-    adjustment = 65
+    mcf_adjustment = 150
+    adjustment = 110
+    #mcf_adjustment = 90
+    #adjustment = 65
 elif field == "Collisions":
     mcf_adjustment = 30
     adjustment = 30
