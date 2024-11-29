@@ -73,8 +73,6 @@ Sequencer::Sequencer(const Params &p)
 {
     m_outstanding_count = 0;
 
-    m_ruby_system = p.ruby_system;
-
     m_dataCache_ptr = p.dcache;
     m_max_outstanding_requests = p.max_outstanding_requests;
     m_deadlock_threshold = p.deadlock_threshold;
@@ -271,9 +269,6 @@ Sequencer::functionalWrite(Packet *func_pkt)
                 ++num_written;
         }
     }
-    // Functional writes to addresses being monitored
-    // will fail (remove) the monitor entry.
-    llscClearMonitor(makeLineAddress(func_pkt->getAddr()));
 
     return num_written;
 }
@@ -564,33 +559,6 @@ Sequencer::writeCallback(Addr address, DataBlock& data,
     }
 }
 
-bool
-Sequencer::processReadCallback(SequencerRequest &seq_req,
-                               DataBlock& data,
-                               const bool ruby_request,
-                               bool externalHit,
-                               const MachineType mach,
-                               Cycles initialRequestTime,
-                               Cycles forwardRequestTime,
-                               Cycles firstResponseTime)
-{
-    if (ruby_request) {
-        assert((seq_req.m_type == RubyRequestType_LD) ||
-               (seq_req.m_type == RubyRequestType_Load_Linked) ||
-               (seq_req.m_type == RubyRequestType_IFETCH));
-    }
-    if ((seq_req.m_type != RubyRequestType_LD) &&
-        (seq_req.m_type != RubyRequestType_Load_Linked) &&
-        (seq_req.m_type != RubyRequestType_IFETCH) &&
-        (seq_req.m_type != RubyRequestType_REPLACEMENT)) {
-        // Write request: reissue request to the cache hierarchy
-        issueRequest(seq_req.pkt, seq_req.m_second_type);
-        return true;
-    }
-    return false;
-
-}
-
 void
 Sequencer::readCallback(Addr address, DataBlock& data,
                         bool externalHit, const MachineType mach,
@@ -612,9 +580,17 @@ Sequencer::readCallback(Addr address, DataBlock& data,
     bool ruby_request = true;
     while (!seq_req_list.empty()) {
         SequencerRequest &seq_req = seq_req_list.front();
-        if (processReadCallback(seq_req, data, ruby_request, externalHit, mach,
-                                initialRequestTime, forwardRequestTime,
-                                firstResponseTime)) {
+        if (ruby_request) {
+            assert((seq_req.m_type == RubyRequestType_LD) ||
+                   (seq_req.m_type == RubyRequestType_Load_Linked) ||
+                   (seq_req.m_type == RubyRequestType_IFETCH));
+        }
+        if ((seq_req.m_type != RubyRequestType_LD) &&
+            (seq_req.m_type != RubyRequestType_Load_Linked) &&
+            (seq_req.m_type != RubyRequestType_IFETCH) &&
+            (seq_req.m_type != RubyRequestType_REPLACEMENT)) {
+            // Write request: reissue request to the cache hierarchy
+            issueRequest(seq_req.pkt, seq_req.m_second_type);
             break;
         }
         if (ruby_request) {
@@ -728,7 +704,7 @@ Sequencer::hitCallback(SequencerRequest* srequest, DataBlock& data,
                          printAddress(request_address));
 
     // update the data unless it is a non-data-carrying flush
-    if (m_ruby_system->getWarmupEnabled()) {
+    if (RubySystem::getWarmupEnabled()) {
         data.setData(pkt);
     } else if (!pkt->isFlush()) {
         if ((type == RubyRequestType_LD) ||
@@ -784,11 +760,11 @@ Sequencer::hitCallback(SequencerRequest* srequest, DataBlock& data,
     }
 
     RubySystem *rs = m_ruby_system;
-    if (m_ruby_system->getWarmupEnabled()) {
+    if (RubySystem::getWarmupEnabled()) {
         assert(pkt->req);
         delete pkt;
         rs->m_cache_recorder->enqueueNextFetchRequest();
-    } else if (m_ruby_system->getCooldownEnabled()) {
+    } else if (RubySystem::getCooldownEnabled()) {
         delete pkt;
         rs->m_cache_recorder->enqueueNextFlushRequest();
     } else {
@@ -854,8 +830,8 @@ Sequencer::completeHitCallback(std::vector<PacketPtr> & mylist)
         // When Ruby is in warmup or cooldown phase, the requests come
         // from the cache recorder. They do not track which port to use
         // and do not need to send the response back
-        if (!m_ruby_system->getWarmupEnabled()
-                && !m_ruby_system->getCooldownEnabled()) {
+        if (!RubySystem::getWarmupEnabled()
+                && !RubySystem::getCooldownEnabled()) {
             RubyPort::SenderState *ss =
                 safe_cast<RubyPort::SenderState *>(pkt->senderState);
             MemResponsePort *port = ss->port;
@@ -875,9 +851,9 @@ Sequencer::completeHitCallback(std::vector<PacketPtr> & mylist)
     }
 
     RubySystem *rs = m_ruby_system;
-    if (m_ruby_system->getWarmupEnabled()) {
+    if (RubySystem::getWarmupEnabled()) {
         rs->m_cache_recorder->enqueueNextFetchRequest();
-    } else if (m_ruby_system->getCooldownEnabled()) {
+    } else if (RubySystem::getCooldownEnabled()) {
         rs->m_cache_recorder->enqueueNextFlushRequest();
     } else {
         testDrainComplete();
@@ -912,16 +888,14 @@ Sequencer::invL1()
         // Evict Read-only data
         RubyRequestType request_type = RubyRequestType_REPLACEMENT;
         std::shared_ptr<RubyRequest> msg = std::make_shared<RubyRequest>(
-            clockEdge(), m_ruby_system->getBlockSizeBytes(), m_ruby_system,
-            addr, 0, 0, request_type, RubyAccessMode_Supervisor,
+            clockEdge(), addr, 0, 0,
+            request_type, RubyAccessMode_Supervisor,
             nullptr);
         DPRINTF(RubySequencer, "Evicting addr 0x%x\n", addr);
         assert(m_mandatory_q_ptr != NULL);
         Tick latency = cyclesToTicks(
             m_controller->mandatoryQueueLatency(request_type));
-        m_mandatory_q_ptr->enqueue(msg, clockEdge(), latency,
-                                   m_ruby_system->getRandomization(),
-                                   m_ruby_system->getWarmupEnabled());
+        m_mandatory_q_ptr->enqueue(msg, clockEdge(), latency);
         m_num_pending_invs++;
     }
     DPRINTF(RubySequencer,
@@ -1008,8 +982,6 @@ Sequencer::makeRequest(PacketPtr pkt)
 
         }
 #endif
-    } else if (pkt->req->hasNoAddr()) {
-        primary_type = secondary_type = RubyRequestType_hasNoAddr;
     } else {
         //
         // To support SwapReq, we need to check isWrite() first: a SwapReq
@@ -1086,14 +1058,11 @@ Sequencer::issueRequest(PacketPtr pkt, RubyRequestType secondary_type)
         pc = pkt->req->getPC();
     }
 
-    int blk_size = m_ruby_system->getBlockSizeBytes();
-
     // check if the packet has data as for example prefetch and flush
     // requests do not
     std::shared_ptr<RubyRequest> msg;
     if (pkt->req->isMemMgmt()) {
-        msg = std::make_shared<RubyRequest>(clockEdge(), blk_size,
-                                            m_ruby_system,
+        msg = std::make_shared<RubyRequest>(clockEdge(),
                                             pc, secondary_type,
                                             RubyAccessMode_Supervisor, pkt,
                                             proc_id, core_id);
@@ -1120,10 +1089,8 @@ Sequencer::issueRequest(PacketPtr pkt, RubyRequestType secondary_type)
                     msg->m_tlbiTransactionUid);
         }
     } else {
-        msg = std::make_shared<RubyRequest>(clockEdge(), blk_size,
-                                            m_ruby_system,
-                                            pkt->getAddr(), pkt->getSize(),
-                                            pc, secondary_type,
+        msg = std::make_shared<RubyRequest>(clockEdge(), pkt->getAddr(),
+                                            pkt->getSize(), pc, secondary_type,
                                             RubyAccessMode_Supervisor, pkt,
                                             PrefetchBit_No, proc_id, core_id);
 
@@ -1158,9 +1125,7 @@ Sequencer::issueRequest(PacketPtr pkt, RubyRequestType secondary_type)
     assert(latency > 0);
 
     assert(m_mandatory_q_ptr != NULL);
-    m_mandatory_q_ptr->enqueue(msg, clockEdge(), latency,
-                               m_ruby_system->getRandomization(),
-                               m_ruby_system->getWarmupEnabled());
+    m_mandatory_q_ptr->enqueue(msg, clockEdge(), latency);
 }
 
 template <class KEY, class VALUE>
@@ -1207,7 +1172,7 @@ Sequencer::incrementUnaddressedTransactionCnt()
     // Limit m_unaddressedTransactionCnt to 32 bits,
     // top 32 bits should always be zeroed out
     uint64_t aligned_txid = \
-        m_unaddressedTransactionCnt << m_ruby_system->getBlockSizeBits();
+        m_unaddressedTransactionCnt << RubySystem::getBlockSizeBits();
 
     if (aligned_txid > 0xFFFFFFFFull) {
         m_unaddressedTransactionCnt = 0;
@@ -1219,7 +1184,7 @@ Sequencer::getCurrentUnaddressedTransactionID() const
 {
     return (
         uint64_t(m_version & 0xFFFFFFFF) << 32) |
-        (m_unaddressedTransactionCnt << m_ruby_system->getBlockSizeBits()
+        (m_unaddressedTransactionCnt << RubySystem::getBlockSizeBits()
     );
 }
 

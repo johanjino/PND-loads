@@ -50,13 +50,15 @@
 #include <type_traits>
 
 #include "base/compiler.hh"
-#include "base/logging.hh"
 #include "base/types.hh"
+#include "sim/serialize.hh"
 
 namespace gem5
 {
 
-class Random
+class Checkpoint;
+
+class Random : public Serializable
 {
 
   public:
@@ -88,7 +90,8 @@ class Random
     random()
     {
         // [0, max_value] for integer types
-        return gen() % std::numeric_limits<T>::max();
+        std::uniform_int_distribution<T> dist;
+        return dist(gen);
     }
 
     /**
@@ -99,11 +102,9 @@ class Random
     random()
     {
         // [0, 1) for real types
-        warn_once("FP random numbers are not uniformly distributed.");
-        return ((T) gen()) /
-          ((T) std::numeric_limits<uint64_t>::max());
+        std::uniform_real_distribution<T> dist;
+        return dist(gen);
     }
-
     /**
      * @ingroup api_base_utils
      */
@@ -111,11 +112,12 @@ class Random
     typename std::enable_if_t<std::is_integral_v<T>, T>
     random(T min, T max)
     {
-        assert(min <= max);
-        // + 1 to handle cases where min == max
-        T r = gen() % (max - min + 1) + min;
-        return r;
+        std::uniform_int_distribution<T> dist(min, max);
+        return dist(gen);
     }
+
+    void serialize(CheckpointOut &cp) const override;
+    void unserialize(CheckpointIn &cp) override;
 };
 
 /**

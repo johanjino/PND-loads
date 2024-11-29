@@ -574,7 +574,7 @@ machine(MachineType:Cache, "Cache coherency protocol") :
   ////////////////////////////////////////////////////////////////////////////
 
   // Cache block size
-  int blockSize, default="m_ruby_system->getBlockSizeBytes()";
+  int blockSize, default="RubySystem::getBlockSizeBytes()";
 
   // CacheEntry
   structure(CacheEntry, interface="AbstractCacheEntry") {

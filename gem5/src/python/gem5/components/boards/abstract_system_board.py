@@ -36,6 +36,7 @@ from .abstract_board import AbstractBoard
 
 
 class AbstractSystemBoard(System, AbstractBoard):
+
     """
     An abstract board for cases where boards should inherit from System.
     """

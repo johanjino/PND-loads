@@ -105,7 +105,6 @@ ComputeUnit::ComputeUnit(const Params &p) : ClockedObject(p),
             p.scalar_mem_req_latency * p.clk_domain->clockPeriod()),
     scalar_resp_tick_latency(
             p.scalar_mem_resp_latency * p.clk_domain->clockPeriod()),
-    memtime_latency(p.memtime_latency * p.clk_domain->clockPeriod()),
     _requestorId(p.system->getRequestorId(this, "ComputeUnit")),
     lds(*p.localDataStore), gmTokenPort(name() + ".gmTokenPort", this),
     ldsPort(csprintf("%s-port", name()), this),
@@ -410,6 +409,8 @@ ComputeUnit::doInvalidate(RequestPtr req, int kernId){
 
     // kern_id will be used in inv responses
     gpuDynInst->kern_id = kernId;
+    // update contextId field
+    req->setContext(gpuDynInst->wfDynId);
 
     injectGlobalMemFence(gpuDynInst, true, req);
 }
@@ -437,6 +438,8 @@ ComputeUnit::doSQCInvalidate(RequestPtr req, int kernId){
 
     // kern_id will be used in inv responses
     gpuDynInst->kern_id = kernId;
+    // update contextId field
+    req->setContext(gpuDynInst->wfDynId);
 
     gpuDynInst->staticInstruction()->setFlag(GPUStaticInst::Scalar);
     scalarMemoryPipe.injectScalarMemFence(gpuDynInst, true, req);

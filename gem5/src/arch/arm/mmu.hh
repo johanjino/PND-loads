@@ -149,7 +149,7 @@ class MMU : public BaseMMU
             sctlr = rhs.sctlr;
             scr = rhs.scr;
             isPriv = rhs.isPriv;
-            securityState = rhs.securityState;
+            isSecure = rhs.isSecure;
             ttbcr = rhs.ttbcr;
             asid = rhs.asid;
             vmid = rhs.vmid;
@@ -184,7 +184,7 @@ class MMU : public BaseMMU
         SCTLR sctlr = 0;
         SCR scr = 0;
         bool isPriv = false;
-        SecurityState securityState = SecurityState::NonSecure;
+        bool isSecure = false;
         TTBCR ttbcr = 0;
         uint16_t asid = 0;
         vmid_t vmid = 0;
@@ -306,7 +306,7 @@ class MMU : public BaseMMU
         }
 
         if (tlbi_op.stage2Flush()) {
-            flushStage2(tlbi_op);
+            flushStage2(tlbi_op.makeStage2());
         }
     }
 
@@ -397,7 +397,7 @@ class MMU : public BaseMMU
      * @param vpn virtual address
      * @param asn context id/address space id to use
      * @param vmid The virtual machine ID used for stage 2 translation
-     * @param ss security state of the PE
+     * @param secure if the lookup is secure
      * @param functional if the lookup should modify state
      * @param ignore_asn if on lookup asn should be ignored
      * @param target_regime selecting the translation regime
@@ -405,21 +405,19 @@ class MMU : public BaseMMU
      * @return pointer to TLB entry if it exists
      */
     TlbEntry *lookup(Addr vpn, uint16_t asn, vmid_t vmid,
-                     SecurityState ss, bool functional,
+                     bool secure, bool functional,
                      bool ignore_asn, TranslationRegime target_regime,
                      bool stage2, BaseMMU::Mode mode);
 
     Fault getTE(TlbEntry **te, const RequestPtr &req,
                 ThreadContext *tc, Mode mode,
                 Translation *translation, bool timing, bool functional,
-                SecurityState ss, PASpace ipaspace,
-                ArmTranslationType tran_type,
+                bool is_secure, ArmTranslationType tran_type,
                 bool stage2);
     Fault getTE(TlbEntry **te, const RequestPtr &req,
                 ThreadContext *tc, Mode mode,
                 Translation *translation, bool timing, bool functional,
-                SecurityState ss, PASpace ipaspace,
-                ArmTranslationType tran_type,
+                bool is_secure, ArmTranslationType tran_type,
                 CachedState &state);
 
     Fault getResultTe(TlbEntry **te, const RequestPtr &req,

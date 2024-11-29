@@ -94,13 +94,6 @@ BaseMMU::flushAll()
 }
 
 void
-BaseMMU::reset()
-{
-    // flush the TLBs by defaults
-    flushAll();
-}
-
-void
 BaseMMU::demapPage(Addr vaddr, uint64_t asn)
 {
     itb->demapPage(vaddr, asn);

@@ -35,10 +35,8 @@
 
 #include <string>
 
-#include "arch/riscv/isa.hh"
 #include "arch/riscv/regs/float.hh"
 #include "arch/riscv/regs/int.hh"
-#include "arch/riscv/regs/misc.hh"
 #include "base/remote_gdb.hh"
 
 namespace gem5
@@ -59,13 +57,11 @@ class RemoteGDB : public BaseRemoteGDB
     bool acc(Addr addr, size_t len) override;
     // A breakpoint will be 2 bytes if it is compressed and 4 if not
     bool checkBpKind(size_t kind) override { return kind == 2 || kind == 4; }
-    void insertHardBreak(Addr addr, size_t kind) override;
-    void removeHardBreak(Addr addr, size_t kind) override;
 
     class Riscv32GdbRegCache : public BaseGdbRegCache
     {
       using BaseGdbRegCache::BaseGdbRegCache;
-      protected:
+      private:
         /**
          * RISC-V Register Cache
          * Order and sizes of registers found in ext/gdb-xml/riscv.xml
@@ -151,7 +147,7 @@ class RemoteGDB : public BaseRemoteGDB
     class Riscv64GdbRegCache : public BaseGdbRegCache
     {
       using BaseGdbRegCache::BaseGdbRegCache;
-      protected:
+      private:
         /**
          * RISC-V Register Cache
          * Order and sizes of registers found in ext/gdb-xml/riscv.xml
@@ -252,10 +248,6 @@ class RemoteGDB : public BaseRemoteGDB
      */
     bool getXferFeaturesRead(const std::string &annex,
                              std::string &output) override;
-
-    virtual RiscvType getRvType(ThreadContext* tc);
-
-    virtual PrivilegeModeSet getPrivilegeModeSet(ThreadContext* tc);
 };
 
 } // namespace RiscvISA

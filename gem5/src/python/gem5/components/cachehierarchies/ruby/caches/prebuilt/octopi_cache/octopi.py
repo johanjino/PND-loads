@@ -38,7 +38,6 @@ from ......components.cachehierarchies.ruby.caches.mesi_three_level.directory im
 from ......components.cachehierarchies.ruby.caches.mesi_three_level.dma_controller import (
     DMAController,
 )
-from ......utils.override import overrides
 from ......utils.requires import requires
 from ....abstract_three_level_cache_hierarchy import (
     AbstractThreeLevelCacheHierarchy,
@@ -96,7 +95,6 @@ class OctopiCache(
         requires(
             coherence_protocol_required=CoherenceProtocol.MESI_THREE_LEVEL
         )
-        super().incorporate_cache(board)
 
         cache_line_size = board.get_cache_line_size()
 
@@ -153,9 +151,7 @@ class OctopiCache(
 
         # Set up a proxy port for the system_port. Used for load binaries and
         # other functional-only things.
-        self.ruby_system.sys_port_proxy = RubyPortProxy(
-            ruby_system=self.ruby_system
-        )
+        self.ruby_system.sys_port_proxy = RubyPortProxy()
         board.connect_system_port(self.ruby_system.sys_port_proxy.in_ports)
 
     def _create_directory_controllers(self, board):
@@ -232,11 +228,7 @@ class OctopiCache(
         if board.has_dma_ports():
             self.ruby_system.dma_controllers = [
                 DMAController(
-                    dma_sequencer=DMASequencer(
-                        version=i + 1,
-                        in_ports=port,
-                        ruby_system=self.ruby_system,
-                    ),
+                    dma_sequencer=DMASequencer(version=i + 1, in_ports=port),
                     ruby_system=self.ruby_system,
                 )
                 for i, port in enumerate(board.get_dma_ports())
@@ -269,15 +261,3 @@ class OctopiCache(
             ]
             for link in self.dma_int_links:
                 self.ruby_system.network._add_int_link(link)
-
-    @overrides(AbstractRubyCacheHierarchy)
-    def _reset_version_numbers(self):
-        from ....caches.mesi_three_level.l1_cache import L1Cache
-        from ....caches.mesi_three_level.l2_cache import L2Cache
-        from ....caches.mesi_three_level.l3_cache import L3Cache
-
-        Directory._version = 0
-        L1Cache._version = 0
-        L2Cache._version = 0
-        L3Cache._version = 0
-        DMAController._version = 0

@@ -179,7 +179,7 @@ MMU::translateFunctional(ThreadContext *tc, Addr va, Addr &pa)
     lookup_data.asn = state.asid;
     lookup_data.ignoreAsn = false;
     lookup_data.vmid = state.vmid;
-    lookup_data.ss = state.securityState;
+    lookup_data.secure = state.isSecure;
     lookup_data.functional = true;
     lookup_data.targetRegime = state.currRegime;
     lookup_data.mode = BaseMMU::Read;
@@ -459,8 +459,7 @@ MMU::checkPermissions(TlbEntry *te, const RequestPtr &req, Mode mode,
                             (ap == 3    && state.sctlr.uwxn && is_priv);
     if (is_fetch && (abt || xn ||
                      (te->longDescFormat && te->pxn && is_priv) ||
-                     (state.securityState == SecurityState::Secure &&
-                        te->ns && state.scr.sif))) {
+                     (state.isSecure && te->ns && state.scr.sif))) {
         stats.permsFaults++;
         DPRINTF(TLB, "TLB Fault: Prefetch abort on permission check. AP:%d "
                      "priv:%d write:%d ns:%d sif:%d sctlr.afe: %d \n",
@@ -616,8 +615,7 @@ MMU::s2PermBits64(TlbEntry *te, const RequestPtr &req, Mode mode,
     uint8_t xn =  te->xn;
     uint8_t pxn = te->pxn;
 
-    if (ArmSystem::haveEL(tc, EL3) &&
-        state.securityState == SecurityState::Secure &&
+    if (ArmSystem::haveEL(tc, EL3) && state.isSecure &&
         te->ns && state.scr.sif) {
         xn = true;
     }
@@ -627,7 +625,7 @@ MMU::s2PermBits64(TlbEntry *te, const RequestPtr &req, Mode mode,
             "w:%d, x:%d\n", te->hap, xn, pxn, r, w, x);
 
     if (x) {
-        grant = !xn;
+        grant = grant_read && !xn;
     } else if (req->isAtomic()) {
         grant = grant_read || grant_write;
     } else if (w) {
@@ -707,8 +705,7 @@ MMU::s1PermBits64(TlbEntry *te, const RequestPtr &req, Mode mode,
     // if wxn is set
     grant_exec = grant_exec && !(wxn && grant_write);
 
-    if (ArmSystem::haveEL(tc, EL3) &&
-        state.securityState == SecurityState::Secure && te->ns) {
+    if (ArmSystem::haveEL(tc, EL3) && state.isSecure && te->ns) {
         grant_exec = grant_exec && !state.scr.sif;
     }
 
@@ -814,7 +811,7 @@ MMU::translateMmuOff(ThreadContext *tc, const RequestPtr &req, Mode mode,
     req->setPaddr(vaddr);
     // When the MMU is off the security attribute corresponds to the
     // security state of the processor
-    if (state.securityState == SecurityState::Secure)
+    if (state.isSecure)
         req->setFlags(Request::SECURE);
     else
         req->clearFlags(Request::SECURE);
@@ -849,9 +846,8 @@ MMU::translateMmuOff(ThreadContext *tc, const RequestPtr &req, Mode mode,
     }
 
     // Set memory attributes
-    bool in_secure_state = state.securityState == SecurityState::Secure;
     TlbEntry temp_te;
-    temp_te.ns = !in_secure_state;
+    temp_te.ns = !state.isSecure;
     bool dc = (HaveExt(tc, ArmExtension::FEAT_VHE) &&
                state.hcr.e2h == 1 && state.hcr.tge == 1) ? 0: state.hcr.dc;
     bool i_cacheability = state.sctlr.i && !state.sctlr.m;
@@ -920,7 +916,7 @@ MMU::translateMmuOn(ThreadContext* tc, const RequestPtr &req, Mode mode,
         Addr pa = te->pAddr(vaddr);
         req->setPaddr(pa);
 
-        if (state.securityState == SecurityState::Secure && !te->ns) {
+        if (state.isSecure && !te->ns) {
             req->setFlags(Request::SECURE);
         } else {
             req->clearFlags(Request::SECURE);
@@ -973,8 +969,7 @@ MMU::translateFs(const RequestPtr &req, ThreadContext *tc, Mode mode,
 
     DPRINTF(TLBVerbose,
             "CPSR is priv:%d UserMode:%d secure:%d S1S2NsTran:%d\n",
-            state.isPriv, flags & UserMode,
-            state.securityState == SecurityState::Secure,
+            state.isPriv, flags & UserMode, state.isSecure,
             tran_type & S1S2NsTran);
 
     DPRINTF(TLB, "translateFs addr %#x, mode %d, st2 %d, scr %#x sctlr %#x "
@@ -1219,9 +1214,8 @@ MMU::CachedState::updateMiscReg(ThreadContext *tc,
     scr = tc->readMiscReg(MISCREG_SCR_EL3);
 
     // Dependencies: SCR/SCR_EL3, CPSR
-    securityState = ArmISA::isSecure(tc) &&
-        !(tran_type & HypMode) && !(tran_type & S1S2NsTran) ?
-            SecurityState::Secure : SecurityState::NonSecure;
+    isSecure = ArmISA::isSecure(tc) &&
+        !(tran_type & HypMode) && !(tran_type & S1S2NsTran);
 
     exceptionLevel = tranTypeEL(cpsr, scr, tran_type);
     currRegime = translationRegime(tc, exceptionLevel);
@@ -1302,27 +1296,27 @@ MMU::CachedState::updateMiscReg(ThreadContext *tc,
         }
     } else {  // AArch32
         sctlr  = tc->readMiscReg(snsBankedIndex(MISCREG_SCTLR, tc,
-                                 securityState == SecurityState::NonSecure));
+                                 !isSecure));
         ttbcr  = tc->readMiscReg(snsBankedIndex(MISCREG_TTBCR, tc,
-                                 securityState == SecurityState::NonSecure));
+                                 !isSecure));
         isPriv = cpsr.mode != MODE_USER;
         if (longDescFormatInUse(tc)) {
             uint64_t ttbr_asid = tc->readMiscReg(
-                snsBankedIndex(ttbcr.a1 ? MISCREG_TTBR1 : MISCREG_TTBR0,
-                               tc, securityState == SecurityState::NonSecure));
+                snsBankedIndex(ttbcr.a1 ? MISCREG_TTBR1 :
+                                          MISCREG_TTBR0,
+                                       tc, !isSecure));
             asid = bits(ttbr_asid, 55, 48);
         } else { // Short-descriptor translation table format in use
             CONTEXTIDR context_id = tc->readMiscReg(snsBankedIndex(
-                MISCREG_CONTEXTIDR, tc,
-                securityState == SecurityState::NonSecure));
+                MISCREG_CONTEXTIDR, tc,!isSecure));
             asid = context_id.asid;
         }
         prrr = tc->readMiscReg(snsBankedIndex(MISCREG_PRRR, tc,
-                               securityState == SecurityState::NonSecure));
+                               !isSecure));
         nmrr = tc->readMiscReg(snsBankedIndex(MISCREG_NMRR, tc,
-                               securityState == SecurityState::NonSecure));
+                               !isSecure));
         dacr = tc->readMiscReg(snsBankedIndex(MISCREG_DACR, tc,
-                               securityState == SecurityState::NonSecure));
+                               !isSecure));
 
         if (mmu->release()->has(ArmExtension::VIRTUALIZATION)) {
             vmid   = bits(tc->readMiscReg(MISCREG_VTTBR), 55, 48);
@@ -1385,15 +1379,15 @@ MMU::tranTypeEL(CPSR cpsr, SCR scr, ArmTranslationType type)
 Fault
 MMU::getTE(TlbEntry **te, const RequestPtr &req, ThreadContext *tc, Mode mode,
         Translation *translation, bool timing, bool functional,
-        SecurityState ss, PASpace ipaspace, ArmTranslationType tran_type,
+        bool is_secure, ArmTranslationType tran_type,
         bool stage2)
 {
     return getTE(te, req, tc, mode, translation, timing, functional,
-        ss, ipaspace, tran_type, stage2 ? s2State : s1State);
+        is_secure, tran_type, stage2 ? s2State : s1State);
 }
 
 TlbEntry*
-MMU::lookup(Addr va, uint16_t asid, vmid_t vmid, SecurityState ss,
+MMU::lookup(Addr va, uint16_t asid, vmid_t vmid, bool secure,
             bool functional, bool ignore_asn, TranslationRegime regime,
             bool stage2, BaseMMU::Mode mode)
 {
@@ -1405,7 +1399,7 @@ MMU::lookup(Addr va, uint16_t asid, vmid_t vmid, SecurityState ss,
     lookup_data.asn = asid;
     lookup_data.ignoreAsn = ignore_asn;
     lookup_data.vmid = vmid;
-    lookup_data.ss = ss;
+    lookup_data.secure = secure;
     lookup_data.functional = functional;
     lookup_data.targetRegime = regime;
     lookup_data.mode = mode;
@@ -1416,7 +1410,7 @@ MMU::lookup(Addr va, uint16_t asid, vmid_t vmid, SecurityState ss,
 Fault
 MMU::getTE(TlbEntry **te, const RequestPtr &req, ThreadContext *tc, Mode mode,
         Translation *translation, bool timing, bool functional,
-        SecurityState ss, PASpace ipaspace, ArmTranslationType tran_type,
+        bool is_secure, ArmTranslationType tran_type,
         CachedState& state)
 {
     // In a 2-stage system, the IPA->PA translation can be started via this
@@ -1436,7 +1430,7 @@ MMU::getTE(TlbEntry **te, const RequestPtr &req, ThreadContext *tc, Mode mode,
         vaddr = vaddr_tainted;
     }
 
-    *te = lookup(vaddr, state.asid, state.vmid, ss, false,
+    *te = lookup(vaddr, state.asid, state.vmid, is_secure, false,
                  false, regime, state.isStage2, mode);
 
     if (!isCompleteTranslation(*te)) {
@@ -1458,15 +1452,15 @@ MMU::getTE(TlbEntry **te, const RequestPtr &req, ThreadContext *tc, Mode mode,
         Fault fault;
         fault = getTableWalker(mode, state.isStage2)->walk(
             req, tc, state.asid, state.vmid, mode,
-            translation, timing, functional, ss,
-            ipaspace, tran_type, state.stage2DescReq, *te);
+            translation, timing, functional, is_secure,
+            tran_type, state.stage2DescReq, *te);
 
         // for timing mode, return and wait for table walk,
         if (timing || fault != NoFault) {
             return fault;
         }
 
-        *te = lookup(vaddr, state.asid, state.vmid, ss,
+        *te = lookup(vaddr, state.asid, state.vmid, is_secure,
                      true, false, regime, state.isStage2, mode);
         assert(*te);
     }
@@ -1482,16 +1476,12 @@ MMU::getResultTe(TlbEntry **te, const RequestPtr &req,
     Fault fault;
 
     if (state.isStage2) {
-        PASpace ipaspace = state.securityState == SecurityState::Secure ?
-            PASpace::Secure : PASpace::NonSecure;
-
         // We are already in the stage 2 TLB. Grab the table entry for stage
         // 2 only. We are here because stage 1 translation is disabled.
         TlbEntry *s2_te = nullptr;
         // Get the stage 2 table entry
         fault = getTE(&s2_te, req, tc, mode, translation, timing, functional,
-                      state.securityState, ipaspace,
-                      state.curTranType, state);
+                      state.isSecure, state.curTranType, state);
         // Check permissions of stage 2
         if (isCompleteTranslation(s2_te) && (fault == NoFault)) {
             if (state.aarch64)
@@ -1509,8 +1499,7 @@ MMU::getResultTe(TlbEntry **te, const RequestPtr &req,
 
     // Get the stage 1 table entry
     fault = getTE(&s1_te, req, tc, mode, translation, timing, functional,
-                  state.securityState, PASpace::NonSecure,
-                  state.curTranType, state);
+                  state.isSecure, state.curTranType, state);
     // only proceed if we have a valid table entry
     if (isCompleteTranslation(s1_te) && (fault == NoFault)) {
         // Check stage 1 permissions before checking stage 2
@@ -1520,8 +1509,8 @@ MMU::getResultTe(TlbEntry **te, const RequestPtr &req,
             fault = checkPermissions(s1_te, req, mode, state);
         if (state.stage2Req & (fault == NoFault)) {
             Stage2LookUp *s2_lookup = new Stage2LookUp(this, *s1_te,
-                req, translation, mode, timing, functional,
-                state.securityState, state.curTranType);
+                req, translation, mode, timing, functional, state.isSecure,
+                state.curTranType);
             fault = s2_lookup->getTe(tc, mergeTe);
             if (s2_lookup->isComplete()) {
                 *te = mergeTe;

@@ -62,12 +62,10 @@ typedef std::shared_ptr<Message> MsgPtr;
 class Message
 {
   public:
-    Message(Tick curTime, int block_size, const RubySystem *rs)
-        : m_block_size(block_size),
-          m_time(curTime),
+    Message(Tick curTime)
+        : m_time(curTime),
           m_LastEnqueueTime(curTime),
-          m_DelayedTicks(0), m_msg_counter(0),
-          p_ruby_system(rs)
+          m_DelayedTicks(0), m_msg_counter(0)
     { }
 
     Message(const Message &other) = default;
@@ -123,9 +121,6 @@ class Message
     int getVnet() const { return vnet; }
     void setVnet(int net) { vnet = net; }
 
-  protected:
-    int m_block_size = 0;
-
   private:
     Tick m_time;
     Tick m_LastEnqueueTime; // my last enqueue time
@@ -135,9 +130,6 @@ class Message
     // Variables for required network traversal
     int incoming_link;
     int vnet;
-
-    // Needed to call MacheinType_base_count/level
-    const RubySystem *p_ruby_system = nullptr;
 };
 
 inline bool

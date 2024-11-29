@@ -3,7 +3,6 @@
  * Copyright (c) 2016 The University of Virginia
  * Copyright (c) 2020 Barkhausen Institut
  * Copyright (c) 2022 Google LLC
- * Copyright (c) 2024 University of Rostock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -259,8 +258,7 @@ RegClass ccRegClass(CCRegClass, CCRegClassName, 0, debug::IntRegs);
 
 ISA::ISA(const Params &p) : BaseISA(p, "riscv"),
     _rvType(p.riscv_type), enableRvv(p.enable_rvv), vlen(p.vlen), elen(p.elen),
-    _privilegeModeSet(p.privilege_mode_set),
-    _wfiResumeOnPending(p.wfi_resume_on_pending), _enableZcd(p.enable_Zcd)
+    _privilegeModeSet(p.privilege_mode_set)
 {
     _regClasses.push_back(&intRegClass);
     _regClasses.push_back(&floatRegClass);
@@ -581,7 +579,8 @@ ISA::readMiscReg(RegIndex idx)
         }
       case MISCREG_VLENB:
         {
-            return getVecLenInBytes();
+            auto rpc = tc->pcState().as<PCState>();
+            return rpc.vlenb();
         }
       case MISCREG_VTYPE:
         {

@@ -159,6 +159,22 @@ namespace gem5
 
 using namespace RiscvISA;
 
+static RiscvType
+getRvType(ThreadContext* tc)
+{
+    auto isa = dynamic_cast<ISA*>(tc->getIsaPtr());
+    panic_if(!isa, "Cannot derive rv_type from non-riscv isa");
+    return isa->rvType();
+}
+
+static PrivilegeModeSet
+getPrivilegeModeSet(ThreadContext* tc)
+{
+    auto isa = dynamic_cast<ISA*>(tc->getIsaPtr());
+    panic_if(!isa, "Cannot derive rv_type from non-riscv isa");
+    return isa->getPrivilegeModeSet();
+}
+
 template <typename xint>
 static void
 setRegNoEffectWithMask(
@@ -191,22 +207,6 @@ RemoteGDB::RemoteGDB(System *_system, ListenSocketConfig _listen_config)
 {
 }
 
-RiscvType
-RemoteGDB::getRvType(ThreadContext* tc)
-{
-    auto isa = dynamic_cast<ISA*>(tc->getIsaPtr());
-    panic_if(!isa, "Cannot derive rv_type from non-riscv isa");
-    return isa->rvType();
-}
-
-PrivilegeModeSet
-RemoteGDB::getPrivilegeModeSet(ThreadContext* tc)
-{
-    auto isa = dynamic_cast<ISA*>(tc->getIsaPtr());
-    panic_if(!isa, "Cannot derive rv_type from non-riscv isa");
-    return isa->getPrivilegeModeSet();
-}
-
 bool
 RemoteGDB::acc(Addr va, size_t len)
 {
@@ -234,28 +234,10 @@ RemoteGDB::acc(Addr va, size_t len)
 }
 
 void
-RemoteGDB::insertHardBreak(Addr addr, size_t kind)
-{
-    Addr realAddr = getRvType(context()) == RV64 ? addr : sext(addr, 32);
-    BaseRemoteGDB::insertHardBreak(realAddr, kind);
-}
-
-void
-RemoteGDB::removeHardBreak(Addr addr, size_t kind)
-{
-    Addr realAddr = getRvType(context()) == RV64 ? addr : sext(addr, 32);
-    BaseRemoteGDB::removeHardBreak(realAddr, kind);
-}
-
-void
 RemoteGDB::Riscv32GdbRegCache::getRegs(ThreadContext *context)
 {
     DPRINTF(GDBAcc, "getregs in remotegdb, size %lu\n", size());
-    RemoteGDB* rv_gdb = dynamic_cast<RemoteGDB*>(gdb);
-    PrivilegeModeSet pms = enums::MSU;
-    if (rv_gdb != nullptr) {
-      pms = rv_gdb->getPrivilegeModeSet(context);
-    }
+    PrivilegeModeSet pms = getPrivilegeModeSet(context);
     auto& RVxCSRMasks = CSRMasks[RV32][pms];
 
     // General registers
@@ -370,11 +352,7 @@ void
 RemoteGDB::Riscv32GdbRegCache::setRegs(ThreadContext *context) const
 {
     DPRINTF(GDBAcc, "setregs in remotegdb \n");
-    RemoteGDB* rv_gdb = dynamic_cast<RemoteGDB*>(gdb);
-    PrivilegeModeSet pms = enums::MSU;
-    if (rv_gdb != nullptr) {
-      pms = rv_gdb->getPrivilegeModeSet(context);
-    }
+    PrivilegeModeSet pms = getPrivilegeModeSet(context);
     for (int i = 0; i < int_reg::NumArchRegs; i++)
         context->setReg(intRegClass[i], r.gpr[i]);
     context->pcState(r.pc);
@@ -390,7 +368,7 @@ RemoteGDB::Riscv32GdbRegCache::setRegs(ThreadContext *context) const
     // TODO: implement CSR counter registers for mcycle(h), minstret(h)
 
     // U mode CSR
-    setRegWithMask(context, RV32, pms, CSR_USTATUS, r.ustatus);
+    setRegNoEffectWithMask(context, RV32, pms, CSR_USTATUS, r.ustatus);
     setRegWithMask(context, RV32, pms, CSR_UIE, r.uie);
     setRegWithMask(context, RV32, pms, CSR_UIP, r.uip);
     context->setMiscRegNoEffect(
@@ -405,7 +383,7 @@ RemoteGDB::Riscv32GdbRegCache::setRegs(ThreadContext *context) const
         CSRData.at(CSR_UTVAL).physIndex, r.utval);
 
     // S mode CSR
-    setRegWithMask(context, RV32, pms, CSR_SSTATUS, r.sstatus);
+    setRegNoEffectWithMask(context, RV32, pms, CSR_SSTATUS, r.sstatus);
     setRegWithMask(context, RV32, pms, CSR_SIE, r.sie);
     setRegWithMask(context, RV32, pms, CSR_SIP, r.sip);
     context->setMiscRegNoEffect(
@@ -428,7 +406,7 @@ RemoteGDB::Riscv32GdbRegCache::setRegs(ThreadContext *context) const
         CSRData.at(CSR_SATP).physIndex, r.satp);
 
     // M mode CSR
-    setRegWithMask(context, RV32, pms, CSR_MSTATUS, r.mstatus);
+    setRegNoEffectWithMask(context, RV32, pms, CSR_MSTATUS, r.mstatus);
     setRegNoEffectWithMask(context, RV32, pms, CSR_MISA, r.misa);
     setRegWithMask(context, RV32, pms, CSR_MIE, r.mie);
     setRegWithMask(context, RV32, pms, CSR_MIP, r.mip);
@@ -456,11 +434,7 @@ void
 RemoteGDB::Riscv64GdbRegCache::getRegs(ThreadContext *context)
 {
     DPRINTF(GDBAcc, "getregs in remotegdb, size %lu\n", size());
-    RemoteGDB* rv_gdb = dynamic_cast<RemoteGDB*>(gdb);
-    PrivilegeModeSet pms = enums::MSU;
-    if (rv_gdb != nullptr) {
-      pms = rv_gdb->getPrivilegeModeSet(context);
-    }
+    PrivilegeModeSet pms = getPrivilegeModeSet(context);
     auto& RVxCSRMasks = CSRMasks[RV64][pms];
 
     // General registers
@@ -569,11 +543,7 @@ void
 RemoteGDB::Riscv64GdbRegCache::setRegs(ThreadContext *context) const
 {
     DPRINTF(GDBAcc, "setregs in remotegdb \n");
-    RemoteGDB* rv_gdb = dynamic_cast<RemoteGDB*>(gdb);
-    PrivilegeModeSet pms = enums::MSU;
-    if (rv_gdb != nullptr) {
-      pms = rv_gdb->getPrivilegeModeSet(context);
-    }
+    PrivilegeModeSet pms = getPrivilegeModeSet(context);
     for (int i = 0; i < int_reg::NumArchRegs; i++)
         context->setReg(intRegClass[i], r.gpr[i]);
     context->pcState(r.pc);
@@ -589,7 +559,7 @@ RemoteGDB::Riscv64GdbRegCache::setRegs(ThreadContext *context) const
     // TODO: implement CSR counter registers for mcycle, minstret
 
     // U mode CSR
-    setRegWithMask(context, RV64, pms, CSR_USTATUS, r.ustatus);
+    setRegNoEffectWithMask(context, RV64, pms, CSR_USTATUS, r.ustatus);
     setRegWithMask(context, RV64, pms, CSR_UIE, r.uie);
     setRegWithMask(context, RV64, pms, CSR_UIP, r.uip);
     context->setMiscRegNoEffect(
@@ -604,7 +574,8 @@ RemoteGDB::Riscv64GdbRegCache::setRegs(ThreadContext *context) const
         CSRData.at(CSR_UTVAL).physIndex, r.utval);
 
     // S mode CSR
-    setRegWithMask(context, RV64, pms, CSR_SSTATUS, r.sstatus);
+    setRegNoEffectWithMask(
+        context, RV64, pms, CSR_SSTATUS, r.sstatus);
     setRegWithMask(context, RV64, pms, CSR_SIE, r.sie);
     setRegWithMask(context, RV64, pms, CSR_SIP, r.sip);
     context->setMiscRegNoEffect(
@@ -627,7 +598,8 @@ RemoteGDB::Riscv64GdbRegCache::setRegs(ThreadContext *context) const
         CSRData.at(CSR_SATP).physIndex, r.satp);
 
     // M mode CSR
-    setRegWithMask(context, RV64, pms, CSR_MSTATUS, r.mstatus);
+    setRegNoEffectWithMask(
+        context, RV64, pms, CSR_MSTATUS, r.mstatus);
     setRegNoEffectWithMask(context, RV64, pms, CSR_MISA, r.misa);
     setRegWithMask(context, RV64, pms, CSR_MIE, r.mie);
     setRegWithMask(context, RV64, pms, CSR_MIP, r.mip);

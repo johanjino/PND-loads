@@ -26,10 +26,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-from typing import (
-    List,
-    Optional,
-)
+from typing import List
 
 import m5
 from m5.objects import (
@@ -177,9 +174,9 @@ class RiscvBoard(AbstractSystemBoard, KernelDiskWorkload):
             ]
 
             # PCI
-            self.bridge.ranges.append(AddrRange(0x2F000000, size="16MiB"))
-            self.bridge.ranges.append(AddrRange(0x30000000, size="256MiB"))
-            self.bridge.ranges.append(AddrRange(0x40000000, size="512MiB"))
+            self.bridge.ranges.append(AddrRange(0x2F000000, size="16MB"))
+            self.bridge.ranges.append(AddrRange(0x30000000, size="256MB"))
+            self.bridge.ranges.append(AddrRange(0x40000000, size="512MB"))
 
     def _setup_pma(self) -> None:
         """Set the PMA devices on each core."""
@@ -190,9 +187,9 @@ class RiscvBoard(AbstractSystemBoard, KernelDiskWorkload):
         ]
 
         # PCI
-        uncacheable_range.append(AddrRange(0x2F000000, size="16MiB"))
-        uncacheable_range.append(AddrRange(0x30000000, size="256MiB"))
-        uncacheable_range.append(AddrRange(0x40000000, size="512MiB"))
+        uncacheable_range.append(AddrRange(0x2F000000, size="16MB"))
+        uncacheable_range.append(AddrRange(0x30000000, size="256MB"))
+        uncacheable_range.append(AddrRange(0x40000000, size="512MB"))
 
         # TODO: Not sure if this should be done per-core like in the example
         for cpu in self.get_processor().get_cores():
@@ -501,26 +498,16 @@ class RiscvBoard(AbstractSystemBoard, KernelDiskWorkload):
         return "/dev/vda"
 
     @overrides(AbstractSystemBoard)
-    def _pre_instantiate(self, full_system: Optional[bool] = None):
-        # This is a bit of a hack necessary to get the RiscDemoBoard working
-        # At the time of writing the RiscvBoard does not support SE mode so
-        # this branch looks pointless. However, the RiscvDemoBoard does and
-        # needs this logic in place.
-        #
-        # This should be refactored in the future as part of a chance to have
-        # all boards support both FS and SE modes.
-        if self._is_fs:
-            if len(self._bootloader) > 0:
-                self.workload.bootloader_addr = 0x0
-                self.workload.bootloader_filename = self._bootloader[0]
-                self.workload.kernel_addr = 0x80200000
-                self.workload.entry_point = (
-                    0x80000000  # Bootloader starting point
-                )
-            else:
-                self.workload.kernel_addr = 0x0
-                self.workload.entry_point = 0x80000000
-        super()._pre_instantiate(full_system=full_system)
+    def _pre_instantiate(self):
+        if len(self._bootloader) > 0:
+            self.workload.bootloader_addr = 0x0
+            self.workload.bootloader_filename = self._bootloader[0]
+            self.workload.kernel_addr = 0x80200000
+            self.workload.entry_point = 0x80000000  # Bootloader starting point
+        else:
+            self.workload.kernel_addr = 0x0
+            self.workload.entry_point = 0x80000000
+        self._connect_things()
 
     @overrides(KernelDiskWorkload)
     def _add_disk_to_board(self, disk_image: AbstractResource):

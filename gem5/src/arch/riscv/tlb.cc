@@ -385,16 +385,9 @@ TLB::translate(const RequestPtr &req, ThreadContext *tc,
         if (fault == NoFault) {
             if (req->getFlags() & Request::PHYSICAL) {
                 /**
-                 * we simply set the virtual address to physical address.
-                 *
-                 * For RV32, we follow what the specification said:
-                 * When mapping between narrower and wider addresses,
-                 * RISC-V zero-extends a narrower physical address to a
-                 * wider size.
+                 * we simply set the virtual address to physical address
                  */
-                req->setPaddr(((ISA*) tc->getIsaPtr())->rvType() == RV32 ?
-                              bits(req->getVaddr(), 31, 0) :
-                              req->getVaddr());
+                req->setPaddr(req->getVaddr());
             } else {
                 fault = doTranslate(req, tc, translation, mode, delayed);
             }
@@ -425,20 +418,9 @@ TLB::translate(const RequestPtr &req, ThreadContext *tc,
 
         Process * p = tc->getProcessPtr();
 
-        /*
-         * In RV32 Linux, as vaddr >= 0x80000000 is legal in userspace
-         * (except for COMPAT mode for RV32 Userspace in RV64 Linux), we
-         * need to ignore the upper bits beyond 32 bits.
-         */
-        Addr vaddr = ((ISA*) tc->getIsaPtr())->rvType() == RV32 ?
-                      bits(req->getVaddr(), 31, 0) :
-                      req->getVaddr();
-        Addr paddr;
-
-        if (!p->pTable->translate(vaddr, paddr))
-            return std::make_shared<GenericPageTableFault>(req->getVaddr());
-
-        req->setPaddr(paddr);
+        Fault fault = p->pTable->translate(req);
+        if (fault != NoFault)
+            return fault;
 
         return NoFault;
     }

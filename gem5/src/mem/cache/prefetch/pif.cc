@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "debug/HWPrefetch.hh"
+#include "mem/cache/prefetch/associative_set_impl.hh"
 #include "params/PIFPrefetcher.hh"
 
 namespace gem5
@@ -47,8 +48,7 @@ PIF::PIF(const PIFPrefetcherParams &p)
       historyBuffer(p.history_buffer_size),
       index((name() + ".PIFIndex").c_str(), p.index_entries, p.index_assoc,
             p.index_replacement_policy,
-            p.index_indexing_policy,
-            IndexEntry(genTagExtractor(p.index_indexing_policy))),
+	    p.index_indexing_policy),
       streamAddressBuffer(p.stream_address_buffer_entries),
       listenersPC()
 {
@@ -177,14 +177,13 @@ PIF::notifyRetiredInst(const Addr pc)
                 // the 'iterator' table to point to the new entry
                 historyBuffer.push_back(spatialCompactor);
 
-                const IndexEntry::KeyType key{spatialCompactor.trigger, false};
-                auto idx_entry = index.findEntry(key);
+                auto idx_entry = index.findEntry(spatialCompactor.trigger);
                 if (idx_entry != nullptr) {
                     index.accessEntry(idx_entry);
                 } else {
-                    idx_entry = index.findVictim(key);
+                    idx_entry = index.findVictim(spatialCompactor.trigger);
                     assert(idx_entry != nullptr);
-                    index.insertEntry(key, idx_entry);
+                    index.insertEntry(spatialCompactor.trigger, idx_entry);
                 }
                 idx_entry->historyIt =
                     historyBuffer.getIterator(historyBuffer.tail());
@@ -206,7 +205,6 @@ PIF::calculatePrefetch(const PrefetchInfo &pfi,
     }
 
     const Addr pc = pfi.getPC();
-    bool is_secure = pfi.isSecure();
 
     // First check if the access has been prefetched, this is done by
     // comparing the access against the active Stream Address Buffers
@@ -221,7 +219,7 @@ PIF::calculatePrefetch(const PrefetchInfo &pfi,
 
     // Check if a valid entry in the 'index' table is found and allocate a new
     // active prediction stream
-    IndexEntry *idx_entry = index.findEntry({pc, is_secure});
+    IndexEntry *idx_entry = index.findEntry(pc);
 
     if (idx_entry != nullptr) {
         index.accessEntry(idx_entry);
