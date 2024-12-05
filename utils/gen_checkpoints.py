@@ -15,5 +15,5 @@ os.chdir(spec_path+"benchspec/CPU/"+bench+"/run/run_peak_refspeed_mytest-64.0000
 specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
 commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if line.startswith(b".")]
 command = commands[run].split('>')[0]
-p = Popen(gem5+"build/ARM/gem5.fast --outdir="+checkpoint_path+"/checkpoints."+str(run)+" "+gem5+"configs/deprecated/example/se.py --cpu-type=NonCachingSimpleCPU --take-simpoint-checkpoint=/work/muke/simpoints/"+bench+"."+str(run)+".simpts,/work/muke/simpoints/"+bench+"."+str(run)+".weights,100000000,10000000 -c "+command.split()[0]+" --options=\""+' '.join(command.split()[1:])+"\" --mem-size=50GB", shell=True)
-p.wait()
+bench_name = bench+"."+str(run)
+subprocess.run(gem5+"build/ARM/gem5.fast --outdir="+checkpoint_path+"/checkpoints."+str(run)+" "+gem5+"configs/deprecated/example/se.py --cpu-type=NonCachingSimpleCPU --take-simpoint-checkpoint=/work/muke/simpoints/"+bench_name+".simpts,/work/muke/simpoints/"+bench_name+".weights,100000000,10000000 -c "+command.split()[0]+" --options=\""+' '.join(command.split()[1:])+"\" --mem-size=50GB 2>&1 > "+bench_name+".out", shell=True, check=True)
