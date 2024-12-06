@@ -1,7 +1,6 @@
 import subprocess
 import os
 import sys
-import psutil
 import time
 
 spec_path = "/work/muke/spec2017/"
@@ -17,7 +16,7 @@ for bench in benches:
     specinvoke = subprocess.run([spec_path+"bin/specinvoke", "-n"], stdout=subprocess.PIPE)
     commands = [line.decode().strip() for line in specinvoke.stdout.split(b"\n") if line.startswith(b".")]
     for run in range(len(commands)):
-        p = subprocess.Popen(["/work/muke/PND-Loads/utils/gen_checkpoints.py", bench+str(run)])
+        p = subprocess.Popen("python3 /work/muke/PND-Loads/utils/gen_checkpoints.py "+bench+str(run), shell=True)
         procs.append(p)
 
 active_procs = procs.copy()
