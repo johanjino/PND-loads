@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#PBS -l walltime=01:00:00
+#PBS -l select=1:ncpus=32:mem=64gb
+#PBS -N buildLLVM
+#PBS -o output.txt
+#PBS -e error.txt
+
+
+# From last timed run for llvm build
+# real	15m54.423s
+# user	143m46.175s
+# sys	15m10.403s
+
+# Load module
+module load cmake/3.18.2
+module load make/3.82
+module load gcc/11.2.0
+module load tools/prod
+
+# Change to the directory where program located
+cd $PBS_O_WORKDIR
+
+# Start python virtual env
+source utils/venv/myenv/bin/activate
+
+# cmake -B build -S llvm -DCMAKE_BUILD_TYPE=MinSizeRel -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_TARGETS_TO_BUILD=AArch64  -DLLVM_ALIASHINTSPASS_LINK_INTO_TOOLS=ON
+# cmake --build build -j 16
+#./johan.sh clean 32
+#./johan.sh build_llvm 32
+#./johan.sh build_labelled_coremark 32
+#./johan.sh gen_addr_list 32
+#./johan.sh build_gem5 32
+./johan.sh run 32
+
+# cd ..
+# qemu-7.0.0/scripts/qemu-binfmt-conf.sh
+# cd temp
+# ../qemu-7.0.0/build_artifacts/qemu-aarch64 -strace ../valgrind/inst/bin/valgrind a.out
