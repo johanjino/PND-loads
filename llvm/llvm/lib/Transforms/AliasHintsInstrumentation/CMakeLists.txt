@@ -1,0 +1,4 @@
+add_llvm_component_library( LLVMAliasHintsInstrumentation
+		AliasHintsInstrumentation.cpp
+)
+add_llvm_pass_plugin(AliasHintsInstrumentationPass AliasHintsInstrumentation.cpp)
