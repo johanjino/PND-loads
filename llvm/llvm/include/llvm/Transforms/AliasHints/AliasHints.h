@@ -94,6 +94,9 @@
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
 #include "llvm/IR/Metadata.h"
 #include <cstdint>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
 #include <memory>
 
 using namespace llvm;
@@ -108,6 +111,7 @@ struct AAMDNodes;
 #define CACHE_LINE_SIZE 8
 
 typedef llvm::MemoryDepChecker::Dependence MemDep;
+typedef std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_set<std::string>>> AliasMapType;
 
 enum AliasHint{
     Predict,
@@ -120,11 +124,11 @@ public:
     bool Debug = false;
     PreservedAnalyses run(LoopNest &LN, LoopAnalysisManager &AM,
                           LoopStandardAnalysisResults &AR, LPMUpdater &U);
-    void markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR, LLVMContext &Ctx);
+    void markLoads(LoopNest &LN, DependenceInfo &DI, LoopStandardAnalysisResults &AR, LLVMContext &Ctx, bool withInstrumentation);
     bool isProblematicDep(LoadInst *Load, Dependence *Dep, LoopInfo &LI, ScalarEvolution &SE, AAResults &AA);
     AliasHint determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                             SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
-                            AAResults &AA, LoopInfo &LI);
+                            AAResults &AA, LoopInfo &LI, AliasMapType &AliasMap, bool withInstrumentation);
     void changeAddrSpace(LoadInst *Load, unsigned int Addrspace);
     SmallVector<std::pair<Loop *, Loop *>, 2> findVersionedLoops(LoopNest &LN, SmallVector<BasicBlock *, 1> GeneratedChecks, LoopInfo &LI, DominatorTree &DT);
     bool withinSameVersion(LoadInst *Load, Instruction *DepInst, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, LoopInfo &LI);

@@ -16,7 +16,6 @@
 
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/AliasAnalysis.h"
-#include "llvm/Analysis/AliasHintsProfileAnalysis.h"
 #include "llvm/Analysis/BasicAliasAnalysis.h"
 #include "llvm/Analysis/CGSCCPassManager.h"
 #include "llvm/Analysis/GlobalsModRef.h"
@@ -1492,9 +1491,8 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   //inserted manually here to work with flang
   FunctionPassManager OptimizePM2;
   LoopPassManager LPM2;
-  LPM2.addPass(AliasHintsProfileAnalysisPass());
   LPM2.addPass(AliasHintsPass());
-  //MPM.addPass(AliasHintsInstrumentationPass());
+  // MPM.addPass(AliasHintsInstrumentationPass());
   OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
   // Add the core optimizing pipeline.
@@ -1621,9 +1619,8 @@ PassBuilder::buildThinLTOPreLinkDefaultPipeline(OptimizationLevel Level) {
   //inserted manually here to work with LTO
   FunctionPassManager OptimizePM2;
   LoopPassManager LPM2;
-  LPM2.addPass(AliasHintsProfileAnalysisPass());
   LPM2.addPass(AliasHintsPass());
-  //MPM.addPass(AliasHintsInstrumentationPass());
+  // MPM.addPass(AliasHintsInstrumentationPass());
   OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
   // Add the core optimizing pipeline.
@@ -2013,9 +2010,8 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   //inserted manually here to work with LTO
   FunctionPassManager OptimizePM2;
   LoopPassManager LPM2;
-  LPM2.addPass(AliasHintsProfileAnalysisPass());
   LPM2.addPass(AliasHintsPass());
-  //MPM.addPass(AliasHintsInstrumentationPass());
+  // MPM.addPass(AliasHintsInstrumentationPass());
   OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
   // Add the core optimizing pipeline.

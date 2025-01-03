@@ -1,7 +1,6 @@
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/Transforms/AliasHints/AliasHints.h"
 #include "llvm/Analysis/AliasAnalysis.h"
-#include "llvm/Analysis/AliasHintsProfileAnalysis.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Analysis/MemoryLocation.h"
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
@@ -15,12 +14,13 @@
 
 PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
                                       LoopStandardAnalysisResults &AR, LPMUpdater &U){
-    outs() << "Starting Transformation...\n";
     Function &F = *LN.getParent();
     LLVMContext &Ctx = F.getContext();
     DependenceInfo DI = DependenceInfo(&F, &AR.AA, &AR.SE, &AR.LI);
     
-    markLoads(LN, DI, AR, Ctx);
+    bool withInstrumentation = true;
+
+    markLoads(LN, DI, AR, Ctx, withInstrumentation);
 
     return PreservedAnalyses::all();
 }
@@ -46,10 +46,44 @@ void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA, LLVMContex
     }
 }
 
+void getAliasMap(AliasMapType& AliasMap){
+
+    std::string PNDProfileFilename = "/rds/general/user/jj21/home/fyp/pnd-loads/profile_files/processed/parser-125k.exe-profile-filtered.txt";
+
+    std::ifstream file(PNDProfileFilename);
+    if (!file) {
+        errs() << "Error opening file: " << PNDProfileFilename << "\n";
+        return;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream stream(line);
+        std::string loadKeyword, filePath, loadLoc;
+        
+        // Read the first part: "Load <line:col>"
+        stream >> loadKeyword; // "Load"
+        stream >> loadLoc; // "<line:col>"
+
+        // Read the file path (it's the part after the first line:col)
+        stream >> filePath;
+
+        // Read store line:col parts
+        std::unordered_set<std::string> dependantStores;
+        std::string storeLoc;
+        while (stream >> storeLoc) {
+            dependantStores.insert(storeLoc);
+        }
+
+        AliasMap[filePath][loadLoc] = dependantStores;
+    }
+}
+
 void AliasHintsPass::markLoads(LoopNest &LN,
                                DependenceInfo &DI,
                                LoopStandardAnalysisResults &AR,
-                               LLVMContext &Ctx){
+                               LLVMContext &Ctx,
+                               bool withInstrumentation){
     SmallVector<LoadInst *> all_loads;
     SmallVector<StoreInst *> all_stores;
     SmallVector<CallInst *> all_calls;
@@ -80,6 +114,10 @@ void AliasHintsPass::markLoads(LoopNest &LN,
     /* Iterate over all loads using our own method for finding labels */
     markConstantAccesses(*LN.getParent(), AR.AA, Ctx);
     AliasHint Hint;
+    AliasMapType AliasMap;
+    if (withInstrumentation){
+        getAliasMap(AliasMap);
+    }
     for (auto Load: all_loads){
         if (!Load->isSimple()) continue;
         Hint = determineHint(Load,
@@ -90,7 +128,9 @@ void AliasHintsPass::markLoads(LoopNest &LN,
                              DI,
                              AR.SE,
                              AR.AA,
-                             AR.LI);
+                             AR.LI,
+                             AliasMap,
+                             withInstrumentation);
         if(Hint == AliasHint::PredictNone) {
             AAMDNodes AAInfo = Load->getAAMetadata();
             AAInfo.PND = MDNode::get(Ctx, ArrayRef<Metadata*>());
@@ -229,9 +269,36 @@ bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution 
     return false;
 }
 
+bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& AliasMap){
+     // Get the debug locations
+    const DebugLoc &LDL = Load->getDebugLoc();
+    const DebugLoc &SDL = Store->getDebugLoc();
+
+    // Check if both locations are valid
+    if (LDL && SDL) {
+        std::string loadLoc = std::to_string(LDL.getLine()) + ":" + std::to_string(LDL.getCol());
+        std::string storeLoc = std::to_string(SDL.getLine()) + ":" + std::to_string(SDL.getCol());
+        if (DILocation *Loc = LDL.get()) {
+            // Get the scope (DIScope) of the location
+            DIScope *Scope = Loc->getScope();
+            // Retrieve the file name and directory
+            if (DIFile *File = Scope->getFile()) {
+                std::string FileLoc = File->getDirectory().str() + File->getFilename().str();
+                
+                // Check alias here:
+                if (AliasMap[FileLoc][loadLoc].find(storeLoc) != AliasMap[FileLoc][loadLoc].end()){
+                    errs() << "\nSUCCESS.. Caught May Alias from being marked PND\n";
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *> all_stores,
                                         SmallVector<CallInst *> all_calls, std::map<Loop *, LoopAccessInfo *> LAIInstances, SmallVector<std::pair<Loop *, Loop *>, 2> VersionPairs, DependenceInfo DI, ScalarEvolution &SE,
-                                        AAResults &AA, LoopInfo &LI){
+                                        AAResults &AA, LoopInfo &LI, AliasMapType &AliasMap, bool withInstrumentation){
     std::unique_ptr<Dependence> Dep;
     Loop *current_loop = LI.getLoopFor(Load->getParent());
     std::map<Instruction *, MemoryDepChecker::Dependence::DepType> store_map;
@@ -244,7 +311,9 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
             store_map = MDC.QueryResults[Load];
         }
     }
+
     for (auto Store: all_stores){
+        if (withInstrumentation && checkInstrumentationInfo(Load, Store, AliasMap)) return AliasHint::Unchanged; 
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
         if (!AA.isMustAlias(Store->getPointerOperand(), Load->getPointerOperand())) continue;
         Dep = DI.depends(Store, Load, true);
@@ -273,22 +342,6 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         }
     }
 
-
-    if (Load->hasMetadata("AliasedStores")) {
-        MDNode *Node = Load->getMetadata("AliasedStores");
-        for (StoreInst *Instr : all_stores) {
-            for (Metadata *Op : Node->operands()) {
-                if (ValueAsMetadata *ValueMeta = dyn_cast<ValueAsMetadata>(Op)) {
-                    if (StoreInst *MetaInstr = dyn_cast<StoreInst>(ValueMeta->getValue())) {
-                        if (MetaInstr == Instr) {
-                            errs() << "\nSUCCESS.. Caught May Alias from being marked PND\n";
-                            return AliasHint::Unchanged;
-                        }
-                    }
-                }
-            }
-        }
-    }
     return AliasHint::PredictNone;
 }
 
@@ -374,14 +427,12 @@ llvm::PassPluginLibraryInfo getAliasHintsPassPluginInfo() {
           [](PassBuilder &PB) {
             PB.registerLateLoopOptimizationsEPCallback(
                 [](llvm::LoopPassManager &LPM, OptimizationLevel Level) {
-                  LPM.addPass(AliasHintsProfileAnalysisPass());
                   LPM.addPass(AliasHintsPass());
                 });
             PB.registerPipelineParsingCallback(
                 [](StringRef Name, llvm::LoopPassManager &LPM,
                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
                   if (Name == "aliashints") {
-                    LPM.addPass(AliasHintsProfileAnalysisPass());
                     LPM.addPass(AliasHintsPass());
                     return true;
                   }

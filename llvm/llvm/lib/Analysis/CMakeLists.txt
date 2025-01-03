@@ -25,7 +25,6 @@ endif()
 
 add_llvm_component_library(LLVMAnalysis
   AliasAnalysis.cpp
-  AliasHintsProfileAnalysis.cpp
   AliasAnalysisEvaluator.cpp
   AliasSetTracker.cpp
   Analysis.cpp
