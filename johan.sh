@@ -216,31 +216,31 @@ run() {
     #Run simulation with profile information"
 
     export ADDR_FILE=addr_files/johan_temp/sha-test.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/sha-test gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/sha-test.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/sha-test gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/sha-test.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/radix2-big-64k.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/radix2-big-64k gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/radix2-big-64k.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/radix2-big-64k gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/radix2-big-64k.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/linear_alg-mid-100x100-sp.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/linear_alg-mid-100x100-sp gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/linear_alg-mid-100x100-sp.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/linear_alg-mid-100x100-sp gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/linear_alg-mid-100x100-sp.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/parser-125k.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/parser-125k gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/parser-125k.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/parser-125k gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/parser-125k.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/nnet_test.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/nnet_test gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/nnet_test.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/nnet_test gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/nnet_test.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/loops-all-mid-10k-sp.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/loops-all-mid-10k-sp gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/loops-all-mid-10k-sp.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/loops-all-mid-10k-sp gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/loops-all-mid-10k-sp.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/core.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/core gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/core.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/core gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/core.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/zip-test.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/zip-test gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/zip-test.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/zip-test gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/zip-test.exe" --options="-v0 -i1"
 
     export ADDR_FILE=addr_files/johan_temp/cjpeg-rose7-preset.exe
-    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/cjpeg-rose7-preset gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/cjpeg-rose7-preset.exe" --options="-v0 -i1" &
+    ./gem5/build/ARM/gem5.opt --outdir=output/with_profile/cjpeg-rose7-preset gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches -c "bin/native/cjpeg-rose7-preset.exe" --options="-v0 -i1"
 
 
 
