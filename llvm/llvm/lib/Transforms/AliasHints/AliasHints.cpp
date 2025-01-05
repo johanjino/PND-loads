@@ -48,7 +48,7 @@ void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA, LLVMContex
 
 void getAliasMap(AliasMapType& AliasMap){
 
-    std::string PNDProfileFilename = "/rds/general/user/jj21/home/fyp/pnd-loads/profile_files/processed/parser-125k.exe-profile-filtered.txt";
+    std::string PNDProfileFilename = "/rds/general/user/jj21/home/fyp/pnd-loads/profile_files/processed/zip-test.exe-profile-filtered.txt";
 
     std::ifstream file(PNDProfileFilename);
     if (!file) {
@@ -60,6 +60,7 @@ void getAliasMap(AliasMapType& AliasMap){
     while (std::getline(file, line)) {
         std::istringstream stream(line);
         std::string loadKeyword, filePath, loadLoc;
+        unsigned long long execCount;
         
         // Read the first part: "Load <line:col>"
         stream >> loadKeyword; // "Load"
@@ -68,14 +69,22 @@ void getAliasMap(AliasMapType& AliasMap){
         // Read the file path (it's the part after the first line:col)
         stream >> filePath;
 
+        // Read Load Exec Count
+        stream >> execCount;
+
         // Read store line:col parts
-        std::unordered_set<std::string> dependantStores;
+        std::unordered_map<std::string, unsigned long long> dependantStores;
         std::string storeLoc;
+        unsigned long long aliasCount;
         while (stream >> storeLoc) {
-            dependantStores.insert(storeLoc);
+            stream >> aliasCount;
+            dependantStores[storeLoc] = aliasCount;
         }
 
         AliasMap[filePath][loadLoc] = dependantStores;
+
+        // Hack: For now store exec count of lond in the same map:
+        AliasMap[filePath][loadLoc]["execCount"] = execCount;
     }
 }
 
@@ -269,7 +278,7 @@ bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution 
     return false;
 }
 
-bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& AliasMap){
+bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& AliasMap, unsigned long long threshold){
      // Get the debug locations
     const DebugLoc &LDL = Load->getDebugLoc();
     const DebugLoc &SDL = Store->getDebugLoc();
@@ -287,8 +296,11 @@ bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& Al
                 
                 // Check alias here:
                 if (AliasMap[FileLoc][loadLoc].find(storeLoc) != AliasMap[FileLoc][loadLoc].end()){
-                    errs() << "\nSUCCESS.. Caught May Alias from being marked PND\n";
-                    return true;
+                    if (AliasMap[FileLoc][loadLoc][storeLoc] > threshold){
+                        errs() << "\nSUCCESS.. Caught May Alias from being marked PND\n";
+                        errs() << AliasMap[FileLoc][loadLoc][storeLoc];
+                        return true;
+                    }
                 }
             }
         }
@@ -312,8 +324,11 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
         }
     }
 
+    // Threshold for when to not mark PND
+    unsigned long long threshold = 5;
+
     for (auto Store: all_stores){
-        if (withInstrumentation && checkInstrumentationInfo(Load, Store, AliasMap)) return AliasHint::Unchanged; 
+        if (withInstrumentation && checkInstrumentationInfo(Load, Store, AliasMap, threshold)) return AliasHint::Unchanged; 
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
         if (!AA.isMustAlias(Store->getPointerOperand(), Load->getPointerOperand())) continue;
         Dep = DI.depends(Store, Load, true);

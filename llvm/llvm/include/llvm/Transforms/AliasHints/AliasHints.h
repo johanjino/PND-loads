@@ -111,7 +111,7 @@ struct AAMDNodes;
 #define CACHE_LINE_SIZE 8
 
 typedef llvm::MemoryDepChecker::Dependence MemDep;
-typedef std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_set<std::string>>> AliasMapType;
+typedef std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>>> AliasMapType;
 
 enum AliasHint{
     Predict,
