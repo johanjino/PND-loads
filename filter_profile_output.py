@@ -12,11 +12,9 @@ pattern = re.compile(
 )
 
 def filter_and_process_lines(input_file, output_file):
-    """
-    Reads a text file, filters lines matching a specific format, and writes them to a new file.
-    """
     load_to_stores_map = {}
-    address_to_stores_map = {}
+    load_execution_count = {}
+    address_to_latest_store_map = {}
     with open(input_file, 'r') as infile:
         for line in infile:
             line = line.strip()
@@ -24,26 +22,31 @@ def filter_and_process_lines(input_file, output_file):
                 op, file_loc, line_num, col_num, address = line.split()
                 if op == "Load":
                     key = op + " " + line_num + ":" + col_num + " " + file_loc
-                    if address in address_to_stores_map:
+                    if key in load_execution_count:
+                        load_execution_count[key] += 1
+                    else: 
+                        load_execution_count[key] = 1
+                    if address in address_to_latest_store_map:
+                        load_loc = address_to_latest_store_map[address]
                         if key in load_to_stores_map :
-                            load_to_stores_map[key] = load_to_stores_map[key] | address_to_stores_map[address]
+                            if load_loc in load_to_stores_map[key]:
+                                load_to_stores_map[key][load_loc] += 1
+                            else:
+                                load_to_stores_map[key][load_loc] = 1
                         else:
-                            load_to_stores_map[key] = address_to_stores_map[address]
+                            load_to_stores_map[key] = {address_to_latest_store_map[address]:1}
 
                 elif op == "Store":
                     loc = line_num + ":" + col_num
-                    if address in address_to_stores_map:
-                        address_to_stores_map[address] = address_to_stores_map[address] | set({loc})
-                    else:
-                        address_to_stores_map[address] = set({loc})
+                    address_to_latest_store_map[address] = loc
             # else:
             #     print("Filtering line: ", line)
     
     with open(output_file, 'w') as outfile:
         for load, values in load_to_stores_map.items():
-            output_line = load + " "
-            for store_loc in values:
-                output_line += store_loc + " "
+            output_line = load + " " + str(load_execution_count[load]) + " "
+            for store_loc, count in values.items():
+                output_line += store_loc + " " + str(count) + " "
             outfile.write(output_line + '\n')
 
 
