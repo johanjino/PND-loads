@@ -48,7 +48,7 @@ void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA, LLVMContex
 
 void getAliasMap(AliasMapType& AliasMap){
 
-    std::string PNDProfileFilename = "/rds/general/user/jj21/home/fyp/pnd-loads/profile_files/processed/zip-test.exe-profile-filtered.txt";
+    std::string PNDProfileFilename = "/rds/general/user/jj21/home/fyp/pnd-loads/profile_files/processed/linear_alg-mid-100x100-sp.exe-profile-filtered.txt";
 
     std::ifstream file(PNDProfileFilename);
     if (!file) {
@@ -278,6 +278,42 @@ bool isSeparateCacheLine(Instruction *Load, Instruction *Store, ScalarEvolution 
     return false;
 }
 
+// WIP
+unsigned countInstructionsBetween(Instruction *start, Instruction *end) {
+    BasicBlock *BB = start->getParent();  // Get the parent basic block of the start instruction
+    unsigned count = 0;                   // Initialize count to 0
+
+    bool counting = false;  // A flag to indicate when to start counting
+
+    for (auto &I : *BB) {  // Iterate through all instructions in the basic block
+        // Skip PHI instructions
+        if (isa<PHINode>(&I))
+            continue;
+
+        // Skip unnecessary instructions like debug info
+        if (isa<DbgInfoIntrinsic>(&I))
+            continue;
+
+        // Start counting after reaching the 'start' instruction
+        if (&I == start) {
+            counting = true;  // Start counting after the start instruction is found
+        }
+
+        // Stop counting when we reach the 'end' instruction
+        if (&I == end) {
+            break;  // Stop the loop as we have found the end instruction
+        }
+
+        if (counting) {
+            count++;  // Increment count for each instruction in between
+        }
+    }
+
+    return count;  // Return the count of instructions between start and end
+}
+
+
+
 bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& AliasMap, unsigned long long threshold){
      // Get the debug locations
     const DebugLoc &LDL = Load->getDebugLoc();
@@ -298,7 +334,7 @@ bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& Al
                 if (AliasMap[FileLoc][loadLoc].find(storeLoc) != AliasMap[FileLoc][loadLoc].end()){
                     if (AliasMap[FileLoc][loadLoc][storeLoc] > threshold){
                         errs() << "\nSUCCESS.. Caught May Alias from being marked PND\n";
-                        errs() << AliasMap[FileLoc][loadLoc][storeLoc];
+                        errs() << AliasMap[FileLoc][loadLoc][storeLoc] << "\n";
                         return true;
                     }
                 }
@@ -325,11 +361,12 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
     }
 
     // Threshold for when to not mark PND
-    unsigned long long threshold = 5;
-
+    unsigned long long threshold = 3;
     for (auto Store: all_stores){
-        if (withInstrumentation && checkInstrumentationInfo(Load, Store, AliasMap, threshold)) return AliasHint::Unchanged; 
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
+        if (withInstrumentation 
+            && AA.alias(Store->getPointerOperand(), Load->getPointerOperand())==AliasResult::MayAlias
+            && checkInstrumentationInfo(Load, Store, AliasMap, threshold)) return AliasHint::Unchanged; 
         if (!AA.isMustAlias(Store->getPointerOperand(), Load->getPointerOperand())) continue;
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
