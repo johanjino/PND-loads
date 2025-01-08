@@ -15,6 +15,7 @@ def filter_and_process_lines(input_file, output_file):
     load_to_stores_map = {}
     load_execution_count = {}
     address_to_latest_store_map = {}
+    last_op_on_address = {}
     with open(input_file, 'r') as infile:
         for line in infile:
             line = line.strip()
@@ -26,7 +27,7 @@ def filter_and_process_lines(input_file, output_file):
                         load_execution_count[key] += 1
                     else: 
                         load_execution_count[key] = 1
-                    if address in address_to_latest_store_map:
+                    if address in address_to_latest_store_map and last_op_on_address[address]=="Store":
                         load_loc = address_to_latest_store_map[address]
                         if key in load_to_stores_map :
                             if load_loc in load_to_stores_map[key]:
@@ -35,10 +36,12 @@ def filter_and_process_lines(input_file, output_file):
                                 load_to_stores_map[key][load_loc] = 1
                         else:
                             load_to_stores_map[key] = {address_to_latest_store_map[address]:1}
+                    last_op_on_address[address] = "Load"
 
                 elif op == "Store":
                     loc = line_num + ":" + col_num
                     address_to_latest_store_map[address] = loc
+                    last_op_on_address[address] = "Store"
             # else:
             #     print("Filtering line: ", line)
     
