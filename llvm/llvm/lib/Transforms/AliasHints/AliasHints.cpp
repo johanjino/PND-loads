@@ -18,7 +18,7 @@ PreservedAnalyses AliasHintsPass::run(LoopNest &LN, LoopAnalysisManager &AM,
     LLVMContext &Ctx = F.getContext();
     DependenceInfo DI = DependenceInfo(&F, &AR.AA, &AR.SE, &AR.LI);
     
-    bool withInstrumentation = true;
+    bool withInstrumentation = false;
 
     markLoads(LN, DI, AR, Ctx, withInstrumentation);
 
@@ -48,7 +48,7 @@ void AliasHintsPass::markConstantAccesses(Function &F, AAResults &AA, LLVMContex
 
 void getAliasMap(AliasMapType& AliasMap){
 
-    std::string PNDProfileFilename = "/rds/general/user/jj21/home/fyp/pnd-loads/profile_files/processed/linear_alg-mid-100x100-sp.exe-profile-filtered.txt";
+    std::string PNDProfileFilename = "/rds/general/user/jj21/home/fyp/pnd-loads/profile_files/processed/zip-test.exe-profile-filtered.txt";
 
     std::ifstream file(PNDProfileFilename);
     if (!file) {
@@ -315,7 +315,16 @@ unsigned countInstructionsBetween(Instruction *start, Instruction *end) {
 
 
 bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& AliasMap, unsigned long long threshold){
-     // Get the debug locations
+    
+    const Function *F1 = Load->getFunction();
+    const Function *F2 = Store->getFunction();
+    // Checking if load and store in same function. This actually doesnt change anything
+    // Should remove this after verifing
+    if (F1!=F2){
+        return false;
+    }
+    
+    // Get the debug locations
     const DebugLoc &LDL = Load->getDebugLoc();
     const DebugLoc &SDL = Store->getDebugLoc();
 
@@ -332,9 +341,12 @@ bool checkInstrumentationInfo(LoadInst *Load, StoreInst *Store, AliasMapType& Al
                 
                 // Check alias here:
                 if (AliasMap[FileLoc][loadLoc].find(storeLoc) != AliasMap[FileLoc][loadLoc].end()){
-                    if (AliasMap[FileLoc][loadLoc][storeLoc] > threshold){
+                    // ToDo:
+                    // Why are we checking both constant and percentage? Only 1 is needed i think
+                    if (AliasMap[FileLoc][loadLoc][storeLoc] > threshold && (AliasMap[FileLoc][loadLoc][storeLoc]*100)/AliasMap[FileLoc][loadLoc]["execCount"] > threshold){
                         errs() << "\nSUCCESS.. Caught May Alias from being marked PND\n";
-                        errs() << AliasMap[FileLoc][loadLoc][storeLoc] << "\n";
+                        errs() << loadLoc << " " << storeLoc << " - " << AliasMap[FileLoc][loadLoc]["execCount"] << "\n";
+                        errs() << (AliasMap[FileLoc][loadLoc][storeLoc]*100)/AliasMap[FileLoc][loadLoc]["execCount"] << "\n";
                         return true;
                     }
                 }
@@ -362,12 +374,19 @@ AliasHint AliasHintsPass::determineHint(LoadInst *Load, SmallVector<StoreInst *>
 
     // Threshold for when to not mark PND
     unsigned long long threshold = 3;
+
+    // unsigned aliascount = 0;
     for (auto Store: all_stores){
         if (!withinSameVersion(Load, Store, VersionPairs, LI)) continue;
-        if (withInstrumentation 
-            && AA.alias(Store->getPointerOperand(), Load->getPointerOperand())==AliasResult::MayAlias
-            && checkInstrumentationInfo(Load, Store, AliasMap, threshold)) return AliasHint::Unchanged; 
-        if (!AA.isMustAlias(Store->getPointerOperand(), Load->getPointerOperand())) continue;
+        if (withInstrumentation){
+            // Do this if using instrumentation
+            if(AA.alias(Store->getPointerOperand(), Load->getPointerOperand())==AliasResult::MayAlias
+               && !checkInstrumentationInfo(Load, Store, AliasMap, threshold)) continue;
+        }
+        else{
+            // Do this if not using instumentation
+            if (!AA.isMustAlias(Store->getPointerOperand(), Load->getPointerOperand())) continue;
+        }
         Dep = DI.depends(Store, Load, true);
         if (!Dep) continue;
         if (!isProblematicDep(Load, Dep.get(), LI, SE, AA)) continue;
