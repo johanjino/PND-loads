@@ -12,3 +12,6 @@ fs/
 benchmarks/forwarding_micro
 benchmarks/coremark-pro/builds*
 gem5/src/cpu/o3/BaseO3CPU.py
+output/*
+plots/*
+profile_files/*
