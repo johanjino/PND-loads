@@ -42,6 +42,23 @@ using namespace llvm;
 
 #define DEBUG_TYPE "aliashint-instrument"
 
+bool isValidAndMachineCodeInstruction(Instruction *I) {
+    // Ensure the instruction is not null and is a valid instruction
+    if (!I) {
+        return false; // Not a valid instruction
+    }
+
+    // Check if the instruction is an IR-specific instruction and not a real machine code instruction
+    // Exclude instructions like PHI, ALLOCA, GEP, and debug intrinsics
+    if (isa<PHINode>(I) || isa<AllocaInst>(I) || isa<GetElementPtrInst>(I) ||
+        isa<DbgInfoIntrinsic>(I) || isa<MetadataAsValue>(I)) {
+        return false; // These are LLVM IR-specific and do not map to machine code
+    }
+
+    // If the instruction is not IR-specific, it's a valid instruction that can compile to machine code
+    return true;
+}
+
 //-----------------------------------------------------------------------------
 // AliasHintsInstrumentation implementation
 //-----------------------------------------------------------------------------
@@ -75,7 +92,8 @@ bool AliasHintsInstrumentationPass::runOnModule(Module &M) {
     // ------------------------------------------------------------------------
     
     // Prepare printing format
-    llvm::Constant *ResultFormatStr = llvm::ConstantDataArray::getString(CTX, "%s %p\n");
+    // llvm::Constant *ResultFormatStr = llvm::ConstantDataArray::getString(CTX, "%s %p\n");
+    llvm::Constant *ResultFormatStr = llvm::ConstantDataArray::getString(CTX, "%s %p %d\n");
 
     // Inject the Format String
     Constant *ResultFormatStrVar = M.getOrInsertGlobal("ResultFormatStrIR", ResultFormatStr->getType());
@@ -86,6 +104,17 @@ bool AliasHintsInstrumentationPass::runOnModule(Module &M) {
     //PointerType *PrintfArgTy = PointerType::getUnqual(Type::getInt8Ty(CTX));
     llvm::Value *ResultFormatStrPtr = Builder.CreatePointerCast(ResultFormatStrVar, PrintfArgTy);
 
+    
+    // Global Instruction Counter
+    // ToDo:
+    // use unsinged long long to try prevent overflows.
+    // also is this even a good way to do this?
+    GlobalVariable *counterGV = dyn_cast<GlobalVariable>(M.getOrInsertGlobal("instruction_counter", IntegerType::getInt32Ty(CTX)));
+
+    // This will change the declaration into a definition (and initialize to 0)
+    counterGV->setLinkage(GlobalValue::CommonLinkage);
+    counterGV->setAlignment(MaybeAlign(4));
+    counterGV->setInitializer(ConstantInt::get(CTX, APInt(32, 0)));
 
     // STEP 3: For each load/store instruction, inject instrumentation code
     // --------------------------------------------------------------------
@@ -106,6 +135,9 @@ bool AliasHintsInstrumentationPass::runOnModule(Module &M) {
                     // Get address of Load Instruction
                     Value* Address = Load->getPointerOperand();
 
+                    // Get Instruction counter
+                    // Load the counter value
+                    LoadInst *CounterValue = Builder.CreateLoad(IntegerType::getInt32Ty(CTX), counterGV, "counter_val");
 
                     // Assign mapping info 
 
@@ -140,8 +172,7 @@ bool AliasHintsInstrumentationPass::runOnModule(Module &M) {
                     llvm::Value *LoadNameStrPtr = Builder.CreatePointerCast(LoadNameStrVar, PrintfArgTy);
                     
                     // Create call to print information
-                    Builder.CreateCall(Printf, {ResultFormatStrPtr, LoadNameStrPtr, Address});
-
+                    Builder.CreateCall(Printf, {ResultFormatStrPtr, LoadNameStrPtr, Address, CounterValue});
                 }
                 // Check if the instruction is a StoreInst
                 else if (auto *Store = dyn_cast<StoreInst>(&I)) {
@@ -156,6 +187,9 @@ bool AliasHintsInstrumentationPass::runOnModule(Module &M) {
                     // Get address of Store Instruction
                     Value* Address = Store->getOperand(1);
 
+                    // Get Instruction counter
+                    // Load the counter value
+                    LoadInst *CounterValue = Builder.CreateLoad(IntegerType::getInt32Ty(CTX), counterGV, "counter_val");
 
                     // Assign mapping info 
 
@@ -189,7 +223,21 @@ bool AliasHintsInstrumentationPass::runOnModule(Module &M) {
                     llvm::Value *StoreNameStrPtr = Builder.CreatePointerCast(StoreNameStrVar, PrintfArgTy);
 
                     // Create call to print information
-                    Builder.CreateCall(Printf, {ResultFormatStrPtr, StoreNameStrPtr, Address});
+                    Builder.CreateCall(Printf, {ResultFormatStrPtr, StoreNameStrPtr, Address, CounterValue});
+                }
+                else if(isValidAndMachineCodeInstruction(&I)){
+                    // Insert code to increment the counter before every instruction
+                    IRBuilder<> Builder(&I); // Set insertion point before instruction I
+
+                    // Load the counter value
+                    LoadInst *loadInst =
+                        Builder.CreateLoad(IntegerType::getInt32Ty(CTX), counterGV);
+
+                    // Increment the counter
+                    Value *incremented = Builder.CreateAdd(Builder.getInt32(1), loadInst);
+
+                    // Store the incremented value back
+                    Builder.CreateStore(incremented, counterGV);
                 }
             }
         }

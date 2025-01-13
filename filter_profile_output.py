@@ -8,7 +8,8 @@ pattern = re.compile(
     r"(/[^\s]+)+ "  # Path to file
     r"\d+ "         # Line number
     r"\d+ "         # Column number
-    r"0x[0-9a-fA-F]+$"  # Address in hexadecimal
+    r"0x[0-9a-fA-F]+ "  # Address in hexadecimal
+    r"-?\d+$"         # Instruction Count
 )
 
 def filter_and_process_lines(input_file, output_file):
@@ -16,11 +17,19 @@ def filter_and_process_lines(input_file, output_file):
     load_execution_count = {}
     address_to_latest_store_map = {}
     last_op_on_address = {}
+    total_far = 0
+    prev_inst_count = 0
     with open(input_file, 'r') as infile:
         for line in infile:
             line = line.strip()
             if pattern.match(line):
-                op, file_loc, line_num, col_num, address = line.split()
+                op, file_loc, line_num, col_num, address, inst_count = line.split()
+                inst_count = int(inst_count)
+                if inst_count < prev_inst_count:
+                    print("Instruction Count overflow?")
+                    print(prev_inst_count)
+                    print(inst_count)
+                    break
                 if op == "Load":
                     key = op + " " + line_num + ":" + col_num + " " + file_loc
                     if key in load_execution_count:
@@ -28,23 +37,30 @@ def filter_and_process_lines(input_file, output_file):
                     else: 
                         load_execution_count[key] = 1
                     if address in address_to_latest_store_map and last_op_on_address[address]=="Store":
-                        load_loc = address_to_latest_store_map[address]
-                        if key in load_to_stores_map :
-                            if load_loc in load_to_stores_map[key]:
-                                load_to_stores_map[key][load_loc] += 1
+                        store_loc, store_inst_count = address_to_latest_store_map[address]
+                        if (inst_count - store_inst_count <= 1000):
+                            if key in load_to_stores_map :
+                                if store_loc in load_to_stores_map[key]:
+                                    load_to_stores_map[key][store_loc] += 1
+                                else:
+                                    load_to_stores_map[key][store_loc] = 1
                             else:
-                                load_to_stores_map[key][load_loc] = 1
+                                load_to_stores_map[key] = {store_loc:1}
                         else:
-                            load_to_stores_map[key] = {address_to_latest_store_map[address]:1}
+                            # print("Caught a too far case")
+                            total_far += 1
                     last_op_on_address[address] = "Load"
 
                 elif op == "Store":
                     loc = line_num + ":" + col_num
-                    address_to_latest_store_map[address] = loc
+                    address_to_latest_store_map[address] = [loc, inst_count]
                     last_op_on_address[address] = "Store"
+                prev_inst_count = inst_count
             # else:
             #     print("Filtering line: ", line)
     
+    print("Total too far cases caught: ", total_far)
+
     with open(output_file, 'w') as outfile:
         for load, values in load_to_stores_map.items():
             output_line = load + " " + str(load_execution_count[load]) + " "
@@ -73,3 +89,4 @@ if __name__ == "__main__":
         # Call the filter_lines function for each file
         filter_and_process_lines(input_file, output_file)
         print(f"Filtered lines written to {output_file}")
+        print()
