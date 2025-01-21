@@ -16,7 +16,7 @@ if addr_file_type == "base":
     run_pnd = False
 if run_base: print("Running with base model")
 addr_file_dir = "/work/muke/PND-Loads/addr_files/"
-chkpt_dir = "/work/muke/checkpoints/"
+chkpt_dir = "/mnt/data/checkpoints/"
 results_dir = "/work/muke/results/"+run_type+"/"+addr_file_type+"/"+cpu_model+"/"
 base_results_dir = "/work/muke/results/"+run_type+"/base/"+cpu_model+"/"
 benches = ["600.perlbench_s", "605.mcf_s", "619.lbm_s",

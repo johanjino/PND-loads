@@ -2,20 +2,24 @@ import subprocess
 import sys
 from collections import defaultdict, Counter
 
-binary = sys.argv[1]
-count = sys.argv[2]
-gem5_output = open(sys.argv[3]).readlines()
+count = sys.argv[1]
+gem5_output = open(sys.argv[2])
+lines = gem5_output.readlines()
+gem5_output.close()
 
 addr_info = {}
 violation_count = {}
 total_count = defaultdict(int)
 function_count = defaultdict(int)
 
-for line in gem5_output:
+for line in lines:
     if "Violation:" in line:
-        addrs = line.split(":")[-1] 
-        load = addrs.split(",")[0]
-        store = addrs.split(",")[1].strip()
+        addrs = [i.split()[0] for i in line.split(":")[-1].split(',')]
+        load = addrs[0]
+        try:
+            store = addrs[1].strip()
+        except:
+            continue
         if load in violation_count:
             if store in violation_count[load]:
                 violation_count[load][store] += 1
