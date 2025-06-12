@@ -13,7 +13,7 @@ The core idea is to use the distance between a load and its dependent store as t
 
 ## Reproducing the Store Distance Results
 
-Follow these steps to reproduce the store distance evaluation results presented in the paper.
+Follow these steps to reproduce the store distance evaluation results presented in the thesis.
 
 ### Prerequisites
 
