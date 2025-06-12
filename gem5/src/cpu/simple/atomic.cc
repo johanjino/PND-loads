@@ -364,8 +364,10 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t *data, unsigned size,
                          const std::vector<bool> &byte_enable)
 {
 
+    // Use below for store distance profiling
     // record_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
     
+    // Use below for alias profiling
     // if (check_in(threadInfo[curThread]->thread->pcState().instAddr())) record_profile_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
 
 
@@ -455,8 +457,10 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
                           Request::Flags flags, uint64_t *res,
                           const std::vector<bool>& byte_enable)
 {
+    // Use below for store distance profiling
     // record_store(addr, size);
 
+    // Use below for alias profiling
     // record_profile_store(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
 
     SimpleExecContext &t_info = *threadInfo[curThread];
@@ -574,9 +578,11 @@ Fault
 AtomicSimpleCPU::amoMem(Addr addr, uint8_t* data, unsigned size,
                         Request::Flags flags, AtomicOpFunctorPtr amo_op)
 {
+    // Use below for store distance profiling
     // record_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
     // record_store(addr, size);
 
+    // Use below for alias profiling
     // if (check_in(threadInfo[curThread]->thread->pcState().instAddr())){
     //     record_profile_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
     // }
@@ -617,8 +623,6 @@ AtomicSimpleCPU::amoMem(Addr addr, uint8_t* data, unsigned size,
 
     // Now do the access.
     if (fault == NoFault && !req->getFlags().isSet(Request::NO_ACCESS)) {
-        // record_load(req->getPC(), req->getPaddr(), size);
-        // record_store(req->getPaddr(), size);
 
         // We treat AMO accesses as Write accesses with SwapReq command
         // data will hold the return data of the AMO access
