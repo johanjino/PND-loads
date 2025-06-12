@@ -1,0 +1,234 @@
+xalancbmk.0:
+	Base CPI: 2.004414709538158
+	PND CPI: 2.004057311522051
+	Base Lookups Per KInst: 303.05925706360756
+	PND Lookups Per KInst: 124.24564458851779
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.14133176596771785
+	MDPLookups: -59.00285610844137
+	PHASTMispredictions: -10.3189699491068
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.01783054247240559
+
+gcc.2:
+	Base CPI: 1.5511842126590367
+	PND CPI: 1.5426795292580566
+	Base Lookups Per KInst: 225.25836643589406
+	PND Lookups Per KInst: 210.2815014493012
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 68.14270407090262
+	MDPLookups: -6.611176940291978
+	PHASTMispredictions: -7.462249347024503
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.5482703686367065
+
+perlbench.2:
+	Base CPI: 1.2684234257268345
+	PND CPI: 1.268377406477012
+	Base Lookups Per KInst: 231.13090465860768
+	PND Lookups Per KInst: 229.49262684578343
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.008674681789356056
+	MDPLookups: -0.709110366767984
+	PHASTMispredictions: -0.2385827063510225
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.0036280668496992833
+
+omnetpp.0:
+	Base CPI: 2.2029695596662475
+	PND CPI: 2.186028044096726
+	Base Lookups Per KInst: 272.83027707134494
+	PND Lookups Per KInst: 197.84346499481822
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 28.513421323502744
+	MDPLookups: -27.22814669847427
+	PHASTMispredictions: -20.789708124769803
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.7690308517966109
+
+mcf.0:
+	Base CPI: 4.398791215001422
+	PND CPI: 4.370250258875013
+	Base Lookups Per KInst: 286.4103702173385
+	PND Lookups Per KInst: 273.71863377513654
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.007693979982676261
+	MDPLookups: -4.289404839671116
+	PHASTMispredictions: -0.49877618797205164
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.6488363446092654
+
+leela.0:
+	Base CPI: 1.1516545096371666
+	PND CPI: 1.1431217142193744
+	Base Lookups Per KInst: 278.51133549928784
+	PND Lookups Per KInst: 166.50257758827186
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.7152342229190679
+	MDPLookups: -40.39786266167496
+	PHASTMispredictions: -46.55484956252269
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.7409162510448185
+
+perlbench.1:
+	Base CPI: 1.3094924053609174
+	PND CPI: 1.3093755388526171
+	Base Lookups Per KInst: 238.12182941098183
+	PND Lookups Per KInst: 233.0174781100346
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.00025563670178656056
+	MDPLookups: -2.1433934819660383
+	PHASTMispredictions: -0.9615046576236559
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.008924565566152953
+
+x264.0:
+	Base CPI: 1.1349635089930654
+	PND CPI: 1.0633904698802077
+	Base Lookups Per KInst: 192.58944824104165
+	PND Lookups Per KInst: 97.52632863335074
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 1164.6676440220253
+	MDPLookups: -48.82127395912404
+	PHASTMispredictions: -58.190142010296285
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -6.306197383945587
+
+nab.0:
+	Base CPI: 1.321375196419737
+	PND CPI: 1.321257238805522
+	Base Lookups Per KInst: 222.63466279414817
+	PND Lookups Per KInst: 221.45759144109127
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.0
+	MDPLookups: -0.528679176185007
+	PHASTMispredictions: -0.9776502319424426
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.00892688273056634
+
+xz.1:
+	Base CPI: 1.8035230024514501
+	PND CPI: 1.8301279296096191
+	Base Lookups Per KInst: 210.60812716437772
+	PND Lookups Per KInst: 99.36485602432866
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 1914.5500775532798
+	MDPLookups: -52.065660516622195
+	PHASTMispredictions: -37.03854810002273
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: 1.4751642824630493
+
+x264.1:
+	Base CPI: 1.095428582662972
+	PND CPI: 1.055904414307086
+	Base Lookups Per KInst: 192.82637177134646
+	PND Lookups Per KInst: 74.29987201457688
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 312.6846116887777
+	MDPLookups: -61.34217191493888
+	PHASTMispredictions: -76.43075400159705
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -3.6081008822869403
+
+lbm.0:
+	Base CPI: 4.423086167952226
+	PND CPI: 3.911227956203549
+	Base Lookups Per KInst: 166.25297131433356
+	PND Lookups Per KInst: 13.285196893504247
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.0
+	MDPLookups: -88.68190952526331
+	PHASTMispredictions: -91.35825147071522
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -11.572422338442799
+
+deepsjeng.0:
+	Base CPI: 1.1375563089433796
+	PND CPI: 1.1374835310990548
+	Base Lookups Per KInst: 179.29762895304304
+	PND Lookups Per KInst: 155.34629290626106
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 0.0
+	MDPLookups: -13.358560314997527
+	PHASTMispredictions: -4.8409001516929155
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.006397735545276031
+
+gcc.1:
+	Base CPI: 1.606539047937023
+	PND CPI: 1.5984608144098325
+	Base Lookups Per KInst: 228.28298102112032
+	PND Lookups Per KInst: 214.72994660677065
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 79.23829031529327
+	MDPLookups: -5.8818265843941795
+	PHASTMispredictions: -7.4858543622750515
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.5028345583983076
+
+gcc.0:
+	Base CPI: 3.325053427481273
+	PND CPI: 3.322324041122383
+	Base Lookups Per KInst: 316.3502875081214
+	PND Lookups Per KInst: 309.5866056667183
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 24.045161864708742
+	MDPLookups: -2.1322615298985834
+	PHASTMispredictions: -5.138610811143846
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.08208548880243723
+
+perlbench.0:
+	Base CPI: 1.079075216117666
+	PND CPI: 1.0787427889872492
+	Base Lookups Per KInst: 218.88370973523698
+	PND Lookups Per KInst: 206.86609237410337
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 1.4995762201162959
+	MDPLookups: -5.493029427349434
+	PHASTMispredictions: -6.639490171424069
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -0.030806669030248906
+
+xz.0:
+	Base CPI: 1.1901874296314627
+	PND CPI: 1.2158775924519691
+	Base Lookups Per KInst: 221.18871821165993
+	PND Lookups Per KInst: 71.36786536649679
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 1866.2392351491721
+	MDPLookups: -67.24220246553453
+	PHASTMispredictions: -43.64765841216105
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: 2.158497240091106
+
+x264.2:
+	Base CPI: 1.082249049229519
+	PND CPI: 1.0423950352920277
+	Base Lookups Per KInst: 193.41135529092048
+	PND Lookups Per KInst: 80.03360130783382
+	Base Violations Per MInst: 0.0
+	PND Violations Per MInst: 501.3513147636558
+	MDPLookups: -58.45227726801192
+	PHASTMispredictions: -73.09631957979337
+	memOrderViolationEvents: 0
+	TotalViolations: 0
+	CPI: -3.682517805477798
+

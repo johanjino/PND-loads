@@ -1,0 +1,3025 @@
+simSeconds 0.036618905228
+simTicks 36618944091.002
+finalTick 399827363518571.44
+simFreq 999998000000.0
+hostSeconds 257.43063625999997
+hostTickRate 144223306.886029
+hostMemory 52598289.788508
+simInsts 109999799.37701999
+simOps 119117073.622896
+hostInstRate 433860.3917810001
+hostOpRate 469700.02780000004
+system.clk_domain.clock 999.9980000000002
+system.cpu_clk_domain.clock 499.9990000000001
+system.cpu_voltage_domain.voltage 0.9999980000000002
+system.l2.demandHits::switch_cpus.data 273126.5291120001
+system.l2.demandHits::total 273147.990641
+system.l2.overallHits::switch_cpus.data 273126.5291120001
+system.l2.overallHits::total 273147.990641
+system.l2.demandMisses::cpu.inst 3.2423719999999996
+system.l2.demandMisses::cpu.data 3.8544929999999993
+system.l2.demandMisses::switch_cpus.inst 238.82649300000003
+system.l2.demandMisses::switch_cpus.data 38967.381122
+system.l2.demandMisses::total 39206.198155
+system.l2.overallMisses::cpu.inst 3.2423719999999996
+system.l2.overallMisses::cpu.data 3.8544929999999993
+system.l2.overallMisses::switch_cpus.inst 238.82649300000003
+system.l2.overallMisses::switch_cpus.data 38967.381122
+system.l2.overallMisses::total 39206.198155
+system.l2.demandMissLatency::switch_cpus.inst 19527537.056
+system.l2.demandMissLatency::switch_cpus.data 3258970361.0635004
+system.l2.demandMissLatency::total 3278497108.2095
+system.l2.overallMissLatency::switch_cpus.inst 19527537.056
+system.l2.overallMissLatency::switch_cpus.data 3258970361.0635004
+system.l2.overallMissLatency::total 3278497108.2095
+system.l2.demandAccesses::cpu.inst 3.2423719999999996
+system.l2.demandAccesses::cpu.data 3.8544929999999993
+system.l2.demandAccesses::switch_cpus.inst 260.28802200000007
+system.l2.demandAccesses::switch_cpus.data 312093.91023399995
+system.l2.demandAccesses::total 312354.188796
+system.l2.overallAccesses::cpu.inst 3.2423719999999996
+system.l2.overallAccesses::cpu.data 3.8544929999999993
+system.l2.overallAccesses::switch_cpus.inst 260.28802200000007
+system.l2.overallAccesses::switch_cpus.data 312093.91023399995
+system.l2.overallAccesses::total 312354.188796
+system.l2.demandMissRate::cpu.inst 0.9999980000000002
+system.l2.demandMissRate::cpu.data 0.9999980000000002
+system.l2.demandMissRate::switch_cpus.inst 0.9518572936959999
+system.l2.demandMissRate::switch_cpus.data 0.091564624155
+system.l2.demandMissRate::total 0.092162394365
+system.l2.overallMissRate::cpu.inst 0.9999980000000002
+system.l2.overallMissRate::cpu.data 0.9999980000000002
+system.l2.overallMissRate::switch_cpus.inst 0.9518572936959999
+system.l2.overallMissRate::switch_cpus.data 0.091564624155
+system.l2.overallMissRate::total 0.092162394365
+system.l2.demandAvgMissLatency::switch_cpus.inst 84128.58421855842
+system.l2.demandAvgMissLatency::switch_cpus.data 81060.69055583599
+system.l2.demandAvgMissLatency::total 81092.74881062465
+system.l2.overallAvgMissLatency::switch_cpus.inst 84128.58421855842
+system.l2.overallAvgMissLatency::switch_cpus.data 81060.69055583599
+system.l2.overallAvgMissLatency::total 81092.74881062465
+system.l2.blockedCycles::no_mshrs 0.0
+system.l2.blockedCycles::no_targets 0.0
+system.l2.blockedCauses::no_mshrs 0.0
+system.l2.blockedCauses::no_targets 0.0
+system.l2.avgBlocked::no_mshrs 0.0
+system.l2.avgBlocked::no_targets 0.0
+system.l2.demandMshrMisses::switch_cpus.inst 238.82649300000003
+system.l2.demandMshrMisses::switch_cpus.data 38967.381122
+system.l2.demandMshrMisses::total 39206.198155
+system.l2.overallMshrMisses::switch_cpus.inst 238.82649300000003
+system.l2.overallMshrMisses::switch_cpus.data 38967.381122
+system.l2.overallMshrMisses::total 39206.198155
+system.l2.demandMshrMissLatency::switch_cpus.inst 17139272.126000002
+system.l2.demandMshrMissLatency::switch_cpus.data 2869296517.022773
+system.l2.demandMshrMissLatency::total 2886435093.8387733
+system.l2.overallMshrMissLatency::switch_cpus.inst 17139272.126000002
+system.l2.overallMshrMissLatency::switch_cpus.data 2869296517.022773
+system.l2.overallMshrMissLatency::total 2886435093.8387733
+system.l2.demandMshrMissRate::switch_cpus.inst 0.9518572936959999
+system.l2.demandMshrMissRate::switch_cpus.data 0.091564624155
+system.l2.demandMshrMissRate::total 0.092162394365
+system.l2.overallMshrMissRate::switch_cpus.inst 0.9518572936959999
+system.l2.overallMshrMissRate::switch_cpus.data 0.091564624155
+system.l2.overallMshrMissRate::total 0.092162394365
+system.l2.demandAvgMshrMissLatency::switch_cpus.inst 74128.60421855842
+system.l2.demandAvgMshrMissLatency::switch_cpus.data 71060.710059776
+system.l2.demandAvgMshrMissLatency::total 71092.7683179191
+system.l2.overallAvgMshrMissLatency::switch_cpus.inst 74128.60421855842
+system.l2.overallAvgMshrMissLatency::switch_cpus.data 71060.710059776
+system.l2.overallAvgMshrMissLatency::total 71092.7683179191
+system.l2.replacements 17428.162431
+system.l2.ReadCleanReq.misses::cpu.inst 3.2423719999999996
+system.l2.ReadCleanReq.misses::switch_cpus.inst 238.82649300000003
+system.l2.ReadCleanReq.misses::total 238.82735300000002
+system.l2.ReadCleanReq.missLatency::switch_cpus.inst 19527537.056
+system.l2.ReadCleanReq.missLatency::total 19527537.056
+system.l2.ReadCleanReq.accesses::cpu.inst 3.2423719999999996
+system.l2.ReadCleanReq.accesses::switch_cpus.inst 260.28802200000007
+system.l2.ReadCleanReq.accesses::total 260.28888200000006
+system.l2.ReadCleanReq.missRate::cpu.inst 0.9999980000000002
+system.l2.ReadCleanReq.missRate::switch_cpus.inst 0.9518572936959999
+system.l2.ReadCleanReq.missRate::total 0.9518572936959999
+system.l2.ReadCleanReq.avgMissLatency::switch_cpus.inst 84128.58421855842
+system.l2.ReadCleanReq.avgMissLatency::total 84125.59213522525
+system.l2.ReadCleanReq.mshrMisses::switch_cpus.inst 238.82649300000003
+system.l2.ReadCleanReq.mshrMisses::total 238.82649300000003
+system.l2.ReadCleanReq.mshrMissLatency::switch_cpus.inst 17139272.126000002
+system.l2.ReadCleanReq.mshrMissLatency::total 17139272.126000002
+system.l2.ReadCleanReq.mshrMissRate::switch_cpus.inst 0.9518572936959999
+system.l2.ReadCleanReq.mshrMissRate::total 0.951821460506
+system.l2.ReadCleanReq.avgMshrMissLatency::switch_cpus.inst 74128.60421855842
+system.l2.ReadCleanReq.avgMshrMissLatency::total 74128.60421855842
+system.l2.ReadExReq.hits::switch_cpus.data 34212.194646
+system.l2.ReadExReq.hits::total 34212.194646
+system.l2.ReadExReq.misses::switch_cpus.data 20989.534133000005
+system.l2.ReadExReq.misses::total 20989.534133000005
+system.l2.ReadExReq.missLatency::switch_cpus.data 1727455370.6335
+system.l2.ReadExReq.missLatency::total 1727455370.6335
+system.l2.ReadExReq.accesses::switch_cpus.data 55201.728779
+system.l2.ReadExReq.accesses::total 55201.728779
+system.l2.ReadExReq.missRate::switch_cpus.data 0.22603533016500002
+system.l2.ReadExReq.missRate::total 0.22603533016500002
+system.l2.ReadExReq.avgMissLatency::switch_cpus.data 76839.71864684082
+system.l2.ReadExReq.avgMissLatency::total 76839.71864684082
+system.l2.ReadExReq.mshrMisses::switch_cpus.data 20989.534133000005
+system.l2.ReadExReq.mshrMisses::total 20989.534133000005
+system.l2.ReadExReq.mshrMissLatency::switch_cpus.data 1517559996.4827728
+system.l2.ReadExReq.mshrMissLatency::total 1517559996.4827728
+system.l2.ReadExReq.mshrMissRate::switch_cpus.data 0.22603533016500002
+system.l2.ReadExReq.mshrMissRate::total 0.22603533016500002
+system.l2.ReadExReq.avgMshrMissLatency::switch_cpus.data 66839.73784552835
+system.l2.ReadExReq.avgMshrMissLatency::total 66839.73784552835
+system.l2.ReadSharedReq.hits::switch_cpus.data 238914.33446599997
+system.l2.ReadSharedReq.hits::total 238914.33446599997
+system.l2.ReadSharedReq.misses::cpu.data 3.3919300000000003
+system.l2.ReadSharedReq.misses::switch_cpus.data 17977.888269000003
+system.l2.ReadSharedReq.misses::total 17977.889559000003
+system.l2.ReadSharedReq.missLatency::switch_cpus.data 1531518199.5200002
+system.l2.ReadSharedReq.missLatency::total 1531518199.5200002
+system.l2.ReadSharedReq.accesses::cpu.data 3.3919300000000003
+system.l2.ReadSharedReq.accesses::switch_cpus.data 256892.181455
+system.l2.ReadSharedReq.accesses::total 256892.181455
+system.l2.ReadSharedReq.missRate::cpu.data 0.9999980000000002
+system.l2.ReadSharedReq.missRate::switch_cpus.data 0.054838968391000005
+system.l2.ReadSharedReq.missRate::total 0.054839228971000006
+system.l2.ReadSharedReq.avgMissLatency::switch_cpus.data 82930.35525186629
+system.l2.ReadSharedReq.avgMissLatency::total 82929.34228153821
+system.l2.ReadSharedReq.mshrMisses::switch_cpus.data 17977.888269000003
+system.l2.ReadSharedReq.mshrMisses::total 17977.888269000003
+system.l2.ReadSharedReq.mshrMissLatency::switch_cpus.data 1351739316.83
+system.l2.ReadSharedReq.mshrMissLatency::total 1351739316.83
+system.l2.ReadSharedReq.mshrMissRate::switch_cpus.data 0.054838968391000005
+system.l2.ReadSharedReq.mshrMissRate::total 0.054826456681
+system.l2.ReadSharedReq.avgMshrMissLatency::switch_cpus.data 72930.37525186628
+system.l2.ReadSharedReq.avgMshrMissLatency::total 72930.37525186628
+system.l2.WritebackDirty.hits::writebacks 168321.541341
+system.l2.WritebackDirty.hits::total 168321.541341
+system.l2.WritebackDirty.accesses::writebacks 168321.541341
+system.l2.WritebackDirty.accesses::total 168321.541341
+system.l2.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.l2.tags.tagsInUse 16779.518511734674
+system.l2.tags.totalRefs 675753.5675059999
+system.l2.tags.sampledRefs 42553.89687700001
+system.l2.tags.avgRefs 58.645789946805
+system.l2.tags.warmupTick 0.0
+system.l2.tags.occupancies::cpu.inst 2.7766281847059995
+system.l2.tags.occupancies::cpu.data 3.4685233774029993
+system.l2.tags.occupancies::switch_cpus.inst 458.062215594704
+system.l2.tags.occupancies::switch_cpus.data 16273.375863424211
+system.l2.tags.avgOccs::cpu.inst 4.2478476000000004e-05
+system.l2.tags.avgOccs::cpu.data 5.2968489999999985e-05
+system.l2.tags.avgOccs::switch_cpus.inst 0.006989479432
+system.l2.tags.avgOccs::switch_cpus.data 0.248311950108
+system.l2.tags.avgOccs::total 0.256035101793
+system.l2.tags.occupanciesTaskId::1024 25008.716441999997
+system.l2.tags.ageTaskId_1024::1 25.895833999999997
+system.l2.tags.ageTaskId_1024::2 463.8624889999999
+system.l2.tags.ageTaskId_1024::3 2624.4564370000003
+system.l2.tags.ratioOccsTaskId::1024 0.38160269636900007
+system.l2.tags.tagAccesses 5037915.841909
+system.l2.tags.dataAccesses 5037915.841909
+system.l2.tags.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.mem_ctrls.avgPriority_switch_cpus.inst::samples 238.82649300000003
+system.mem_ctrls.avgPriority_switch_cpus.data::samples 38945.348035999996
+system.mem_ctrls.priorityMinLatency 1.8755875e-08
+system.mem_ctrls.priorityMaxLatency 0.002993661416891999
+system.mem_ctrls.numReadWriteTurnArounds 467.22739799999994
+system.mem_ctrls.numWriteReadTurnArounds 467.22739799999994
+system.mem_ctrls.numStayReadState 92160.051622
+system.mem_ctrls.numStayWriteState 7080.43535
+system.mem_ctrls.readReqs 39206.198155
+system.mem_ctrls.writeReqs 7538.294830999999
+system.mem_ctrls.readBursts 39206.198155
+system.mem_ctrls.writeBursts 7538.294830999999
+system.mem_ctrls.servicedByWrQ 22.033086
+system.mem_ctrls.mergedWrBursts 0.0
+system.mem_ctrls.neitherReadNorWriteReqs 0.0
+system.mem_ctrls.avgRdQLen 1.03574656
+system.mem_ctrls.avgWrQLen 4.69137291
+system.mem_ctrls.numRdRetry 0.0
+system.mem_ctrls.numWrRetry 0.0
+system.mem_ctrls.readPktSize::0 0.0
+system.mem_ctrls.readPktSize::1 0.0
+system.mem_ctrls.readPktSize::2 0.0
+system.mem_ctrls.readPktSize::3 0.0
+system.mem_ctrls.readPktSize::4 0.0
+system.mem_ctrls.readPktSize::5 0.0
+system.mem_ctrls.readPktSize::6 39206.198155
+system.mem_ctrls.writePktSize::0 0.0
+system.mem_ctrls.writePktSize::1 0.0
+system.mem_ctrls.writePktSize::2 0.0
+system.mem_ctrls.writePktSize::3 0.0
+system.mem_ctrls.writePktSize::4 0.0
+system.mem_ctrls.writePktSize::5 0.0
+system.mem_ctrls.writePktSize::6 7538.294830999999
+system.mem_ctrls.rdQLenPdf::0 21153.099263000007
+system.mem_ctrls.rdQLenPdf::1 11988.119660999999
+system.mem_ctrls.rdQLenPdf::2 5596.334866000001
+system.mem_ctrls.rdQLenPdf::3 446.34136200000006
+system.mem_ctrls.rdQLenPdf::4 0.269917
+system.mem_ctrls.rdQLenPdf::5 0.0
+system.mem_ctrls.rdQLenPdf::6 0.0
+system.mem_ctrls.rdQLenPdf::7 0.0
+system.mem_ctrls.rdQLenPdf::8 0.0
+system.mem_ctrls.rdQLenPdf::9 0.0
+system.mem_ctrls.rdQLenPdf::10 0.0
+system.mem_ctrls.rdQLenPdf::11 0.0
+system.mem_ctrls.rdQLenPdf::12 0.0
+system.mem_ctrls.rdQLenPdf::13 0.0
+system.mem_ctrls.rdQLenPdf::14 0.0
+system.mem_ctrls.rdQLenPdf::15 0.0
+system.mem_ctrls.rdQLenPdf::16 0.0
+system.mem_ctrls.rdQLenPdf::17 0.0
+system.mem_ctrls.rdQLenPdf::18 0.0
+system.mem_ctrls.rdQLenPdf::19 0.0
+system.mem_ctrls.rdQLenPdf::20 0.0
+system.mem_ctrls.rdQLenPdf::21 0.0
+system.mem_ctrls.rdQLenPdf::22 0.0
+system.mem_ctrls.rdQLenPdf::23 0.0
+system.mem_ctrls.rdQLenPdf::24 0.0
+system.mem_ctrls.rdQLenPdf::25 0.0
+system.mem_ctrls.rdQLenPdf::26 0.0
+system.mem_ctrls.rdQLenPdf::27 0.0
+system.mem_ctrls.rdQLenPdf::28 0.0
+system.mem_ctrls.rdQLenPdf::29 0.0
+system.mem_ctrls.rdQLenPdf::30 0.0
+system.mem_ctrls.rdQLenPdf::31 0.0
+system.mem_ctrls.wrQLenPdf::0 0.321305
+system.mem_ctrls.wrQLenPdf::1 0.321305
+system.mem_ctrls.wrQLenPdf::2 0.321305
+system.mem_ctrls.wrQLenPdf::3 0.321305
+system.mem_ctrls.wrQLenPdf::4 0.321305
+system.mem_ctrls.wrQLenPdf::5 0.321305
+system.mem_ctrls.wrQLenPdf::6 0.321305
+system.mem_ctrls.wrQLenPdf::7 0.289709
+system.mem_ctrls.wrQLenPdf::8 0.289709
+system.mem_ctrls.wrQLenPdf::9 0.289709
+system.mem_ctrls.wrQLenPdf::10 0.289709
+system.mem_ctrls.wrQLenPdf::11 0.289709
+system.mem_ctrls.wrQLenPdf::12 0.289709
+system.mem_ctrls.wrQLenPdf::13 0.289709
+system.mem_ctrls.wrQLenPdf::14 0.289709
+system.mem_ctrls.wrQLenPdf::15 21.656100000000002
+system.mem_ctrls.wrQLenPdf::16 23.847855
+system.mem_ctrls.wrQLenPdf::17 177.946975
+system.mem_ctrls.wrQLenPdf::18 334.281353
+system.mem_ctrls.wrQLenPdf::19 466.076395
+system.mem_ctrls.wrQLenPdf::20 483.13366700000006
+system.mem_ctrls.wrQLenPdf::21 479.433503
+system.mem_ctrls.wrQLenPdf::22 486.160267
+system.mem_ctrls.wrQLenPdf::23 498.59241
+system.mem_ctrls.wrQLenPdf::24 489.3880879999999
+system.mem_ctrls.wrQLenPdf::25 501.247563
+system.mem_ctrls.wrQLenPdf::26 509.752739
+system.mem_ctrls.wrQLenPdf::27 493.319765
+system.mem_ctrls.wrQLenPdf::28 493.1919
+system.mem_ctrls.wrQLenPdf::29 543.417631
+system.mem_ctrls.wrQLenPdf::30 490.751414
+system.mem_ctrls.wrQLenPdf::31 547.2033859999999
+system.mem_ctrls.wrQLenPdf::32 486.838967
+system.mem_ctrls.wrQLenPdf::33 6.357597
+system.mem_ctrls.wrQLenPdf::34 1.0523790000000002
+system.mem_ctrls.wrQLenPdf::35 0.062456
+system.mem_ctrls.wrQLenPdf::36 0.015614
+system.mem_ctrls.wrQLenPdf::37 0.0
+system.mem_ctrls.wrQLenPdf::38 0.0
+system.mem_ctrls.wrQLenPdf::39 0.0
+system.mem_ctrls.wrQLenPdf::40 0.0
+system.mem_ctrls.wrQLenPdf::41 0.0
+system.mem_ctrls.wrQLenPdf::42 0.0
+system.mem_ctrls.wrQLenPdf::43 0.0
+system.mem_ctrls.wrQLenPdf::44 0.0
+system.mem_ctrls.wrQLenPdf::45 0.0
+system.mem_ctrls.wrQLenPdf::46 0.0
+system.mem_ctrls.wrQLenPdf::47 0.0
+system.mem_ctrls.wrQLenPdf::48 0.0
+system.mem_ctrls.wrQLenPdf::49 0.0
+system.mem_ctrls.wrQLenPdf::50 0.0
+system.mem_ctrls.wrQLenPdf::51 0.0
+system.mem_ctrls.wrQLenPdf::52 0.0
+system.mem_ctrls.wrQLenPdf::53 0.0
+system.mem_ctrls.wrQLenPdf::54 0.0
+system.mem_ctrls.wrQLenPdf::55 0.0
+system.mem_ctrls.wrQLenPdf::56 0.0
+system.mem_ctrls.wrQLenPdf::57 0.0
+system.mem_ctrls.wrQLenPdf::58 0.0
+system.mem_ctrls.wrQLenPdf::59 0.0
+system.mem_ctrls.wrQLenPdf::60 0.0
+system.mem_ctrls.wrQLenPdf::61 0.0
+system.mem_ctrls.wrQLenPdf::62 0.0
+system.mem_ctrls.wrQLenPdf::63 0.0
+system.mem_ctrls.bytesReadWrQ 1410.117504
+system.mem_ctrls.bytesReadSys 2509196.68192
+system.mem_ctrls.bytesWrittenSys 482450.86918399995
+system.mem_ctrls.avgRdBWSys 61570917.142550565
+system.mem_ctrls.avgWrBWSys 10659800.363609327
+system.mem_ctrls.totGap 36589920670.2885
+system.mem_ctrls.avgGap 7752757.60901663
+system.mem_ctrls.requestorReadBytes::switch_cpus.inst 15284.895552000002
+system.mem_ctrls.requestorReadBytes::switch_cpus.data 2492502.2743039997
+system.mem_ctrls.requestorReadRate::switch_cpus.inst 404971.792138605
+system.mem_ctrls.requestorReadRate::switch_cpus.data 61132693.7277215
+system.mem_ctrls.requestorReadAccesses::switch_cpus.inst 238.82649300000003
+system.mem_ctrls.requestorReadAccesses::switch_cpus.data 38967.381122
+system.mem_ctrls.requestorReadTotalLat::switch_cpus.inst 7316037.6655
+system.mem_ctrls.requestorReadTotalLat::switch_cpus.data 1266575625.11175
+system.mem_ctrls.requestorReadAvgLat::switch_cpus.inst 33002.2945196
+system.mem_ctrls.requestorReadAvgLat::switch_cpus.data 29944.67594436
+system.mem_ctrls.dram.bytesRead::cpu.inst 207.51180799999997
+system.mem_ctrls.dram.bytesRead::cpu.data 246.68755199999995
+system.mem_ctrls.dram.bytesRead::switch_cpus.inst 15284.895552000002
+system.mem_ctrls.dram.bytesRead::switch_cpus.data 2493912.391808
+system.mem_ctrls.dram.bytesRead::total 2509196.68192
+system.mem_ctrls.dram.bytesInstRead::cpu.inst 207.51180799999997
+system.mem_ctrls.dram.bytesInstRead::switch_cpus.inst 15284.895552000002
+system.mem_ctrls.dram.bytesInstRead::total 15284.950592000001
+system.mem_ctrls.dram.numReads::cpu.inst 3.2423719999999996
+system.mem_ctrls.dram.numReads::cpu.data 3.8544929999999993
+system.mem_ctrls.dram.numReads::switch_cpus.inst 238.82649300000003
+system.mem_ctrls.dram.numReads::switch_cpus.data 38967.381122
+system.mem_ctrls.dram.numReads::total 39206.198155
+system.mem_ctrls.dram.bwRead::cpu.inst 54638.91527699999
+system.mem_ctrls.dram.bwRead::cpu.data 64720.169948
+system.mem_ctrls.dram.bwRead::switch_cpus.inst 404971.78784500004
+system.mem_ctrls.dram.bwRead::switch_cpus.data 61166186.085429005
+system.mem_ctrls.dram.bwRead::total 61570917.18504799
+system.mem_ctrls.dram.bwInstRead::cpu.inst 54638.91527699999
+system.mem_ctrls.dram.bwInstRead::switch_cpus.inst 404971.78784500004
+system.mem_ctrls.dram.bwInstRead::total 404993.66538500006
+system.mem_ctrls.dram.bwTotal::cpu.inst 54638.91527699999
+system.mem_ctrls.dram.bwTotal::cpu.data 64720.169948
+system.mem_ctrls.dram.bwTotal::switch_cpus.inst 404971.78784500004
+system.mem_ctrls.dram.bwTotal::switch_cpus.data 61166186.085429005
+system.mem_ctrls.dram.bwTotal::total 72230717.52181399
+system.mem_ctrls.dram.readBursts 39184.165069
+system.mem_ctrls.dram.writeBursts 7531.982147999999
+system.mem_ctrls.dram.perBankRdBursts::0 2496.287167
+system.mem_ctrls.dram.perBankRdBursts::1 2778.4137949999995
+system.mem_ctrls.dram.perBankRdBursts::2 2369.998366
+system.mem_ctrls.dram.perBankRdBursts::3 2254.780529
+system.mem_ctrls.dram.perBankRdBursts::4 2539.1905599999996
+system.mem_ctrls.dram.perBankRdBursts::5 2410.293518
+system.mem_ctrls.dram.perBankRdBursts::6 2473.3137859999997
+system.mem_ctrls.dram.perBankRdBursts::7 2455.4022999999997
+system.mem_ctrls.dram.perBankRdBursts::8 2479.780693
+system.mem_ctrls.dram.perBankRdBursts::9 2340.8781510000003
+system.mem_ctrls.dram.perBankRdBursts::10 2359.821742
+system.mem_ctrls.dram.perBankRdBursts::11 2604.375943
+system.mem_ctrls.dram.perBankRdBursts::12 2420.9478850000005
+system.mem_ctrls.dram.perBankRdBursts::13 2343.586094
+system.mem_ctrls.dram.perBankRdBursts::14 2485.925454
+system.mem_ctrls.dram.perBankRdBursts::15 2371.1690860000003
+system.mem_ctrls.dram.perBankWrBursts::0 535.803959
+system.mem_ctrls.dram.perBankWrBursts::1 636.057352
+system.mem_ctrls.dram.perBankWrBursts::2 428.83256200000005
+system.mem_ctrls.dram.perBankWrBursts::3 349.501726
+system.mem_ctrls.dram.perBankWrBursts::4 556.088752
+system.mem_ctrls.dram.perBankWrBursts::5 527.845954
+system.mem_ctrls.dram.perBankWrBursts::6 520.5904009999999
+system.mem_ctrls.dram.perBankWrBursts::7 537.805426
+system.mem_ctrls.dram.perBankWrBursts::8 512.100049
+system.mem_ctrls.dram.perBankWrBursts::9 345.079791
+system.mem_ctrls.dram.perBankWrBursts::10 419.771837
+system.mem_ctrls.dram.perBankWrBursts::11 509.89840200000003
+system.mem_ctrls.dram.perBankWrBursts::12 421.393113
+system.mem_ctrls.dram.perBankWrBursts::13 348.16405399999996
+system.mem_ctrls.dram.perBankWrBursts::14 461.582692
+system.mem_ctrls.dram.perBankWrBursts::15 421.4660779999999
+system.mem_ctrls.dram.totQLat 539188262.4335
+system.mem_ctrls.dram.totBusLat 195920825.345
+system.mem_ctrls.dram.totMemAccLat 1273891357.47725
+system.mem_ctrls.dram.avgQLat 11232.29695962
+system.mem_ctrls.dram.avgBusLat 4999.99
+system.mem_ctrls.dram.avgMemAccLat 29982.259459619996
+system.mem_ctrls.dram.readRowHits 32603.847757999993
+system.mem_ctrls.dram.writeRowHits 6132.243584000001
+system.mem_ctrls.dram.readRowHitRate 63.32993675
+system.mem_ctrls.dram.writeRowHitRate 21.71258156
+system.mem_ctrls.dram.bytesPerActivate::samples 7980.547823999999
+system.mem_ctrls.dram.bytesPerActivate::mean 249.86034066671002
+system.mem_ctrls.dram.bytesPerActivate::gmean 145.431336495289
+system.mem_ctrls.dram.bytesPerActivate::stdev 287.0356603513199
+system.mem_ctrls.dram.bytesPerActivate::0-127 2665.7013560000005
+system.mem_ctrls.dram.bytesPerActivate::128-255 2135.454999
+system.mem_ctrls.dram.bytesPerActivate::256-383 411.3601760000001
+system.mem_ctrls.dram.bytesPerActivate::384-511 337.60866100000004
+system.mem_ctrls.dram.bytesPerActivate::512-639 300.74054899999993
+system.mem_ctrls.dram.bytesPerActivate::640-767 230.69462400000006
+system.mem_ctrls.dram.bytesPerActivate::768-895 217.16401700000003
+system.mem_ctrls.dram.bytesPerActivate::896-1023 239.246549
+system.mem_ctrls.dram.bytesPerActivate::1024-1151 1440.6741429999997
+system.mem_ctrls.dram.bytesPerActivate::total 7980.547823999999
+system.mem_ctrls.dram.dramBytesRead 2507786.564416
+system.mem_ctrls.dram.dramBytesWritten 482046.85747199995
+system.mem_ctrls.dram.avgRdBW 61.53742499347299
+system.mem_ctrls.dram.avgWrBW 10.649373495752
+system.mem_ctrls.dram.peakBW 12799.974400000003
+system.mem_ctrls.dram.busUtil 0.5633360600000001
+system.mem_ctrls.dram.busUtilRead 0.48013434000000005
+system.mem_ctrls.dram.busUtilWrite 0.08370516000000001
+system.mem_ctrls.dram.pageHitRate 63.20585652
+system.mem_ctrls.dram.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.mem_ctrls.dram.rank0.actEnergy 30459496.704419993
+system.mem_ctrls.dram.rank0.preEnergy 16191182.717654997
+system.mem_ctrls.dram.rank0.readEnergy 141212635.34994
+system.mem_ctrls.dram.rank0.writeEnergy 21362986.40904
+system.mem_ctrls.dram.rank0.refreshEnergy 2890657231.7188807
+system.mem_ctrls.dram.rank0.actBackEnergy 2317963735.02471
+system.mem_ctrls.dram.rank0.preBackEnergy 12109706469.41328
+system.mem_ctrls.dram.rank0.actPowerDownEnergy 0.0
+system.mem_ctrls.dram.rank0.prePowerDownEnergy 0.0
+system.mem_ctrls.dram.rank0.selfRefreshEnergy 0.0
+system.mem_ctrls.dram.rank0.totalEnergy 17527553737.337925
+system.mem_ctrls.dram.rank0.averagePower 477.7258538253771
+system.mem_ctrls.dram.rank0.totalIdleTime 0.0
+system.mem_ctrls.dram.rank0.pwrStateTime::IDLE 31451783421.567
+system.mem_ctrls.dram.rank0.pwrStateTime::REF 1222777541.0749998
+system.mem_ctrls.dram.rank0.pwrStateTime::SREF 0.0
+system.mem_ctrls.dram.rank0.pwrStateTime::PRE_PDN 0.0
+system.mem_ctrls.dram.rank0.pwrStateTime::ACT 3944383128.36
+system.mem_ctrls.dram.rank0.pwrStateTime::ACT_PDN 0.0
+system.mem_ctrls.dram.rank1.actEnergy 26518102.24308
+system.mem_ctrls.dram.rank1.preEnergy 14094996.274424998
+system.mem_ctrls.dram.rank1.readEnergy 138562303.24272
+system.mem_ctrls.dram.rank1.writeEnergy 17953960.40352
+system.mem_ctrls.dram.rank1.refreshEnergy 2890657231.7188807
+system.mem_ctrls.dram.rank1.actBackEnergy 2180241310.05132
+system.mem_ctrls.dram.rank1.preBackEnergy 12225683248.338243
+system.mem_ctrls.dram.rank1.actPowerDownEnergy 0.0
+system.mem_ctrls.dram.rank1.prePowerDownEnergy 0.0
+system.mem_ctrls.dram.rank1.selfRefreshEnergy 0.0
+system.mem_ctrls.dram.rank1.totalEnergy 17493711152.272182
+system.mem_ctrls.dram.rank1.averagePower 476.849974501934
+system.mem_ctrls.dram.rank1.totalIdleTime 0.0
+system.mem_ctrls.dram.rank1.pwrStateTime::IDLE 31754414300.079994
+system.mem_ctrls.dram.rank1.pwrStateTime::REF 1222777541.0749998
+system.mem_ctrls.dram.rank1.pwrStateTime::SREF 0.0
+system.mem_ctrls.dram.rank1.pwrStateTime::PRE_PDN 0.0
+system.mem_ctrls.dram.rank1.pwrStateTime::ACT 3641752249.8470006
+system.mem_ctrls.dram.rank1.pwrStateTime::ACT_PDN 0.0
+system.mem_ctrls.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.membus.transDist::ReadResp 18216.716912000004
+system.membus.transDist::ReadExReq 20989.534133000005
+system.membus.transDist::ReadExResp 20989.534133000005
+system.membus.transDist::ReadSharedReq 18216.716912000004
+system.membus.pktCount_system.l2.mem_side_port::system.mem_ctrls.port 95774.47666300001
+system.membus.pktCount::total 95774.47666300001
+system.membus.pktSize_system.l2.mem_side_port::system.mem_ctrls.port 2991647.5511040003
+system.membus.pktSize::total 2991647.5511040003
+system.membus.snoops 0.0
+system.membus.snoopTraffic 0.0
+system.membus.snoopFanout::samples 39285.369913
+system.membus.snoopFanout::mean 0.0
+system.membus.snoopFanout::stdev 0.0
+system.membus.snoopFanout::underflows 0.0
+system.membus.snoopFanout::0 39285.369913
+system.membus.snoopFanout::1 0.0
+system.membus.snoopFanout::overflows 0.0
+system.membus.snoopFanout::min_value 0.0
+system.membus.snoopFanout::max_value 0.0
+system.membus.snoopFanout::total 39285.369913
+system.membus.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.membus.reqLayer0.occupancy 95959628.86649998
+system.membus.reqLayer0.utilization 0.0
+system.membus.respLayer1.occupancy 205406893.6865
+system.membus.respLayer1.utilization 0.0
+system.membus.snoop_filter.totRequests 56568.278507999996
+system.membus.snoop_filter.hitSingleRequests 17282.908595
+system.membus.snoop_filter.hitMultiRequests 0.0
+system.membus.snoop_filter.totSnoops 0.0
+system.membus.snoop_filter.hitSingleSnoops 0.0
+system.membus.snoop_filter.hitMultiSnoops 0.0
+system.switch_cpus.numCycles 73237888.880118
+system.switch_cpus.cpi 0.7323564415910001
+system.switch_cpus.ipc 1.371410316428
+system.switch_cpus.numWorkItemsStarted 0.0
+system.switch_cpus.numWorkItemsCompleted 0.0
+system.switch_cpus.instsAdded 126926555.50693896
+system.switch_cpus.instsIssued 121253324.82414001
+system.switch_cpus.squashedInstsIssued 944.9760590000001
+system.switch_cpus.squashedInstsExamined 18616070.428537
+system.switch_cpus.squashedOperandsExamined 15038223.806432
+system.switch_cpus.numIssuedDist::samples 73215940.41403602
+system.switch_cpus.numIssuedDist::mean 1.662628033377
+system.switch_cpus.numIssuedDist::stdev 1.572435197808
+system.switch_cpus.numIssuedDist::underflows 0.0
+system.switch_cpus.numIssuedDist::0 23425403.06134199
+system.switch_cpus.numIssuedDist::1 14764874.220310997
+system.switch_cpus.numIssuedDist::2 13730077.476269
+system.switch_cpus.numIssuedDist::3 11355295.390246
+system.switch_cpus.numIssuedDist::4 6269947.578177
+system.switch_cpus.numIssuedDist::5 2625004.1009529997
+system.switch_cpus.numIssuedDist::6 769090.826518
+system.switch_cpus.numIssuedDist::7 155374.480949
+system.switch_cpus.numIssuedDist::8 67422.33959899998
+system.switch_cpus.numIssuedDist::9 18455.776183000005
+system.switch_cpus.numIssuedDist::10 34995.163489000006
+system.switch_cpus.numIssuedDist::overflows 0.0
+system.switch_cpus.numIssuedDist::min_value 0.0
+system.switch_cpus.numIssuedDist::max_value 9.99998
+system.switch_cpus.numIssuedDist::total 73215940.41403602
+system.switch_cpus.statFuBusy::No_OpClass 0.0
+system.switch_cpus.statFuBusy::IntAlu 824.634796
+system.switch_cpus.statFuBusy::IntMult 520422.35406199994
+system.switch_cpus.statFuBusy::IntDiv 355472.88435700006
+system.switch_cpus.statFuBusy::FloatAdd 0.0
+system.switch_cpus.statFuBusy::FloatCmp 0.0
+system.switch_cpus.statFuBusy::FloatCvt 0.0
+system.switch_cpus.statFuBusy::FloatMult 0.0
+system.switch_cpus.statFuBusy::FloatMultAcc 0.0
+system.switch_cpus.statFuBusy::FloatDiv 0.0
+system.switch_cpus.statFuBusy::FloatMisc 0.0
+system.switch_cpus.statFuBusy::FloatSqrt 0.0
+system.switch_cpus.statFuBusy::SimdAdd 0.0
+system.switch_cpus.statFuBusy::SimdAddAcc 0.0
+system.switch_cpus.statFuBusy::SimdAlu 0.758483
+system.switch_cpus.statFuBusy::SimdCmp 0.0
+system.switch_cpus.statFuBusy::SimdCvt 0.0
+system.switch_cpus.statFuBusy::SimdMisc 0.0
+system.switch_cpus.statFuBusy::SimdMult 0.0
+system.switch_cpus.statFuBusy::SimdMultAcc 0.0
+system.switch_cpus.statFuBusy::SimdMatMultAcc 0.0
+system.switch_cpus.statFuBusy::SimdShift 0.0
+system.switch_cpus.statFuBusy::SimdShiftAcc 0.0
+system.switch_cpus.statFuBusy::SimdDiv 0.0
+system.switch_cpus.statFuBusy::SimdSqrt 0.0
+system.switch_cpus.statFuBusy::SimdFloatAdd 0.0
+system.switch_cpus.statFuBusy::SimdFloatAlu 0.0
+system.switch_cpus.statFuBusy::SimdFloatCmp 0.0
+system.switch_cpus.statFuBusy::SimdFloatCvt 0.0
+system.switch_cpus.statFuBusy::SimdFloatDiv 0.0
+system.switch_cpus.statFuBusy::SimdFloatMisc 0.0
+system.switch_cpus.statFuBusy::SimdFloatMult 0.0
+system.switch_cpus.statFuBusy::SimdFloatMultAcc 0.0
+system.switch_cpus.statFuBusy::SimdFloatMatMultAcc 0.0
+system.switch_cpus.statFuBusy::SimdFloatSqrt 0.0
+system.switch_cpus.statFuBusy::SimdReduceAdd 0.0
+system.switch_cpus.statFuBusy::SimdReduceAlu 0.0
+system.switch_cpus.statFuBusy::SimdReduceCmp 0.0
+system.switch_cpus.statFuBusy::SimdFloatReduceAdd 0.0
+system.switch_cpus.statFuBusy::SimdFloatReduceCmp 0.0
+system.switch_cpus.statFuBusy::SimdAes 0.0
+system.switch_cpus.statFuBusy::SimdAesMix 0.0
+system.switch_cpus.statFuBusy::SimdSha1Hash 0.0
+system.switch_cpus.statFuBusy::SimdSha1Hash2 0.0
+system.switch_cpus.statFuBusy::SimdSha256Hash 0.0
+system.switch_cpus.statFuBusy::SimdSha256Hash2 0.0
+system.switch_cpus.statFuBusy::SimdShaSigma2 0.0
+system.switch_cpus.statFuBusy::SimdShaSigma3 0.0
+system.switch_cpus.statFuBusy::SimdPredAlu 0.0
+system.switch_cpus.statFuBusy::Matrix 0.0
+system.switch_cpus.statFuBusy::MatrixMov 0.0
+system.switch_cpus.statFuBusy::MatrixOP 0.0
+system.switch_cpus.statFuBusy::MemRead 1545.889469
+system.switch_cpus.statFuBusy::MemWrite 1351.3790519999998
+system.switch_cpus.statFuBusy::FloatMemRead 0.0
+system.switch_cpus.statFuBusy::FloatMemWrite 0.0
+system.switch_cpus.statFuBusy::IprAccess 0.0
+system.switch_cpus.statFuBusy::InstPrefetch 0.0
+system.switch_cpus.statFuBusy::SimdUnitStrideLoad 0.0
+system.switch_cpus.statFuBusy::SimdUnitStrideStore 0.0
+system.switch_cpus.statFuBusy::SimdUnitStrideMaskLoad 0.0
+system.switch_cpus.statFuBusy::SimdUnitStrideMaskStore 0.0
+system.switch_cpus.statFuBusy::SimdStridedLoad 0.0
+system.switch_cpus.statFuBusy::SimdStridedStore 0.0
+system.switch_cpus.statFuBusy::SimdIndexedLoad 0.0
+system.switch_cpus.statFuBusy::SimdIndexedStore 0.0
+system.switch_cpus.statFuBusy::SimdWholeRegisterLoad 0.0
+system.switch_cpus.statFuBusy::SimdWholeRegisterStore 0.0
+system.switch_cpus.statFuBusy::SimdUnitStrideFaultOnlyFirstLoad 0.0
+system.switch_cpus.statFuBusy::SimdUnitStrideSegmentedLoad 0.0
+system.switch_cpus.statFuBusy::SimdUnitStrideSegmentedStore 0.0
+system.switch_cpus.statFuBusy::SimdExt 0.0
+system.switch_cpus.statFuBusy::SimdFloatExt 0.0
+system.switch_cpus.statFuBusy::SimdConfig 0.0
+system.switch_cpus.statIssuedInstType_0::No_OpClass 47.684111
+system.switch_cpus.statIssuedInstType_0::IntAlu 74067580.672512
+system.switch_cpus.statIssuedInstType_0::IntMult 1196049.1743790002
+system.switch_cpus.statIssuedInstType_0::IntDiv 351038.7435
+system.switch_cpus.statIssuedInstType_0::FloatAdd 51367.580228000006
+system.switch_cpus.statIssuedInstType_0::FloatCmp 8673.134016
+system.switch_cpus.statIssuedInstType_0::FloatCvt 51595.71267299999
+system.switch_cpus.statIssuedInstType_0::FloatMult 0.00688
+system.switch_cpus.statIssuedInstType_0::FloatMultAcc 0.0
+system.switch_cpus.statIssuedInstType_0::FloatDiv 372.890837
+system.switch_cpus.statIssuedInstType_0::FloatMisc 304403.8974690001
+system.switch_cpus.statIssuedInstType_0::FloatSqrt 0.0
+system.switch_cpus.statIssuedInstType_0::SimdAdd 16128.837131000002
+system.switch_cpus.statIssuedInstType_0::SimdAddAcc 0.0
+system.switch_cpus.statIssuedInstType_0::SimdAlu 1274511.3782649997
+system.switch_cpus.statIssuedInstType_0::SimdCmp 1193.4837359999997
+system.switch_cpus.statIssuedInstType_0::SimdCvt 52709.731626999994
+system.switch_cpus.statIssuedInstType_0::SimdMisc 349381.359945
+system.switch_cpus.statIssuedInstType_0::SimdMult 0.0
+system.switch_cpus.statIssuedInstType_0::SimdMultAcc 0.0
+system.switch_cpus.statIssuedInstType_0::SimdMatMultAcc 0.0
+system.switch_cpus.statIssuedInstType_0::SimdShift 967181.075515
+system.switch_cpus.statIssuedInstType_0::SimdShiftAcc 0.0
+system.switch_cpus.statIssuedInstType_0::SimdDiv 0.0
+system.switch_cpus.statIssuedInstType_0::SimdSqrt 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatAdd 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatAlu 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatCmp 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatCvt 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatDiv 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatMisc 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatMult 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatMultAcc 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatMatMultAcc 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatSqrt 0.0
+system.switch_cpus.statIssuedInstType_0::SimdReduceAdd 0.0
+system.switch_cpus.statIssuedInstType_0::SimdReduceAlu 0.0
+system.switch_cpus.statIssuedInstType_0::SimdReduceCmp 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatReduceAdd 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatReduceCmp 0.0
+system.switch_cpus.statIssuedInstType_0::SimdAes 0.0
+system.switch_cpus.statIssuedInstType_0::SimdAesMix 0.0
+system.switch_cpus.statIssuedInstType_0::SimdSha1Hash 0.0
+system.switch_cpus.statIssuedInstType_0::SimdSha1Hash2 0.0
+system.switch_cpus.statIssuedInstType_0::SimdSha256Hash 0.0
+system.switch_cpus.statIssuedInstType_0::SimdSha256Hash2 0.0
+system.switch_cpus.statIssuedInstType_0::SimdShaSigma2 0.0
+system.switch_cpus.statIssuedInstType_0::SimdShaSigma3 0.0
+system.switch_cpus.statIssuedInstType_0::SimdPredAlu 0.0
+system.switch_cpus.statIssuedInstType_0::Matrix 0.0
+system.switch_cpus.statIssuedInstType_0::MatrixMov 0.0
+system.switch_cpus.statIssuedInstType_0::MatrixOP 0.0
+system.switch_cpus.statIssuedInstType_0::MemRead 31559954.598477997
+system.switch_cpus.statIssuedInstType_0::MemWrite 11001134.862838
+system.switch_cpus.statIssuedInstType_0::FloatMemRead 0.0
+system.switch_cpus.statIssuedInstType_0::FloatMemWrite 0.0
+system.switch_cpus.statIssuedInstType_0::IprAccess 0.0
+system.switch_cpus.statIssuedInstType_0::InstPrefetch 0.0
+system.switch_cpus.statIssuedInstType_0::SimdUnitStrideLoad 0.0
+system.switch_cpus.statIssuedInstType_0::SimdUnitStrideStore 0.0
+system.switch_cpus.statIssuedInstType_0::SimdUnitStrideMaskLoad 0.0
+system.switch_cpus.statIssuedInstType_0::SimdUnitStrideMaskStore 0.0
+system.switch_cpus.statIssuedInstType_0::SimdStridedLoad 0.0
+system.switch_cpus.statIssuedInstType_0::SimdStridedStore 0.0
+system.switch_cpus.statIssuedInstType_0::SimdIndexedLoad 0.0
+system.switch_cpus.statIssuedInstType_0::SimdIndexedStore 0.0
+system.switch_cpus.statIssuedInstType_0::SimdWholeRegisterLoad 0.0
+system.switch_cpus.statIssuedInstType_0::SimdWholeRegisterStore 0.0
+system.switch_cpus.statIssuedInstType_0::SimdUnitStrideFaultOnlyFirstLoad 0.0
+system.switch_cpus.statIssuedInstType_0::SimdUnitStrideSegmentedLoad 0.0
+system.switch_cpus.statIssuedInstType_0::SimdUnitStrideSegmentedStore 0.0
+system.switch_cpus.statIssuedInstType_0::SimdExt 0.0
+system.switch_cpus.statIssuedInstType_0::SimdFloatExt 0.0
+system.switch_cpus.statIssuedInstType_0::SimdConfig 0.0
+system.switch_cpus.statIssuedInstType_0::total 121253324.82414001
+system.switch_cpus.issueRate 1.6621599433489997
+system.switch_cpus.fuBusy 879617.9002190001
+system.switch_cpus.fuBusyRate 0.007265995033
+system.switch_cpus.intInstQueueReads 303793395.31263596
+system.switch_cpus.intInstQueueWrites 138938793.541367
+system.switch_cpus.intInstQueueWakeupAccesses 111816705.97284599
+system.switch_cpus.fpInstQueueReads 0.0
+system.switch_cpus.fpInstQueueWrites 0.0
+system.switch_cpus.fpInstQueueWakeupAccesses 0.0
+system.switch_cpus.vecInstQueueReads 12809758.972772999
+system.switch_cpus.vecInstQueueWrites 6638375.522716
+system.switch_cpus.vecInstQueueWakeupAccesses 6376330.062744998
+system.switch_cpus.intAluAccesses 115727627.10939498
+system.switch_cpus.fpAluAccesses 0.0
+system.switch_cpus.vecAluAccesses 6405267.930852999
+system.switch_cpus.numSquashedInsts 1551795.1911229999
+system.switch_cpus.numSwp 0.0
+system.switch_cpus.timesIdled 206.04115999999996
+system.switch_cpus.idleCycles 21949.487762000004
+system.switch_cpus.MemDepUnit__0.insertedLoads 32519487.359994
+system.switch_cpus.MemDepUnit__0.insertedStores 11505804.458997
+system.switch_cpus.MemDepUnit__0.conflictingLoads 1673755.27929
+system.switch_cpus.MemDepUnit__0.conflictingStores 2709756.9187669996
+system.switch_cpus.MemDepUnit__0.MDPLookups 19396542.953900997
+system.switch_cpus.MemDepUnit__0.bypassedMDPLookups 13122944.406093
+system.switch_cpus.MemDepUnit__0.LFSTReads 19191969.308352005
+system.switch_cpus.MemDepUnit__0.LFSTWrites 9359781.386103999
+system.switch_cpus.MemDepUnit__0.PHASTMispredictions 573626.219987
+system.switch_cpus.MemDepUnit__0.PHASTCorrectPredictions 946150.456241
+system.switch_cpus.MemDepUnit__0.readsPath1 0.0
+system.switch_cpus.MemDepUnit__0.readsPath2 0.0
+system.switch_cpus.MemDepUnit__0.readsPath3 0.0
+system.switch_cpus.MemDepUnit__0.readsPath4 0.0
+system.switch_cpus.MemDepUnit__0.readsPath5 0.0
+system.switch_cpus.MemDepUnit__0.readsPath6 0.0
+system.switch_cpus.MemDepUnit__0.readsPath7 0.0
+system.switch_cpus.MemDepUnit__0.readsPath8 0.0
+system.switch_cpus.MemDepUnit__0.writesPath1 0.0
+system.switch_cpus.MemDepUnit__0.writesPath2 0.0
+system.switch_cpus.MemDepUnit__0.writesPath3 0.0
+system.switch_cpus.MemDepUnit__0.writesPath4 0.0
+system.switch_cpus.MemDepUnit__0.writesPath5 0.0
+system.switch_cpus.MemDepUnit__0.writesPath6 0.0
+system.switch_cpus.MemDepUnit__0.writesPath7 0.0
+system.switch_cpus.MemDepUnit__0.writesPath8 0.0
+system.switch_cpus.MemDepUnit__1.insertedLoads 0.0
+system.switch_cpus.MemDepUnit__1.insertedStores 0.0
+system.switch_cpus.MemDepUnit__1.conflictingLoads 0.0
+system.switch_cpus.MemDepUnit__1.conflictingStores 0.0
+system.switch_cpus.MemDepUnit__1.MDPLookups 0.0
+system.switch_cpus.MemDepUnit__1.bypassedMDPLookups 0.0
+system.switch_cpus.MemDepUnit__1.LFSTReads 0.0
+system.switch_cpus.MemDepUnit__1.LFSTWrites 0.0
+system.switch_cpus.MemDepUnit__1.PHASTMispredictions 0.0
+system.switch_cpus.MemDepUnit__1.PHASTCorrectPredictions 0.0
+system.switch_cpus.MemDepUnit__1.readsPath1 0.0
+system.switch_cpus.MemDepUnit__1.readsPath2 0.0
+system.switch_cpus.MemDepUnit__1.readsPath3 0.0
+system.switch_cpus.MemDepUnit__1.readsPath4 0.0
+system.switch_cpus.MemDepUnit__1.readsPath5 0.0
+system.switch_cpus.MemDepUnit__1.readsPath6 0.0
+system.switch_cpus.MemDepUnit__1.readsPath7 0.0
+system.switch_cpus.MemDepUnit__1.readsPath8 0.0
+system.switch_cpus.MemDepUnit__1.writesPath1 0.0
+system.switch_cpus.MemDepUnit__1.writesPath2 0.0
+system.switch_cpus.MemDepUnit__1.writesPath3 0.0
+system.switch_cpus.MemDepUnit__1.writesPath4 0.0
+system.switch_cpus.MemDepUnit__1.writesPath5 0.0
+system.switch_cpus.MemDepUnit__1.writesPath6 0.0
+system.switch_cpus.MemDepUnit__1.writesPath7 0.0
+system.switch_cpus.MemDepUnit__1.writesPath8 0.0
+system.switch_cpus.MemDepUnit__2.insertedLoads 0.0
+system.switch_cpus.MemDepUnit__2.insertedStores 0.0
+system.switch_cpus.MemDepUnit__2.conflictingLoads 0.0
+system.switch_cpus.MemDepUnit__2.conflictingStores 0.0
+system.switch_cpus.MemDepUnit__2.MDPLookups 0.0
+system.switch_cpus.MemDepUnit__2.bypassedMDPLookups 0.0
+system.switch_cpus.MemDepUnit__2.LFSTReads 0.0
+system.switch_cpus.MemDepUnit__2.LFSTWrites 0.0
+system.switch_cpus.MemDepUnit__2.PHASTMispredictions 0.0
+system.switch_cpus.MemDepUnit__2.PHASTCorrectPredictions 0.0
+system.switch_cpus.MemDepUnit__2.readsPath1 0.0
+system.switch_cpus.MemDepUnit__2.readsPath2 0.0
+system.switch_cpus.MemDepUnit__2.readsPath3 0.0
+system.switch_cpus.MemDepUnit__2.readsPath4 0.0
+system.switch_cpus.MemDepUnit__2.readsPath5 0.0
+system.switch_cpus.MemDepUnit__2.readsPath6 0.0
+system.switch_cpus.MemDepUnit__2.readsPath7 0.0
+system.switch_cpus.MemDepUnit__2.readsPath8 0.0
+system.switch_cpus.MemDepUnit__2.writesPath1 0.0
+system.switch_cpus.MemDepUnit__2.writesPath2 0.0
+system.switch_cpus.MemDepUnit__2.writesPath3 0.0
+system.switch_cpus.MemDepUnit__2.writesPath4 0.0
+system.switch_cpus.MemDepUnit__2.writesPath5 0.0
+system.switch_cpus.MemDepUnit__2.writesPath6 0.0
+system.switch_cpus.MemDepUnit__2.writesPath7 0.0
+system.switch_cpus.MemDepUnit__2.writesPath8 0.0
+system.switch_cpus.MemDepUnit__3.insertedLoads 0.0
+system.switch_cpus.MemDepUnit__3.insertedStores 0.0
+system.switch_cpus.MemDepUnit__3.conflictingLoads 0.0
+system.switch_cpus.MemDepUnit__3.conflictingStores 0.0
+system.switch_cpus.MemDepUnit__3.MDPLookups 0.0
+system.switch_cpus.MemDepUnit__3.bypassedMDPLookups 0.0
+system.switch_cpus.MemDepUnit__3.LFSTReads 0.0
+system.switch_cpus.MemDepUnit__3.LFSTWrites 0.0
+system.switch_cpus.MemDepUnit__3.PHASTMispredictions 0.0
+system.switch_cpus.MemDepUnit__3.PHASTCorrectPredictions 0.0
+system.switch_cpus.MemDepUnit__3.readsPath1 0.0
+system.switch_cpus.MemDepUnit__3.readsPath2 0.0
+system.switch_cpus.MemDepUnit__3.readsPath3 0.0
+system.switch_cpus.MemDepUnit__3.readsPath4 0.0
+system.switch_cpus.MemDepUnit__3.readsPath5 0.0
+system.switch_cpus.MemDepUnit__3.readsPath6 0.0
+system.switch_cpus.MemDepUnit__3.readsPath7 0.0
+system.switch_cpus.MemDepUnit__3.readsPath8 0.0
+system.switch_cpus.MemDepUnit__3.writesPath1 0.0
+system.switch_cpus.MemDepUnit__3.writesPath2 0.0
+system.switch_cpus.MemDepUnit__3.writesPath3 0.0
+system.switch_cpus.MemDepUnit__3.writesPath4 0.0
+system.switch_cpus.MemDepUnit__3.writesPath5 0.0
+system.switch_cpus.MemDepUnit__3.writesPath6 0.0
+system.switch_cpus.MemDepUnit__3.writesPath7 0.0
+system.switch_cpus.MemDepUnit__3.writesPath8 0.0
+system.switch_cpus.branchPred.lookups_0::NoBranch 0.0
+system.switch_cpus.branchPred.lookups_0::Return 957437.3205329999
+system.switch_cpus.branchPred.lookups_0::CallDirect 917850.099867
+system.switch_cpus.branchPred.lookups_0::CallIndirect 148.156565
+system.switch_cpus.branchPred.lookups_0::DirectCond 15145729.405987002
+system.switch_cpus.branchPred.lookups_0::DirectUncond 1598809.5924189999
+system.switch_cpus.branchPred.lookups_0::IndirectCond 0.0
+system.switch_cpus.branchPred.lookups_0::IndirectUncond 3341.6767739999996
+system.switch_cpus.branchPred.lookups_0::total 18623316.252144996
+system.switch_cpus.branchPred.squashes_0::NoBranch 0.0
+system.switch_cpus.branchPred.squashes_0::Return 245896.51825199998
+system.switch_cpus.branchPred.squashes_0::CallDirect 206313.78289200005
+system.switch_cpus.branchPred.squashes_0::CallIndirect 142.574633
+system.switch_cpus.branchPred.squashes_0::DirectCond 4199608.696456
+system.switch_cpus.branchPred.squashes_0::DirectUncond 327057.612962
+system.switch_cpus.branchPred.squashes_0::IndirectCond 0.0
+system.switch_cpus.branchPred.squashes_0::IndirectUncond 399.07945
+system.switch_cpus.branchPred.squashes_0::total 4979418.264645001
+system.switch_cpus.branchPred.corrected_0::NoBranch 0.0
+system.switch_cpus.branchPred.corrected_0::Return 214.703334
+system.switch_cpus.branchPred.corrected_0::CallDirect 79.89045200000001
+system.switch_cpus.branchPred.corrected_0::CallIndirect 2.105909
+system.switch_cpus.branchPred.corrected_0::DirectCond 1249564.167185
+system.switch_cpus.branchPred.corrected_0::DirectUncond 73.162875
+system.switch_cpus.branchPred.corrected_0::IndirectCond 0.0
+system.switch_cpus.branchPred.corrected_0::IndirectUncond 7.489016000000001
+system.switch_cpus.branchPred.corrected_0::total 1249941.518771
+system.switch_cpus.branchPred.earlyResteers_0::NoBranch 0.0
+system.switch_cpus.branchPred.earlyResteers_0::Return 0.0
+system.switch_cpus.branchPred.earlyResteers_0::CallDirect 0.0
+system.switch_cpus.branchPred.earlyResteers_0::CallIndirect 0.0
+system.switch_cpus.branchPred.earlyResteers_0::DirectCond 0.0
+system.switch_cpus.branchPred.earlyResteers_0::DirectUncond 0.0
+system.switch_cpus.branchPred.earlyResteers_0::IndirectCond 0.0
+system.switch_cpus.branchPred.earlyResteers_0::IndirectUncond 0.0
+system.switch_cpus.branchPred.earlyResteers_0::total 0.0
+system.switch_cpus.branchPred.committed_0::NoBranch 0.0
+system.switch_cpus.branchPred.committed_0::Return 711540.7686559998
+system.switch_cpus.branchPred.committed_0::CallDirect 711536.1409239998
+system.switch_cpus.branchPred.committed_0::CallIndirect 5.581932
+system.switch_cpus.branchPred.committed_0::DirectCond 10946121.116455998
+system.switch_cpus.branchPred.committed_0::DirectUncond 1271752.12508
+system.switch_cpus.branchPred.committed_0::IndirectCond 0.0
+system.switch_cpus.branchPred.committed_0::IndirectUncond 2942.5973239999994
+system.switch_cpus.branchPred.committed_0::total 13643898.330372
+system.switch_cpus.branchPred.mispredicted_0::NoBranch 0.0
+system.switch_cpus.branchPred.mispredicted_0::Return 193.228997
+system.switch_cpus.branchPred.mispredicted_0::CallDirect 48.180994
+system.switch_cpus.branchPred.mispredicted_0::CallIndirect 2.0933080000000004
+system.switch_cpus.branchPred.mispredicted_0::DirectCond 1199342.400842
+system.switch_cpus.branchPred.mispredicted_0::DirectUncond 38.799011
+system.switch_cpus.branchPred.mispredicted_0::IndirectCond 0.0
+system.switch_cpus.branchPred.mispredicted_0::IndirectUncond 6.746823
+system.switch_cpus.branchPred.mispredicted_0::total 1199631.4499749998
+system.switch_cpus.branchPred.targetProvider_0::NoTarget 8245406.490788
+system.switch_cpus.branchPred.targetProvider_0::BTB 9416982.607485
+system.switch_cpus.branchPred.targetProvider_0::RAS 957437.3205329999
+system.switch_cpus.branchPred.targetProvider_0::Indirect 3489.833339
+system.switch_cpus.branchPred.targetProvider_0::total 18623316.252144996
+system.switch_cpus.branchPred.targetWrong_0::NoBranch 508073.00209500006
+system.switch_cpus.branchPred.targetWrong_0::Return 741644.2184169999
+system.switch_cpus.branchPred.targetWrong_0::CallDirect 214.703334
+system.switch_cpus.branchPred.targetWrong_0::CallIndirect 9.594925
+system.switch_cpus.branchPred.targetWrong_0::DirectCond 0.0
+system.switch_cpus.branchPred.targetWrong_0::DirectUncond 0.0
+system.switch_cpus.branchPred.targetWrong_0::IndirectCond 0.0
+system.switch_cpus.branchPred.targetWrong_0::IndirectUncond 0.0
+system.switch_cpus.branchPred.targetWrong_0::total 1249941.518771
+system.switch_cpus.branchPred.condPredicted 15145729.405987002
+system.switch_cpus.branchPred.condPredictedTaken 6950823.844230999
+system.switch_cpus.branchPred.condIncorrect 1249941.518771
+system.switch_cpus.branchPred.predTakenBTBMiss 183.598161
+system.switch_cpus.branchPred.NotTakenMispredicted 508297.30035400006
+system.switch_cpus.branchPred.TakenMispredicted 741644.2184169999
+system.switch_cpus.branchPred.BTBLookups 18623316.252144996
+system.switch_cpus.branchPred.BTBUpdates 508073.00209500006
+system.switch_cpus.branchPred.BTBHits 15968439.413315002
+system.switch_cpus.branchPred.BTBHitRatio 0.857551736
+system.switch_cpus.branchPred.BTBMispredicted 336.33210499999996
+system.switch_cpus.branchPred.indirectLookups 3489.833339
+system.switch_cpus.branchPred.indirectHits 3489.833339
+system.switch_cpus.branchPred.indirectMisses 0.0
+system.switch_cpus.branchPred.indirectMispredicted 0.0
+system.switch_cpus.branchPred.btb.lookups::NoBranch 0.0
+system.switch_cpus.branchPred.btb.lookups::Return 957437.3205329999
+system.switch_cpus.branchPred.btb.lookups::CallDirect 917850.099867
+system.switch_cpus.branchPred.btb.lookups::CallIndirect 148.156565
+system.switch_cpus.branchPred.btb.lookups::DirectCond 15145729.405987002
+system.switch_cpus.branchPred.btb.lookups::DirectUncond 1598809.5924189999
+system.switch_cpus.branchPred.btb.lookups::IndirectCond 0.0
+system.switch_cpus.branchPred.btb.lookups::IndirectUncond 3341.6767739999996
+system.switch_cpus.branchPred.btb.lookups::total 18623316.252144996
+system.switch_cpus.branchPred.btb.misses::NoBranch 0.0
+system.switch_cpus.branchPred.btb.misses::Return 957437.3205329999
+system.switch_cpus.branchPred.btb.misses::CallDirect 126.03875500000001
+system.switch_cpus.branchPred.btb.misses::CallIndirect 148.156565
+system.switch_cpus.branchPred.btb.misses::DirectCond 1645499.4699860003
+system.switch_cpus.branchPred.btb.misses::DirectUncond 48324.17621700001
+system.switch_cpus.branchPred.btb.misses::IndirectCond 0.0
+system.switch_cpus.branchPred.btb.misses::IndirectUncond 3341.6767739999996
+system.switch_cpus.branchPred.btb.misses::total 2654876.8388300003
+system.switch_cpus.branchPred.btb.updates::NoBranch 0.0
+system.switch_cpus.branchPred.btb.updates::Return 0.0
+system.switch_cpus.branchPred.btb.updates::CallDirect 79.89045200000001
+system.switch_cpus.branchPred.btb.updates::CallIndirect 0.0
+system.switch_cpus.branchPred.btb.updates::DirectCond 507919.94876800006
+system.switch_cpus.branchPred.btb.updates::DirectUncond 73.162875
+system.switch_cpus.branchPred.btb.updates::IndirectCond 0.0
+system.switch_cpus.branchPred.btb.updates::IndirectUncond 0.0
+system.switch_cpus.branchPred.btb.updates::total 508073.00209500006
+system.switch_cpus.branchPred.btb.mispredict::NoBranch 0.0
+system.switch_cpus.branchPred.btb.mispredict::Return 0.0
+system.switch_cpus.branchPred.btb.mispredict::CallDirect 79.89045200000001
+system.switch_cpus.branchPred.btb.mispredict::CallIndirect 0.0
+system.switch_cpus.branchPred.btb.mispredict::DirectCond 507919.94876800006
+system.switch_cpus.branchPred.btb.mispredict::DirectUncond 73.162875
+system.switch_cpus.branchPred.btb.mispredict::IndirectCond 0.0
+system.switch_cpus.branchPred.btb.mispredict::IndirectUncond 0.0
+system.switch_cpus.branchPred.btb.mispredict::total 508073.00209500006
+system.switch_cpus.branchPred.btb.evictions 336.338985
+system.switch_cpus.branchPred.btb.conflict 0.0
+system.switch_cpus.branchPred.btb.replace_vector::0 0.0
+system.switch_cpus.branchPred.btb.replace_vector::1 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::2 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::3 0.504978
+system.switch_cpus.branchPred.btb.replace_vector::4 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::5 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::6 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::7 2.4030579999999993
+system.switch_cpus.branchPred.btb.replace_vector::8 1.3564029999999998
+system.switch_cpus.branchPred.btb.replace_vector::9 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::10 1.412771
+system.switch_cpus.branchPred.btb.replace_vector::11 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::12 1.04229
+system.switch_cpus.branchPred.btb.replace_vector::13 1.2176040000000001
+system.switch_cpus.branchPred.btb.replace_vector::14 0.31147
+system.switch_cpus.branchPred.btb.replace_vector::15 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::16 0.551143
+system.switch_cpus.branchPred.btb.replace_vector::17 0.641012
+system.switch_cpus.branchPred.btb.replace_vector::18 0.864272
+system.switch_cpus.branchPred.btb.replace_vector::19 0.0
+system.switch_cpus.branchPred.btb.replace_vector::20 0.556245
+system.switch_cpus.branchPred.btb.replace_vector::21 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::22 0.47934699999999997
+system.switch_cpus.branchPred.btb.replace_vector::23 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::24 1.328373
+system.switch_cpus.branchPred.btb.replace_vector::25 0.393225
+system.switch_cpus.branchPred.btb.replace_vector::26 0.614395
+system.switch_cpus.branchPred.btb.replace_vector::27 1.4140010000000003
+system.switch_cpus.branchPred.btb.replace_vector::28 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::29 0.012601
+system.switch_cpus.branchPred.btb.replace_vector::30 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::31 2.3493329999999997
+system.switch_cpus.branchPred.btb.replace_vector::32 0.6517080000000001
+system.switch_cpus.branchPred.btb.replace_vector::33 0.678571
+system.switch_cpus.branchPred.btb.replace_vector::34 1.3129439999999999
+system.switch_cpus.branchPred.btb.replace_vector::35 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::36 0.410561
+system.switch_cpus.branchPred.btb.replace_vector::37 0.9240830000000001
+system.switch_cpus.branchPred.btb.replace_vector::38 0.473321
+system.switch_cpus.branchPred.btb.replace_vector::39 0.213978
+system.switch_cpus.branchPred.btb.replace_vector::40 0.7759389999999999
+system.switch_cpus.branchPred.btb.replace_vector::41 0.787004
+system.switch_cpus.branchPred.btb.replace_vector::42 0.908469
+system.switch_cpus.branchPred.btb.replace_vector::43 2.231556
+system.switch_cpus.branchPred.btb.replace_vector::44 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::45 0.7590349999999999
+system.switch_cpus.branchPred.btb.replace_vector::46 0.766473
+system.switch_cpus.branchPred.btb.replace_vector::47 0.463548
+system.switch_cpus.branchPred.btb.replace_vector::48 0.213978
+system.switch_cpus.branchPred.btb.replace_vector::49 0.169289
+system.switch_cpus.branchPred.btb.replace_vector::50 1.147774
+system.switch_cpus.branchPred.btb.replace_vector::51 0.0
+system.switch_cpus.branchPred.btb.replace_vector::52 0.416338
+system.switch_cpus.branchPred.btb.replace_vector::53 0.918428
+system.switch_cpus.branchPred.btb.replace_vector::54 0.041984
+system.switch_cpus.branchPred.btb.replace_vector::55 0.771575
+system.switch_cpus.branchPred.btb.replace_vector::56 1.164616
+system.switch_cpus.branchPred.btb.replace_vector::57 0.158225
+system.switch_cpus.branchPred.btb.replace_vector::58 0.346878
+system.switch_cpus.branchPred.btb.replace_vector::59 0.9678500000000001
+system.switch_cpus.branchPred.btb.replace_vector::60 1.1282869999999998
+system.switch_cpus.branchPred.btb.replace_vector::61 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::62 0.279198
+system.switch_cpus.branchPred.btb.replace_vector::63 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::64 0.910868
+system.switch_cpus.branchPred.btb.replace_vector::65 0.0
+system.switch_cpus.branchPred.btb.replace_vector::66 0.155642
+system.switch_cpus.branchPred.btb.replace_vector::67 0.9186120000000001
+system.switch_cpus.branchPred.btb.replace_vector::68 0.478977
+system.switch_cpus.branchPred.btb.replace_vector::69 2.0388469999999996
+system.switch_cpus.branchPred.btb.replace_vector::70 0.728423
+system.switch_cpus.branchPred.btb.replace_vector::71 0.025202
+system.switch_cpus.branchPred.btb.replace_vector::72 0.435333
+system.switch_cpus.branchPred.btb.replace_vector::73 0.973136
+system.switch_cpus.branchPred.btb.replace_vector::74 1.029689
+system.switch_cpus.branchPred.btb.replace_vector::75 0.6428560000000001
+system.switch_cpus.branchPred.btb.replace_vector::76 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::77 0.549975
+system.switch_cpus.branchPred.btb.replace_vector::78 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::79 0.0
+system.switch_cpus.branchPred.btb.replace_vector::80 1.029689
+system.switch_cpus.branchPred.btb.replace_vector::81 1.032394
+system.switch_cpus.branchPred.btb.replace_vector::82 0.0
+system.switch_cpus.branchPred.btb.replace_vector::83 1.4157840000000002
+system.switch_cpus.branchPred.btb.replace_vector::84 0.0
+system.switch_cpus.branchPred.btb.replace_vector::85 0.8650100000000001
+system.switch_cpus.branchPred.btb.replace_vector::86 0.669535
+system.switch_cpus.branchPred.btb.replace_vector::87 1.029689
+system.switch_cpus.branchPred.btb.replace_vector::88 0.448119
+system.switch_cpus.branchPred.btb.replace_vector::89 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::90 0.7045729999999999
+system.switch_cpus.branchPred.btb.replace_vector::91 1.0153050000000001
+system.switch_cpus.branchPred.btb.replace_vector::92 1.529934
+system.switch_cpus.branchPred.btb.replace_vector::93 0.028214999999999997
+system.switch_cpus.branchPred.btb.replace_vector::94 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::95 0.028214999999999997
+system.switch_cpus.branchPred.btb.replace_vector::96 0.6523830000000002
+system.switch_cpus.branchPred.btb.replace_vector::97 0.0
+system.switch_cpus.branchPred.btb.replace_vector::98 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::99 0.658225
+system.switch_cpus.branchPred.btb.replace_vector::100 0.8650100000000001
+system.switch_cpus.branchPred.btb.replace_vector::101 0.16388
+system.switch_cpus.branchPred.btb.replace_vector::102 0.404291
+system.switch_cpus.branchPred.btb.replace_vector::103 0.726764
+system.switch_cpus.branchPred.btb.replace_vector::104 0.0
+system.switch_cpus.branchPred.btb.replace_vector::105 1.089623
+system.switch_cpus.branchPred.btb.replace_vector::106 0.0
+system.switch_cpus.branchPred.btb.replace_vector::107 0.71115
+system.switch_cpus.branchPred.btb.replace_vector::108 0.445106
+system.switch_cpus.branchPred.btb.replace_vector::109 0.679554
+system.switch_cpus.branchPred.btb.replace_vector::110 1.04229
+system.switch_cpus.branchPred.btb.replace_vector::111 0.6081259999999999
+system.switch_cpus.branchPred.btb.replace_vector::112 0.0
+system.switch_cpus.branchPred.btb.replace_vector::113 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::114 0.462995
+system.switch_cpus.branchPred.btb.replace_vector::115 0.0
+system.switch_cpus.branchPred.btb.replace_vector::116 0.746189
+system.switch_cpus.branchPred.btb.replace_vector::117 0.493483
+system.switch_cpus.branchPred.btb.replace_vector::118 0.028214999999999997
+system.switch_cpus.branchPred.btb.replace_vector::119 1.181522
+system.switch_cpus.branchPred.btb.replace_vector::120 0.748402
+system.switch_cpus.branchPred.btb.replace_vector::121 0.424698
+system.switch_cpus.branchPred.btb.replace_vector::122 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::123 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::124 0.0
+system.switch_cpus.branchPred.btb.replace_vector::125 0.028214999999999997
+system.switch_cpus.branchPred.btb.replace_vector::126 0.012601
+system.switch_cpus.branchPred.btb.replace_vector::127 0.755593
+system.switch_cpus.branchPred.btb.replace_vector::128 0.463548
+system.switch_cpus.branchPred.btb.replace_vector::129 0.324624
+system.switch_cpus.branchPred.btb.replace_vector::130 0.6246619999999999
+system.switch_cpus.branchPred.btb.replace_vector::131 0.445106
+system.switch_cpus.branchPred.btb.replace_vector::132 0.10284
+system.switch_cpus.branchPred.btb.replace_vector::133 0.0
+system.switch_cpus.branchPred.btb.replace_vector::134 1.425558
+system.switch_cpus.branchPred.btb.replace_vector::135 0.0
+system.switch_cpus.branchPred.btb.replace_vector::136 1.049728
+system.switch_cpus.branchPred.btb.replace_vector::137 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::138 0.8806240000000001
+system.switch_cpus.branchPred.btb.replace_vector::139 1.143655
+system.switch_cpus.branchPred.btb.replace_vector::140 0.8650100000000001
+system.switch_cpus.branchPred.btb.replace_vector::141 1.564113
+system.switch_cpus.branchPred.btb.replace_vector::142 0.0
+system.switch_cpus.branchPred.btb.replace_vector::143 0.947196
+system.switch_cpus.branchPred.btb.replace_vector::144 0.27864500000000003
+system.switch_cpus.branchPred.btb.replace_vector::145 0.463548
+system.switch_cpus.branchPred.btb.replace_vector::146 0.0
+system.switch_cpus.branchPred.btb.replace_vector::147 0.448119
+system.switch_cpus.branchPred.btb.replace_vector::148 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::149 0.46053499999999997
+system.switch_cpus.branchPred.btb.replace_vector::150 1.211396
+system.switch_cpus.branchPred.btb.replace_vector::151 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::152 0.6930769999999999
+system.switch_cpus.branchPred.btb.replace_vector::153 0.5149360000000001
+system.switch_cpus.branchPred.btb.replace_vector::154 0.9060729999999999
+system.switch_cpus.branchPred.btb.replace_vector::155 0.092882
+system.switch_cpus.branchPred.btb.replace_vector::156 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::157 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::158 0.795672
+system.switch_cpus.branchPred.btb.replace_vector::159 0.898388
+system.switch_cpus.branchPred.btb.replace_vector::160 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::161 1.184533
+system.switch_cpus.branchPred.btb.replace_vector::162 0.346509
+system.switch_cpus.branchPred.btb.replace_vector::163 0.776493
+system.switch_cpus.branchPred.btb.replace_vector::164 0.440679
+system.switch_cpus.branchPred.btb.replace_vector::165 0.5208379999999999
+system.switch_cpus.branchPred.btb.replace_vector::166 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::167 0.0
+system.switch_cpus.branchPred.btb.replace_vector::168 0.8870770000000001
+system.switch_cpus.branchPred.btb.replace_vector::169 0.173839
+system.switch_cpus.branchPred.btb.replace_vector::170 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::171 0.8031710000000001
+system.switch_cpus.branchPred.btb.replace_vector::172 1.4776230000000001
+system.switch_cpus.branchPred.btb.replace_vector::173 0.977439
+system.switch_cpus.branchPred.btb.replace_vector::174 2.0732069999999996
+system.switch_cpus.branchPred.btb.replace_vector::175 1.4664960000000002
+system.switch_cpus.branchPred.btb.replace_vector::176 1.318476
+system.switch_cpus.branchPred.btb.replace_vector::177 1.029689
+system.switch_cpus.branchPred.btb.replace_vector::178 0.031043
+system.switch_cpus.branchPred.btb.replace_vector::179 0.0
+system.switch_cpus.branchPred.btb.replace_vector::180 0.57616
+system.switch_cpus.branchPred.btb.replace_vector::181 0.511863
+system.switch_cpus.branchPred.btb.replace_vector::182 0.19234
+system.switch_cpus.branchPred.btb.replace_vector::183 1.763706
+system.switch_cpus.branchPred.btb.replace_vector::184 0.5074369999999999
+system.switch_cpus.branchPred.btb.replace_vector::185 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::186 0.0
+system.switch_cpus.branchPred.btb.replace_vector::187 0.34847599999999995
+system.switch_cpus.branchPred.btb.replace_vector::188 0.108187
+system.switch_cpus.branchPred.btb.replace_vector::189 1.6557650000000002
+system.switch_cpus.branchPred.btb.replace_vector::190 0.301204
+system.switch_cpus.branchPred.btb.replace_vector::191 1.840974
+system.switch_cpus.branchPred.btb.replace_vector::192 0.028214999999999997
+system.switch_cpus.branchPred.btb.replace_vector::193 0.8650100000000001
+system.switch_cpus.branchPred.btb.replace_vector::194 0.158225
+system.switch_cpus.branchPred.btb.replace_vector::195 0.337165
+system.switch_cpus.branchPred.btb.replace_vector::196 0.896053
+system.switch_cpus.branchPred.btb.replace_vector::197 0.235493
+system.switch_cpus.branchPred.btb.replace_vector::198 0.935947
+system.switch_cpus.branchPred.btb.replace_vector::199 0.0
+system.switch_cpus.branchPred.btb.replace_vector::200 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::201 0.8806240000000001
+system.switch_cpus.branchPred.btb.replace_vector::202 1.3179239999999999
+system.switch_cpus.branchPred.btb.replace_vector::203 0.7993589999999999
+system.switch_cpus.branchPred.btb.replace_vector::204 0.46871100000000004
+system.switch_cpus.branchPred.btb.replace_vector::205 1.4169520000000002
+system.switch_cpus.branchPred.btb.replace_vector::206 0.5938640000000001
+system.switch_cpus.branchPred.btb.replace_vector::207 0.10548300000000001
+system.switch_cpus.branchPred.btb.replace_vector::208 1.4264180000000002
+system.switch_cpus.branchPred.btb.replace_vector::209 1.308702
+system.switch_cpus.branchPred.btb.replace_vector::210 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::211 1.5758520000000003
+system.switch_cpus.branchPred.btb.replace_vector::212 0.0
+system.switch_cpus.branchPred.btb.replace_vector::213 1.3143580000000001
+system.switch_cpus.branchPred.btb.replace_vector::214 1.149125
+system.switch_cpus.branchPred.btb.replace_vector::215 0.0
+system.switch_cpus.branchPred.btb.replace_vector::216 0.45094700000000004
+system.switch_cpus.branchPred.btb.replace_vector::217 0.525202
+system.switch_cpus.branchPred.btb.replace_vector::218 0.9708019999999999
+system.switch_cpus.branchPred.btb.replace_vector::219 0.541001
+system.switch_cpus.branchPred.btb.replace_vector::220 0.158655
+system.switch_cpus.branchPred.btb.replace_vector::221 0.092882
+system.switch_cpus.branchPred.btb.replace_vector::222 0.607081
+system.switch_cpus.branchPred.btb.replace_vector::223 0.625768
+system.switch_cpus.branchPred.btb.replace_vector::224 0.012601
+system.switch_cpus.branchPred.btb.replace_vector::225 1.465513
+system.switch_cpus.branchPred.btb.replace_vector::226 1.263891
+system.switch_cpus.branchPred.btb.replace_vector::227 1.457153
+system.switch_cpus.branchPred.btb.replace_vector::228 1.0234800000000002
+system.switch_cpus.branchPred.btb.replace_vector::229 1.741638
+system.switch_cpus.branchPred.btb.replace_vector::230 0.6612360000000002
+system.switch_cpus.branchPred.btb.replace_vector::231 1.1978110000000002
+system.switch_cpus.branchPred.btb.replace_vector::232 0.883267
+system.switch_cpus.branchPred.btb.replace_vector::233 0.6925239999999999
+system.switch_cpus.branchPred.btb.replace_vector::234 0.028214999999999997
+system.switch_cpus.branchPred.btb.replace_vector::235 0.463548
+system.switch_cpus.branchPred.btb.replace_vector::236 1.053417
+system.switch_cpus.branchPred.btb.replace_vector::237 0.543459
+system.switch_cpus.branchPred.btb.replace_vector::238 1.4344709999999998
+system.switch_cpus.branchPred.btb.replace_vector::239 0.372449
+system.switch_cpus.branchPred.btb.replace_vector::240 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::241 0.26272399999999996
+system.switch_cpus.branchPred.btb.replace_vector::242 0.435333
+system.switch_cpus.branchPred.btb.replace_vector::243 1.0763449999999999
+system.switch_cpus.branchPred.btb.replace_vector::244 1.1313000000000002
+system.switch_cpus.branchPred.btb.replace_vector::245 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::246 0.012601
+system.switch_cpus.branchPred.btb.replace_vector::247 0.012601
+system.switch_cpus.branchPred.btb.replace_vector::248 0.683857
+system.switch_cpus.branchPred.btb.replace_vector::249 0.0
+system.switch_cpus.branchPred.btb.replace_vector::250 1.1225710000000002
+system.switch_cpus.branchPred.btb.replace_vector::251 0.46053499999999997
+system.switch_cpus.branchPred.btb.replace_vector::252 0.81196
+system.switch_cpus.branchPred.btb.replace_vector::253 0.09534000000000001
+system.switch_cpus.branchPred.btb.replace_vector::254 0.8994329999999999
+system.switch_cpus.branchPred.btb.replace_vector::255 0.7252260000000001
+system.switch_cpus.branchPred.btb.replace_vector::256 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::257 0.46053499999999997
+system.switch_cpus.branchPred.btb.replace_vector::258 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::259 0.012601
+system.switch_cpus.branchPred.btb.replace_vector::260 0.529321
+system.switch_cpus.branchPred.btb.replace_vector::261 0.625399
+system.switch_cpus.branchPred.btb.replace_vector::262 1.0003069999999998
+system.switch_cpus.branchPred.btb.replace_vector::263 1.3792700000000002
+system.switch_cpus.branchPred.btb.replace_vector::264 0.0
+system.switch_cpus.branchPred.btb.replace_vector::265 0.9377899999999999
+system.switch_cpus.branchPred.btb.replace_vector::266 2.019423
+system.switch_cpus.branchPred.btb.replace_vector::267 0.0
+system.switch_cpus.branchPred.btb.replace_vector::268 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::269 0.6992860000000001
+system.switch_cpus.branchPred.btb.replace_vector::270 0.15386
+system.switch_cpus.branchPred.btb.replace_vector::271 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::272 0.376936
+system.switch_cpus.branchPred.btb.replace_vector::273 0.45445
+system.switch_cpus.branchPred.btb.replace_vector::274 0.329542
+system.switch_cpus.branchPred.btb.replace_vector::275 0.448119
+system.switch_cpus.branchPred.btb.replace_vector::276 0.900416
+system.switch_cpus.branchPred.btb.replace_vector::277 1.3368560000000003
+system.switch_cpus.branchPred.btb.replace_vector::278 0.922669
+system.switch_cpus.branchPred.btb.replace_vector::279 1.10081
+system.switch_cpus.branchPred.btb.replace_vector::280 1.315772
+system.switch_cpus.branchPred.btb.replace_vector::281 0.607511
+system.switch_cpus.branchPred.btb.replace_vector::282 1.103946
+system.switch_cpus.branchPred.btb.replace_vector::283 1.3439870000000003
+system.switch_cpus.branchPred.btb.replace_vector::284 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::285 1.249629
+system.switch_cpus.branchPred.btb.replace_vector::286 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::287 1.100196
+system.switch_cpus.branchPred.btb.replace_vector::288 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::289 0.056429999999999994
+system.switch_cpus.branchPred.btb.replace_vector::290 0.922669
+system.switch_cpus.branchPred.btb.replace_vector::291 0.9116650000000001
+system.switch_cpus.branchPred.btb.replace_vector::292 1.640457
+system.switch_cpus.branchPred.btb.replace_vector::293 0.31140900000000005
+system.switch_cpus.branchPred.btb.replace_vector::294 2.039584
+system.switch_cpus.branchPred.btb.replace_vector::295 1.2330329999999998
+system.switch_cpus.branchPred.btb.replace_vector::296 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::297 0.47073999999999994
+system.switch_cpus.branchPred.btb.replace_vector::298 1.06319
+system.switch_cpus.branchPred.btb.replace_vector::299 0.0
+system.switch_cpus.branchPred.btb.replace_vector::300 1.6983009999999998
+system.switch_cpus.branchPred.btb.replace_vector::301 0.550959
+system.switch_cpus.branchPred.btb.replace_vector::302 0.426358
+system.switch_cpus.branchPred.btb.replace_vector::303 1.074747
+system.switch_cpus.branchPred.btb.replace_vector::304 1.376013
+system.switch_cpus.branchPred.btb.replace_vector::305 0.9912080000000001
+system.switch_cpus.branchPred.btb.replace_vector::306 0.463056
+system.switch_cpus.branchPred.btb.replace_vector::307 0.028214999999999997
+system.switch_cpus.branchPred.btb.replace_vector::308 0.83704
+system.switch_cpus.branchPred.btb.replace_vector::309 0.0
+system.switch_cpus.branchPred.btb.replace_vector::310 0.800528
+system.switch_cpus.branchPred.btb.replace_vector::311 0.267888
+system.switch_cpus.branchPred.btb.replace_vector::312 0.500246
+system.switch_cpus.branchPred.btb.replace_vector::313 0.14132
+system.switch_cpus.branchPred.btb.replace_vector::314 0.911482
+system.switch_cpus.branchPred.btb.replace_vector::315 1.156564
+system.switch_cpus.branchPred.btb.replace_vector::316 0.30667500000000003
+system.switch_cpus.branchPred.btb.replace_vector::317 0.559564
+system.switch_cpus.branchPred.btb.replace_vector::318 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::319 1.456047
+system.switch_cpus.branchPred.btb.replace_vector::320 0.40527399999999997
+system.switch_cpus.branchPred.btb.replace_vector::321 0.129517
+system.switch_cpus.branchPred.btb.replace_vector::322 0.380809
+system.switch_cpus.branchPred.btb.replace_vector::323 0.0
+system.switch_cpus.branchPred.btb.replace_vector::324 0.0
+system.switch_cpus.branchPred.btb.replace_vector::325 0.911482
+system.switch_cpus.branchPred.btb.replace_vector::326 0.982356
+system.switch_cpus.branchPred.btb.replace_vector::327 0.0
+system.switch_cpus.branchPred.btb.replace_vector::328 1.359416
+system.switch_cpus.branchPred.btb.replace_vector::329 0.707768
+system.switch_cpus.branchPred.btb.replace_vector::330 0.6936920000000001
+system.switch_cpus.branchPred.btb.replace_vector::331 1.277415
+system.switch_cpus.branchPred.btb.replace_vector::332 1.171932
+system.switch_cpus.branchPred.btb.replace_vector::333 0.158225
+system.switch_cpus.branchPred.btb.replace_vector::334 1.510755
+system.switch_cpus.branchPred.btb.replace_vector::335 2.0688440000000003
+system.switch_cpus.branchPred.btb.replace_vector::336 0.269301
+system.switch_cpus.branchPred.btb.replace_vector::337 0.485678
+system.switch_cpus.branchPred.btb.replace_vector::338 0.9664970000000002
+system.switch_cpus.branchPred.btb.replace_vector::339 0.448119
+system.switch_cpus.branchPred.btb.replace_vector::340 1.3672849999999999
+system.switch_cpus.branchPred.btb.replace_vector::341 0.378288
+system.switch_cpus.branchPred.btb.replace_vector::342 1.4838299999999998
+system.switch_cpus.branchPred.btb.replace_vector::343 0.22412100000000001
+system.switch_cpus.branchPred.btb.replace_vector::344 0.9870909999999999
+system.switch_cpus.branchPred.btb.replace_vector::345 1.8348270000000002
+system.switch_cpus.branchPred.btb.replace_vector::346 1.313129
+system.switch_cpus.branchPred.btb.replace_vector::347 1.3438020000000002
+system.switch_cpus.branchPred.btb.replace_vector::348 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::349 0.896053
+system.switch_cpus.branchPred.btb.replace_vector::350 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::351 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::352 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::353 1.3438020000000002
+system.switch_cpus.branchPred.btb.replace_vector::354 0.291246
+system.switch_cpus.branchPred.btb.replace_vector::355 0.494961
+system.switch_cpus.branchPred.btb.replace_vector::356 1.3285580000000001
+system.switch_cpus.branchPred.btb.replace_vector::357 0.232234
+system.switch_cpus.branchPred.btb.replace_vector::358 1.714899
+system.switch_cpus.branchPred.btb.replace_vector::359 0.491948
+system.switch_cpus.branchPred.btb.replace_vector::360 0.7694240000000001
+system.switch_cpus.branchPred.btb.replace_vector::361 0.25516500000000003
+system.switch_cpus.branchPred.btb.replace_vector::362 0.743483
+system.switch_cpus.branchPred.btb.replace_vector::363 0.179432
+system.switch_cpus.branchPred.btb.replace_vector::364 1.074131
+system.switch_cpus.branchPred.btb.replace_vector::365 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::366 0.7201869999999999
+system.switch_cpus.branchPred.btb.replace_vector::367 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::368 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::369 1.058952
+system.switch_cpus.branchPred.btb.replace_vector::370 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::371 0.141012
+system.switch_cpus.branchPred.btb.replace_vector::372 0.472215
+system.switch_cpus.branchPred.btb.replace_vector::373 0.295549
+system.switch_cpus.branchPred.btb.replace_vector::374 1.011678
+system.switch_cpus.branchPred.btb.replace_vector::375 0.5946030000000001
+system.switch_cpus.branchPred.btb.replace_vector::376 0.45445
+system.switch_cpus.branchPred.btb.replace_vector::377 0.332494
+system.switch_cpus.branchPred.btb.replace_vector::378 1.2612480000000001
+system.switch_cpus.branchPred.btb.replace_vector::379 1.196028
+system.switch_cpus.branchPred.btb.replace_vector::380 0.731251
+system.switch_cpus.branchPred.btb.replace_vector::381 0.814482
+system.switch_cpus.branchPred.btb.replace_vector::382 0.940125
+system.switch_cpus.branchPred.btb.replace_vector::383 0.555875
+system.switch_cpus.branchPred.btb.replace_vector::384 0.829174
+system.switch_cpus.branchPred.btb.replace_vector::385 0.820937
+system.switch_cpus.branchPred.btb.replace_vector::386 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::387 0.46053499999999997
+system.switch_cpus.branchPred.btb.replace_vector::388 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::389 0.501844
+system.switch_cpus.branchPred.btb.replace_vector::390 1.004363
+system.switch_cpus.branchPred.btb.replace_vector::391 2.512722
+system.switch_cpus.branchPred.btb.replace_vector::392 0.0
+system.switch_cpus.branchPred.btb.replace_vector::393 0.793029
+system.switch_cpus.branchPred.btb.replace_vector::394 0.35701900000000003
+system.switch_cpus.branchPred.btb.replace_vector::395 0.5564300000000001
+system.switch_cpus.branchPred.btb.replace_vector::396 0.706293
+system.switch_cpus.branchPred.btb.replace_vector::397 1.191417
+system.switch_cpus.branchPred.btb.replace_vector::398 0.730268
+system.switch_cpus.branchPred.btb.replace_vector::399 0.10327
+system.switch_cpus.branchPred.btb.replace_vector::400 1.7608780000000002
+system.switch_cpus.branchPred.btb.replace_vector::401 0.184227
+system.switch_cpus.branchPred.btb.replace_vector::402 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::403 1.2401010000000001
+system.switch_cpus.branchPred.btb.replace_vector::404 0.184227
+system.switch_cpus.branchPred.btb.replace_vector::405 0.012601
+system.switch_cpus.branchPred.btb.replace_vector::406 0.35646600000000006
+system.switch_cpus.branchPred.btb.replace_vector::407 0.0
+system.switch_cpus.branchPred.btb.replace_vector::408 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::409 0.0
+system.switch_cpus.branchPred.btb.replace_vector::410 0.896053
+system.switch_cpus.branchPred.btb.replace_vector::411 0.47952999999999996
+system.switch_cpus.branchPred.btb.replace_vector::412 0.896053
+system.switch_cpus.branchPred.btb.replace_vector::413 0.48912
+system.switch_cpus.branchPred.btb.replace_vector::414 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::415 1.2243650000000001
+system.switch_cpus.branchPred.btb.replace_vector::416 0.8858480000000001
+system.switch_cpus.branchPred.btb.replace_vector::417 0.7993589999999999
+system.switch_cpus.branchPred.btb.replace_vector::418 1.356588
+system.switch_cpus.branchPred.btb.replace_vector::419 0.38628
+system.switch_cpus.branchPred.btb.replace_vector::420 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::421 0.5507110000000001
+system.switch_cpus.branchPred.btb.replace_vector::422 0.661852
+system.switch_cpus.branchPred.btb.replace_vector::423 0.110954
+system.switch_cpus.branchPred.btb.replace_vector::424 0.0
+system.switch_cpus.branchPred.btb.replace_vector::425 2.2809169999999996
+system.switch_cpus.branchPred.btb.replace_vector::426 0.10794100000000001
+system.switch_cpus.branchPred.btb.replace_vector::427 0.0
+system.switch_cpus.branchPred.btb.replace_vector::428 1.029689
+system.switch_cpus.branchPred.btb.replace_vector::429 0.19068000000000002
+system.switch_cpus.branchPred.btb.replace_vector::430 0.51008
+system.switch_cpus.branchPred.btb.replace_vector::431 0.336796
+system.switch_cpus.branchPred.btb.replace_vector::432 0.7993589999999999
+system.switch_cpus.branchPred.btb.replace_vector::433 0.401034
+system.switch_cpus.branchPred.btb.replace_vector::434 0.6456220000000001
+system.switch_cpus.branchPred.btb.replace_vector::435 0.090176
+system.switch_cpus.branchPred.btb.replace_vector::436 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::437 1.129639
+system.switch_cpus.branchPred.btb.replace_vector::438 0.0
+system.switch_cpus.branchPred.btb.replace_vector::439 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::440 0.35751099999999997
+system.switch_cpus.branchPred.btb.replace_vector::441 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::442 0.015614
+system.switch_cpus.branchPred.btb.replace_vector::443 0.34491
+system.switch_cpus.branchPred.btb.replace_vector::444 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::445 1.32573
+system.switch_cpus.branchPred.btb.replace_vector::446 1.910374
+system.switch_cpus.branchPred.btb.replace_vector::447 0.47614900000000004
+system.switch_cpus.branchPred.btb.replace_vector::448 0.9086540000000001
+system.switch_cpus.branchPred.btb.replace_vector::449 0.05391
+system.switch_cpus.branchPred.btb.replace_vector::450 0.536328
+system.switch_cpus.branchPred.btb.replace_vector::451 0.8492740000000001
+system.switch_cpus.branchPred.btb.replace_vector::452 1.2936430000000003
+system.switch_cpus.branchPred.btb.replace_vector::453 0.077268
+system.switch_cpus.branchPred.btb.replace_vector::454 0.967727
+system.switch_cpus.branchPred.btb.replace_vector::455 0.463548
+system.switch_cpus.branchPred.btb.replace_vector::456 1.3592309999999999
+system.switch_cpus.branchPred.btb.replace_vector::457 0.733218
+system.switch_cpus.branchPred.btb.replace_vector::458 0.09478700000000001
+system.switch_cpus.branchPred.btb.replace_vector::459 0.158655
+system.switch_cpus.branchPred.btb.replace_vector::460 0.728423
+system.switch_cpus.branchPred.btb.replace_vector::461 0.7682549999999999
+system.switch_cpus.branchPred.btb.replace_vector::462 0.979221
+system.switch_cpus.branchPred.btb.replace_vector::463 1.0540920000000003
+system.switch_cpus.branchPred.btb.replace_vector::464 0.8930400000000001
+system.switch_cpus.branchPred.btb.replace_vector::465 0.6989770000000001
+system.switch_cpus.branchPred.btb.replace_vector::466 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::467 1.120911
+system.switch_cpus.branchPred.btb.replace_vector::468 0.7343240000000001
+system.switch_cpus.branchPred.btb.replace_vector::469 0.6834880000000001
+system.switch_cpus.branchPred.btb.replace_vector::470 1.283499
+system.switch_cpus.branchPred.btb.replace_vector::471 0.463548
+system.switch_cpus.branchPred.btb.replace_vector::472 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::473 0.381546
+system.switch_cpus.branchPred.btb.replace_vector::474 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::475 0.30772
+system.switch_cpus.branchPred.btb.replace_vector::476 0.31780200000000003
+system.switch_cpus.branchPred.btb.replace_vector::477 0.0
+system.switch_cpus.branchPred.btb.replace_vector::478 0.5408160000000001
+system.switch_cpus.branchPred.btb.replace_vector::479 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::480 0.0
+system.switch_cpus.branchPred.btb.replace_vector::481 0.628165
+system.switch_cpus.branchPred.btb.replace_vector::482 0.0
+system.switch_cpus.branchPred.btb.replace_vector::483 2.090175
+system.switch_cpus.branchPred.btb.replace_vector::484 1.1881590000000002
+system.switch_cpus.branchPred.btb.replace_vector::485 0.6849000000000001
+system.switch_cpus.branchPred.btb.replace_vector::486 0.8310150000000001
+system.switch_cpus.branchPred.btb.replace_vector::487 0.447934
+system.switch_cpus.branchPred.btb.replace_vector::488 0.620358
+system.switch_cpus.branchPred.btb.replace_vector::489 1.4776230000000001
+system.switch_cpus.branchPred.btb.replace_vector::490 0.49028700000000003
+system.switch_cpus.branchPred.btb.replace_vector::491 0.324378
+system.switch_cpus.branchPred.btb.replace_vector::492 0.0
+system.switch_cpus.branchPred.btb.replace_vector::493 0.0
+system.switch_cpus.branchPred.btb.replace_vector::494 0.0
+system.switch_cpus.branchPred.btb.replace_vector::495 0.14384
+system.switch_cpus.branchPred.btb.replace_vector::496 1.194798
+system.switch_cpus.branchPred.btb.replace_vector::497 0.895868
+system.switch_cpus.branchPred.btb.replace_vector::498 0.0
+system.switch_cpus.branchPred.btb.replace_vector::499 1.328065
+system.switch_cpus.branchPred.btb.replace_vector::500 1.925557
+system.switch_cpus.branchPred.btb.replace_vector::501 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::502 0.8804390000000001
+system.switch_cpus.branchPred.btb.replace_vector::503 0.313805
+system.switch_cpus.branchPred.btb.replace_vector::504 0.46053499999999997
+system.switch_cpus.branchPred.btb.replace_vector::505 0.8819129999999998
+system.switch_cpus.branchPred.btb.replace_vector::506 0.5971839999999999
+system.switch_cpus.branchPred.btb.replace_vector::507 0.0
+system.switch_cpus.branchPred.btb.replace_vector::508 1.7763069999999999
+system.switch_cpus.branchPred.btb.replace_vector::509 0.43250500000000003
+system.switch_cpus.branchPred.btb.replace_vector::510 0.0
+system.switch_cpus.branchPred.btb.replace_vector::511 0.445106
+system.switch_cpus.branchPred.btb.hit_vector::0 66922.475737
+system.switch_cpus.branchPred.btb.hit_vector::1 1.414551
+system.switch_cpus.branchPred.btb.hit_vector::2 831.9039490000001
+system.switch_cpus.branchPred.btb.hit_vector::3 8115.508711000001
+system.switch_cpus.branchPred.btb.hit_vector::4 18285.263891000002
+system.switch_cpus.branchPred.btb.hit_vector::5 18524.26891
+system.switch_cpus.branchPred.btb.hit_vector::6 2.9035450000000003
+system.switch_cpus.branchPred.btb.hit_vector::7 116.01651300000002
+system.switch_cpus.branchPred.btb.hit_vector::8 3722.6842039999997
+system.switch_cpus.branchPred.btb.hit_vector::9 13.983381999999999
+system.switch_cpus.branchPred.btb.hit_vector::10 147.294388
+system.switch_cpus.branchPred.btb.hit_vector::11 5945.714271000001
+system.switch_cpus.branchPred.btb.hit_vector::12 730.5675949999999
+system.switch_cpus.branchPred.btb.hit_vector::13 0.604074
+system.switch_cpus.branchPred.btb.hit_vector::14 113656.980179
+system.switch_cpus.branchPred.btb.hit_vector::15 2227.310426
+system.switch_cpus.branchPred.btb.hit_vector::16 31506.228634
+system.switch_cpus.branchPred.btb.hit_vector::17 105998.930026
+system.switch_cpus.branchPred.btb.hit_vector::18 69.542276
+system.switch_cpus.branchPred.btb.hit_vector::19 49277.689892
+system.switch_cpus.branchPred.btb.hit_vector::20 229322.87385500004
+system.switch_cpus.branchPred.btb.hit_vector::21 8102.779226
+system.switch_cpus.branchPred.btb.hit_vector::22 0.93684
+system.switch_cpus.branchPred.btb.hit_vector::23 26506.179578
+system.switch_cpus.branchPred.btb.hit_vector::24 180816.575411
+system.switch_cpus.branchPred.btb.hit_vector::25 29102.72107400001
+system.switch_cpus.branchPred.btb.hit_vector::26 6061.906464
+system.switch_cpus.branchPred.btb.hit_vector::27 3374.5845709999994
+system.switch_cpus.branchPred.btb.hit_vector::28 3049.893158
+system.switch_cpus.branchPred.btb.hit_vector::29 38150.478284
+system.switch_cpus.branchPred.btb.hit_vector::30 0.36691799999999997
+system.switch_cpus.branchPred.btb.hit_vector::31 390.880634
+system.switch_cpus.branchPred.btb.hit_vector::32 1709.6131499999997
+system.switch_cpus.branchPred.btb.hit_vector::33 22633.162530999998
+system.switch_cpus.branchPred.btb.hit_vector::34 19.736096
+system.switch_cpus.branchPred.btb.hit_vector::35 1344.983788
+system.switch_cpus.branchPred.btb.hit_vector::36 34.899874000000004
+system.switch_cpus.branchPred.btb.hit_vector::37 820.8754409999999
+system.switch_cpus.branchPred.btb.hit_vector::38 50435.35349999999
+system.switch_cpus.branchPred.btb.hit_vector::39 47.06810900000001
+system.switch_cpus.branchPred.btb.hit_vector::40 82.61039899999999
+system.switch_cpus.branchPred.btb.hit_vector::41 86.588945
+system.switch_cpus.branchPred.btb.hit_vector::42 27473.743427999998
+system.switch_cpus.branchPred.btb.hit_vector::43 32628.578726999996
+system.switch_cpus.branchPred.btb.hit_vector::44 5033.352734
+system.switch_cpus.branchPred.btb.hit_vector::45 8361.151782
+system.switch_cpus.branchPred.btb.hit_vector::46 2111.6566
+system.switch_cpus.branchPred.btb.hit_vector::47 2008.0844269999998
+system.switch_cpus.branchPred.btb.hit_vector::48 7145.865573
+system.switch_cpus.branchPred.btb.hit_vector::49 447.2121739999999
+system.switch_cpus.branchPred.btb.hit_vector::50 7349.0006650000005
+system.switch_cpus.branchPred.btb.hit_vector::51 0.0
+system.switch_cpus.branchPred.btb.hit_vector::52 24650.384871000002
+system.switch_cpus.branchPred.btb.hit_vector::53 7061.611450999999
+system.switch_cpus.branchPred.btb.hit_vector::54 7471.153798
+system.switch_cpus.branchPred.btb.hit_vector::55 59071.377571000005
+system.switch_cpus.branchPred.btb.hit_vector::56 17823.58567
+system.switch_cpus.branchPred.btb.hit_vector::57 73343.29636699999
+system.switch_cpus.branchPred.btb.hit_vector::58 1981.7206919999999
+system.switch_cpus.branchPred.btb.hit_vector::59 45477.58763399999
+system.switch_cpus.branchPred.btb.hit_vector::60 31457.346525999998
+system.switch_cpus.branchPred.btb.hit_vector::61 27628.094410999995
+system.switch_cpus.branchPred.btb.hit_vector::62 168682.03528500002
+system.switch_cpus.branchPred.btb.hit_vector::63 2800.401891000001
+system.switch_cpus.branchPred.btb.hit_vector::64 1796.7941080000003
+system.switch_cpus.branchPred.btb.hit_vector::65 0.0
+system.switch_cpus.branchPred.btb.hit_vector::66 1769.586551
+system.switch_cpus.branchPred.btb.hit_vector::67 72016.670389
+system.switch_cpus.branchPred.btb.hit_vector::68 23.581166999999997
+system.switch_cpus.branchPred.btb.hit_vector::69 2528.1570899999997
+system.switch_cpus.branchPred.btb.hit_vector::70 3219.78994
+system.switch_cpus.branchPred.btb.hit_vector::71 90794.59694599999
+system.switch_cpus.branchPred.btb.hit_vector::72 9866.026176
+system.switch_cpus.branchPred.btb.hit_vector::73 4.930163
+system.switch_cpus.branchPred.btb.hit_vector::74 722.224841
+system.switch_cpus.branchPred.btb.hit_vector::75 83.75901900000004
+system.switch_cpus.branchPred.btb.hit_vector::76 3.311157
+system.switch_cpus.branchPred.btb.hit_vector::77 124511.17188599998
+system.switch_cpus.branchPred.btb.hit_vector::78 3.645376
+system.switch_cpus.branchPred.btb.hit_vector::79 0.0
+system.switch_cpus.branchPred.btb.hit_vector::80 136.557295
+system.switch_cpus.branchPred.btb.hit_vector::81 27050.98908
+system.switch_cpus.branchPred.btb.hit_vector::82 21266.476331
+system.switch_cpus.branchPred.btb.hit_vector::83 133216.45966700002
+system.switch_cpus.branchPred.btb.hit_vector::84 0.0
+system.switch_cpus.branchPred.btb.hit_vector::85 0.62456
+system.switch_cpus.branchPred.btb.hit_vector::86 14.036838999999999
+system.switch_cpus.branchPred.btb.hit_vector::87 750.805811
+system.switch_cpus.branchPred.btb.hit_vector::88 34738.185847
+system.switch_cpus.branchPred.btb.hit_vector::89 0.15614
+system.switch_cpus.branchPred.btb.hit_vector::90 2771.1831979999997
+system.switch_cpus.branchPred.btb.hit_vector::91 72833.75202100001
+system.switch_cpus.branchPred.btb.hit_vector::92 257.91546
+system.switch_cpus.branchPred.btb.hit_vector::93 135.80904999999998
+system.switch_cpus.branchPred.btb.hit_vector::94 46721.235829
+system.switch_cpus.branchPred.btb.hit_vector::95 128694.529882
+system.switch_cpus.branchPred.btb.hit_vector::96 54933.606479
+system.switch_cpus.branchPred.btb.hit_vector::97 0.0
+system.switch_cpus.branchPred.btb.hit_vector::98 0.0
+system.switch_cpus.branchPred.btb.hit_vector::99 261.977032
+system.switch_cpus.branchPred.btb.hit_vector::100 27768.020312
+system.switch_cpus.branchPred.btb.hit_vector::101 22379.20061
+system.switch_cpus.branchPred.btb.hit_vector::102 102822.826073
+system.switch_cpus.branchPred.btb.hit_vector::103 107.18353800000001
+system.switch_cpus.branchPred.btb.hit_vector::104 0.0
+system.switch_cpus.branchPred.btb.hit_vector::105 57995.378778999984
+system.switch_cpus.branchPred.btb.hit_vector::106 0.0
+system.switch_cpus.branchPred.btb.hit_vector::107 41178.437610999994
+system.switch_cpus.branchPred.btb.hit_vector::108 140.821994
+system.switch_cpus.branchPred.btb.hit_vector::109 4.78049
+system.switch_cpus.branchPred.btb.hit_vector::110 49804.594153000005
+system.switch_cpus.branchPred.btb.hit_vector::111 64543.510776
+system.switch_cpus.branchPred.btb.hit_vector::112 62285.94611700001
+system.switch_cpus.branchPred.btb.hit_vector::113 0.0
+system.switch_cpus.branchPred.btb.hit_vector::114 10427.575495
+system.switch_cpus.branchPred.btb.hit_vector::115 49787.51180299999
+system.switch_cpus.branchPred.btb.hit_vector::116 763.0887369999999
+system.switch_cpus.branchPred.btb.hit_vector::117 41474.404081
+system.switch_cpus.branchPred.btb.hit_vector::118 361.04776300000003
+system.switch_cpus.branchPred.btb.hit_vector::119 20909.178021999996
+system.switch_cpus.branchPred.btb.hit_vector::120 19385.621366
+system.switch_cpus.branchPred.btb.hit_vector::121 12585.299492999999
+system.switch_cpus.branchPred.btb.hit_vector::122 100.01980500000003
+system.switch_cpus.branchPred.btb.hit_vector::123 223.639322
+system.switch_cpus.branchPred.btb.hit_vector::124 0.0
+system.switch_cpus.branchPred.btb.hit_vector::125 2055.492764
+system.switch_cpus.branchPred.btb.hit_vector::126 0.025202
+system.switch_cpus.branchPred.btb.hit_vector::127 128027.744554
+system.switch_cpus.branchPred.btb.hit_vector::128 1.644883
+system.switch_cpus.branchPred.btb.hit_vector::129 24769.776477000003
+system.switch_cpus.branchPred.btb.hit_vector::130 200993.198796
+system.switch_cpus.branchPred.btb.hit_vector::131 985.5173110000001
+system.switch_cpus.branchPred.btb.hit_vector::132 98600.31472399998
+system.switch_cpus.branchPred.btb.hit_vector::133 120.71620099999998
+system.switch_cpus.branchPred.btb.hit_vector::134 56918.985334000005
+system.switch_cpus.branchPred.btb.hit_vector::135 0.0
+system.switch_cpus.branchPred.btb.hit_vector::136 388.15455600000007
+system.switch_cpus.branchPred.btb.hit_vector::137 2106.610748
+system.switch_cpus.branchPred.btb.hit_vector::138 19311.298002
+system.switch_cpus.branchPred.btb.hit_vector::139 19274.076690000005
+system.switch_cpus.branchPred.btb.hit_vector::140 0.21859599999999998
+system.switch_cpus.branchPred.btb.hit_vector::141 57981.942357000014
+system.switch_cpus.branchPred.btb.hit_vector::142 5160.855464000001
+system.switch_cpus.branchPred.btb.hit_vector::143 54015.57309400001
+system.switch_cpus.branchPred.btb.hit_vector::144 759.3787929999999
+system.switch_cpus.branchPred.btb.hit_vector::145 72806.31985500001
+system.switch_cpus.branchPred.btb.hit_vector::146 81611.208396
+system.switch_cpus.branchPred.btb.hit_vector::147 0.43250500000000003
+system.switch_cpus.branchPred.btb.hit_vector::148 6.7977500000000015
+system.switch_cpus.branchPred.btb.hit_vector::149 52869.403249999996
+system.switch_cpus.branchPred.btb.hit_vector::150 26.660179
+system.switch_cpus.branchPred.btb.hit_vector::151 84642.73392099999
+system.switch_cpus.branchPred.btb.hit_vector::152 29292.009988000005
+system.switch_cpus.branchPred.btb.hit_vector::153 8074.711059
+system.switch_cpus.branchPred.btb.hit_vector::154 3313.906943
+system.switch_cpus.branchPred.btb.hit_vector::155 0.062456
+system.switch_cpus.branchPred.btb.hit_vector::156 3504.5757649999996
+system.switch_cpus.branchPred.btb.hit_vector::157 198.553252
+system.switch_cpus.branchPred.btb.hit_vector::158 1494.348463
+system.switch_cpus.branchPred.btb.hit_vector::159 48262.390148
+system.switch_cpus.branchPred.btb.hit_vector::160 1.8634789999999999
+system.switch_cpus.branchPred.btb.hit_vector::161 19.944312999999998
+system.switch_cpus.branchPred.btb.hit_vector::162 144.19636699999998
+system.switch_cpus.branchPred.btb.hit_vector::163 31519.463985
+system.switch_cpus.branchPred.btb.hit_vector::164 55627.946136000006
+system.switch_cpus.branchPred.btb.hit_vector::165 26484.908192
+system.switch_cpus.branchPred.btb.hit_vector::166 0.43719199999999997
+system.switch_cpus.branchPred.btb.hit_vector::167 0.0
+system.switch_cpus.branchPred.btb.hit_vector::168 65424.793179
+system.switch_cpus.branchPred.btb.hit_vector::169 790.5416260000001
+system.switch_cpus.branchPred.btb.hit_vector::170 597.924211
+system.switch_cpus.branchPred.btb.hit_vector::171 28726.051988
+system.switch_cpus.branchPred.btb.hit_vector::172 280.1026560000001
+system.switch_cpus.branchPred.btb.hit_vector::173 52000.471731000005
+system.switch_cpus.branchPred.btb.hit_vector::174 4173.666383000001
+system.switch_cpus.branchPred.btb.hit_vector::175 116.61040799999999
+system.switch_cpus.branchPred.btb.hit_vector::176 5.6072940000000004
+system.switch_cpus.branchPred.btb.hit_vector::177 589.8863409999998
+system.switch_cpus.branchPred.btb.hit_vector::178 64461.457664
+system.switch_cpus.branchPred.btb.hit_vector::179 0.0
+system.switch_cpus.branchPred.btb.hit_vector::180 67195.292915
+system.switch_cpus.branchPred.btb.hit_vector::181 48511.04730000001
+system.switch_cpus.branchPred.btb.hit_vector::182 1209.844231
+system.switch_cpus.branchPred.btb.hit_vector::183 24765.990507999995
+system.switch_cpus.branchPred.btb.hit_vector::184 2583.0542390000005
+system.switch_cpus.branchPred.btb.hit_vector::185 0.07807
+system.switch_cpus.branchPred.btb.hit_vector::186 0.0
+system.switch_cpus.branchPred.btb.hit_vector::187 0.171754
+system.switch_cpus.branchPred.btb.hit_vector::188 15218.760991999998
+system.switch_cpus.branchPred.btb.hit_vector::189 756.165822
+system.switch_cpus.branchPred.btb.hit_vector::190 132530.934955
+system.switch_cpus.branchPred.btb.hit_vector::191 60819.062122999996
+system.switch_cpus.branchPred.btb.hit_vector::192 1322.296223
+system.switch_cpus.branchPred.btb.hit_vector::193 212.02772900000002
+system.switch_cpus.branchPred.btb.hit_vector::194 782.9103339999998
+system.switch_cpus.branchPred.btb.hit_vector::195 39177.59508400001
+system.switch_cpus.branchPred.btb.hit_vector::196 1.559262
+system.switch_cpus.branchPred.btb.hit_vector::197 784.3956849999998
+system.switch_cpus.branchPred.btb.hit_vector::198 633.7598529999999
+system.switch_cpus.branchPred.btb.hit_vector::199 0.0
+system.switch_cpus.branchPred.btb.hit_vector::200 155.767704
+system.switch_cpus.branchPred.btb.hit_vector::201 21190.618866
+system.switch_cpus.branchPred.btb.hit_vector::202 26457.083002000007
+system.switch_cpus.branchPred.btb.hit_vector::203 99107.36674600001
+system.switch_cpus.branchPred.btb.hit_vector::204 186.499802
+system.switch_cpus.branchPred.btb.hit_vector::205 448761.382429
+system.switch_cpus.branchPred.btb.hit_vector::206 4997.7748710000005
+system.switch_cpus.branchPred.btb.hit_vector::207 0.5040399999999999
+system.switch_cpus.branchPred.btb.hit_vector::208 172952.12648600002
+system.switch_cpus.branchPred.btb.hit_vector::209 5024.055758
+system.switch_cpus.branchPred.btb.hit_vector::210 1132.849555
+system.switch_cpus.branchPred.btb.hit_vector::211 801.592381
+system.switch_cpus.branchPred.btb.hit_vector::212 168582.37395699997
+system.switch_cpus.branchPred.btb.hit_vector::213 79.27272699999999
+system.switch_cpus.branchPred.btb.hit_vector::214 4161.4402279999995
+system.switch_cpus.branchPred.btb.hit_vector::215 39305.488337
+system.switch_cpus.branchPred.btb.hit_vector::216 0.68552
+system.switch_cpus.branchPred.btb.hit_vector::217 1.4253109999999998
+system.switch_cpus.branchPred.btb.hit_vector::218 3128.428712
+system.switch_cpus.branchPred.btb.hit_vector::219 155539.42144999997
+system.switch_cpus.branchPred.btb.hit_vector::220 57272.074805000004
+system.switch_cpus.branchPred.btb.hit_vector::221 222617.366241
+system.switch_cpus.branchPred.btb.hit_vector::222 19562.586787999997
+system.switch_cpus.branchPred.btb.hit_vector::223 166831.693932
+system.switch_cpus.branchPred.btb.hit_vector::224 7255.657808999999
+system.switch_cpus.branchPred.btb.hit_vector::225 2175.2418280000006
+system.switch_cpus.branchPred.btb.hit_vector::226 215896.688432
+system.switch_cpus.branchPred.btb.hit_vector::227 1923.0347829999998
+system.switch_cpus.branchPred.btb.hit_vector::228 68835.933874
+system.switch_cpus.branchPred.btb.hit_vector::229 1721.2971740000003
+system.switch_cpus.branchPred.btb.hit_vector::230 491.42262000000017
+system.switch_cpus.branchPred.btb.hit_vector::231 17361.226005
+system.switch_cpus.branchPred.btb.hit_vector::232 25657.483889999996
+system.switch_cpus.branchPred.btb.hit_vector::233 53520.46310400001
+system.switch_cpus.branchPred.btb.hit_vector::234 17.909257999999998
+system.switch_cpus.branchPred.btb.hit_vector::235 20.031728
+system.switch_cpus.branchPred.btb.hit_vector::236 12140.105812
+system.switch_cpus.branchPred.btb.hit_vector::237 20.546707
+system.switch_cpus.branchPred.btb.hit_vector::238 20803.803679
+system.switch_cpus.branchPred.btb.hit_vector::239 2031.6641010000003
+system.switch_cpus.branchPred.btb.hit_vector::240 634.3374920000001
+system.switch_cpus.branchPred.btb.hit_vector::241 15606.34814
+system.switch_cpus.branchPred.btb.hit_vector::242 67205.375952
+system.switch_cpus.branchPred.btb.hit_vector::243 220127.39599700004
+system.switch_cpus.branchPred.btb.hit_vector::244 40546.04756899999
+system.switch_cpus.branchPred.btb.hit_vector::245 95982.67521000002
+system.switch_cpus.branchPred.btb.hit_vector::246 8872.664377
+system.switch_cpus.branchPred.btb.hit_vector::247 44780.321309
+system.switch_cpus.branchPred.btb.hit_vector::248 120599.369548
+system.switch_cpus.branchPred.btb.hit_vector::249 0.0
+system.switch_cpus.branchPred.btb.hit_vector::250 245450.582841
+system.switch_cpus.branchPred.btb.hit_vector::251 65123.99057599999
+system.switch_cpus.branchPred.btb.hit_vector::252 12.829461
+system.switch_cpus.branchPred.btb.hit_vector::253 39418.657935
+system.switch_cpus.branchPred.btb.hit_vector::254 1094.3439720000001
+system.switch_cpus.branchPred.btb.hit_vector::255 81904.56335499998
+system.switch_cpus.branchPred.btb.hit_vector::256 22197.947135
+system.switch_cpus.branchPred.btb.hit_vector::257 204471.99578800003
+system.switch_cpus.branchPred.btb.hit_vector::258 52.347747
+system.switch_cpus.branchPred.btb.hit_vector::259 165271.65316400002
+system.switch_cpus.branchPred.btb.hit_vector::260 85193.130323
+system.switch_cpus.branchPred.btb.hit_vector::261 53677.20036
+system.switch_cpus.branchPred.btb.hit_vector::262 123627.32113
+system.switch_cpus.branchPred.btb.hit_vector::263 264.816844
+system.switch_cpus.branchPred.btb.hit_vector::264 53938.15912400001
+system.switch_cpus.branchPred.btb.hit_vector::265 156262.43313600004
+system.switch_cpus.branchPred.btb.hit_vector::266 674.8042639999999
+system.switch_cpus.branchPred.btb.hit_vector::267 0.0
+system.switch_cpus.branchPred.btb.hit_vector::268 0.0
+system.switch_cpus.branchPred.btb.hit_vector::269 364.890852
+system.switch_cpus.branchPred.btb.hit_vector::270 13995.929477
+system.switch_cpus.branchPred.btb.hit_vector::271 202315.003816
+system.switch_cpus.branchPred.btb.hit_vector::272 1017.9035070000001
+system.switch_cpus.branchPred.btb.hit_vector::273 10250.800006
+system.switch_cpus.branchPred.btb.hit_vector::274 10212.895276
+system.switch_cpus.branchPred.btb.hit_vector::275 75416.69595899999
+system.switch_cpus.branchPred.btb.hit_vector::276 136608.88056599998
+system.switch_cpus.branchPred.btb.hit_vector::277 6973.9569809999975
+system.switch_cpus.branchPred.btb.hit_vector::278 90860.447445
+system.switch_cpus.branchPred.btb.hit_vector::279 27.222125000000005
+system.switch_cpus.branchPred.btb.hit_vector::280 5081.038171000001
+system.switch_cpus.branchPred.btb.hit_vector::281 5043.122237999999
+system.switch_cpus.branchPred.btb.hit_vector::282 1070.219529
+system.switch_cpus.branchPred.btb.hit_vector::283 123534.14693299998
+system.switch_cpus.branchPred.btb.hit_vector::284 10473.470153000002
+system.switch_cpus.branchPred.btb.hit_vector::285 4594.134360000001
+system.switch_cpus.branchPred.btb.hit_vector::286 2206.625249
+system.switch_cpus.branchPred.btb.hit_vector::287 10671.247282
+system.switch_cpus.branchPred.btb.hit_vector::288 13852.965032000002
+system.switch_cpus.branchPred.btb.hit_vector::289 2960.128801
+system.switch_cpus.branchPred.btb.hit_vector::290 117146.51547500002
+system.switch_cpus.branchPred.btb.hit_vector::291 14527.046018999998
+system.switch_cpus.branchPred.btb.hit_vector::292 224590.913473
+system.switch_cpus.branchPred.btb.hit_vector::293 67623.36591600002
+system.switch_cpus.branchPred.btb.hit_vector::294 14664.181835999998
+system.switch_cpus.branchPred.btb.hit_vector::295 29.593248
+system.switch_cpus.branchPred.btb.hit_vector::296 76403.899604
+system.switch_cpus.branchPred.btb.hit_vector::297 141512.286337
+system.switch_cpus.branchPred.btb.hit_vector::298 64580.879543
+system.switch_cpus.branchPred.btb.hit_vector::299 9256.576124000001
+system.switch_cpus.branchPred.btb.hit_vector::300 4384.135998000001
+system.switch_cpus.branchPred.btb.hit_vector::301 129464.88121499997
+system.switch_cpus.branchPred.btb.hit_vector::302 11.840526
+system.switch_cpus.branchPred.btb.hit_vector::303 80969.18192099998
+system.switch_cpus.branchPred.btb.hit_vector::304 12684.435697
+system.switch_cpus.branchPred.btb.hit_vector::305 62254.919250999985
+system.switch_cpus.branchPred.btb.hit_vector::306 67.129114
+system.switch_cpus.branchPred.btb.hit_vector::307 1.354601
+system.switch_cpus.branchPred.btb.hit_vector::308 4581.042511999999
+system.switch_cpus.branchPred.btb.hit_vector::309 25826.255088
+system.switch_cpus.branchPred.btb.hit_vector::310 11.150122999999997
+system.switch_cpus.branchPred.btb.hit_vector::311 28456.909614000004
+system.switch_cpus.branchPred.btb.hit_vector::312 16.540146999999997
+system.switch_cpus.branchPred.btb.hit_vector::313 4865.156276
+system.switch_cpus.branchPred.btb.hit_vector::314 64616.793919
+system.switch_cpus.branchPred.btb.hit_vector::315 241.52659500000001
+system.switch_cpus.branchPred.btb.hit_vector::316 0.53732
+system.switch_cpus.branchPred.btb.hit_vector::317 111703.81295100001
+system.switch_cpus.branchPred.btb.hit_vector::318 1557.5558689999998
+system.switch_cpus.branchPred.btb.hit_vector::319 28.565396
+system.switch_cpus.branchPred.btb.hit_vector::320 957.6396639999999
+system.switch_cpus.branchPred.btb.hit_vector::321 1160.637973
+system.switch_cpus.branchPred.btb.hit_vector::322 37804.405093
+system.switch_cpus.branchPred.btb.hit_vector::323 4511.650724
+system.switch_cpus.branchPred.btb.hit_vector::324 206896.996182
+system.switch_cpus.branchPred.btb.hit_vector::325 105753.18606799998
+system.switch_cpus.branchPred.btb.hit_vector::326 55557.33887900001
+system.switch_cpus.branchPred.btb.hit_vector::327 0.0
+system.switch_cpus.branchPred.btb.hit_vector::328 32359.171177999997
+system.switch_cpus.branchPred.btb.hit_vector::329 132330.90179799998
+system.switch_cpus.branchPred.btb.hit_vector::330 92.02101700000001
+system.switch_cpus.branchPred.btb.hit_vector::331 57097.136806999995
+system.switch_cpus.branchPred.btb.hit_vector::332 76190.982132
+system.switch_cpus.branchPred.btb.hit_vector::333 98155.112282
+system.switch_cpus.branchPred.btb.hit_vector::334 5387.316616
+system.switch_cpus.branchPred.btb.hit_vector::335 79589.06436500001
+system.switch_cpus.branchPred.btb.hit_vector::336 56866.23802499999
+system.switch_cpus.branchPred.btb.hit_vector::337 95827.705523
+system.switch_cpus.branchPred.btb.hit_vector::338 6445.962146
+system.switch_cpus.branchPred.btb.hit_vector::339 1129.626283
+system.switch_cpus.branchPred.btb.hit_vector::340 6173.745424000002
+system.switch_cpus.branchPred.btb.hit_vector::341 73762.23550099997
+system.switch_cpus.branchPred.btb.hit_vector::342 792.7642369999999
+system.switch_cpus.branchPred.btb.hit_vector::343 5791.1001400000005
+system.switch_cpus.branchPred.btb.hit_vector::344 3271.943523
+system.switch_cpus.branchPred.btb.hit_vector::345 63721.498122000005
+system.switch_cpus.branchPred.btb.hit_vector::346 3.0103859999999996
+system.switch_cpus.branchPred.btb.hit_vector::347 154478.42080499997
+system.switch_cpus.branchPred.btb.hit_vector::348 5832.168964
+system.switch_cpus.branchPred.btb.hit_vector::349 56740.551872000004
+system.switch_cpus.branchPred.btb.hit_vector::350 62760.52250000001
+system.switch_cpus.branchPred.btb.hit_vector::351 5005.110019999999
+system.switch_cpus.branchPred.btb.hit_vector::352 0.0
+system.switch_cpus.branchPred.btb.hit_vector::353 138.93370700000003
+system.switch_cpus.branchPred.btb.hit_vector::354 192.955081
+system.switch_cpus.branchPred.btb.hit_vector::355 28666.661519000005
+system.switch_cpus.branchPred.btb.hit_vector::356 2268.3162949999996
+system.switch_cpus.branchPred.btb.hit_vector::357 149213.609051
+system.switch_cpus.branchPred.btb.hit_vector::358 9.161545999999998
+system.switch_cpus.branchPred.btb.hit_vector::359 31593.909008
+system.switch_cpus.branchPred.btb.hit_vector::360 613.2436230000002
+system.switch_cpus.branchPred.btb.hit_vector::361 10822.081552000001
+system.switch_cpus.branchPred.btb.hit_vector::362 21.432533
+system.switch_cpus.branchPred.btb.hit_vector::363 66281.09536200001
+system.switch_cpus.branchPred.btb.hit_vector::364 4195.319072
+system.switch_cpus.branchPred.btb.hit_vector::365 85.143142
+system.switch_cpus.branchPred.btb.hit_vector::366 10497.259224000001
+system.switch_cpus.branchPred.btb.hit_vector::367 3.609088
+system.switch_cpus.branchPred.btb.hit_vector::368 45634.667137
+system.switch_cpus.branchPred.btb.hit_vector::369 58027.144538
+system.switch_cpus.branchPred.btb.hit_vector::370 162318.73805400002
+system.switch_cpus.branchPred.btb.hit_vector::371 117619.321316
+system.switch_cpus.branchPred.btb.hit_vector::372 2343.71191
+system.switch_cpus.branchPred.btb.hit_vector::373 17.693447999999997
+system.switch_cpus.branchPred.btb.hit_vector::374 24741.888567
+system.switch_cpus.branchPred.btb.hit_vector::375 87894.938833
+system.switch_cpus.branchPred.btb.hit_vector::376 32392.977615
+system.switch_cpus.branchPred.btb.hit_vector::377 1.0773
+system.switch_cpus.branchPred.btb.hit_vector::378 98.239468
+system.switch_cpus.branchPred.btb.hit_vector::379 4250.976091000001
+system.switch_cpus.branchPred.btb.hit_vector::380 950.9161619999999
+system.switch_cpus.branchPred.btb.hit_vector::381 5685.070510999998
+system.switch_cpus.branchPred.btb.hit_vector::382 39995.300514
+system.switch_cpus.branchPred.btb.hit_vector::383 54887.654497999996
+system.switch_cpus.branchPred.btb.hit_vector::384 19847.649382000007
+system.switch_cpus.branchPred.btb.hit_vector::385 80892.07264599999
+system.switch_cpus.branchPred.btb.hit_vector::386 19779.753837
+system.switch_cpus.branchPred.btb.hit_vector::387 21726.073640999995
+system.switch_cpus.branchPred.btb.hit_vector::388 1620.324013
+system.switch_cpus.branchPred.btb.hit_vector::389 0.26100399999999996
+system.switch_cpus.branchPred.btb.hit_vector::390 78658.939664
+system.switch_cpus.branchPred.btb.hit_vector::391 1797.732406
+system.switch_cpus.branchPred.btb.hit_vector::392 8086.297469999999
+system.switch_cpus.branchPred.btb.hit_vector::393 2.123069
+system.switch_cpus.branchPred.btb.hit_vector::394 33329.086305
+system.switch_cpus.branchPred.btb.hit_vector::395 5483.303171
+system.switch_cpus.branchPred.btb.hit_vector::396 100.65969800000002
+system.switch_cpus.branchPred.btb.hit_vector::397 40952.565366
+system.switch_cpus.branchPred.btb.hit_vector::398 64461.37528100001
+system.switch_cpus.branchPred.btb.hit_vector::399 49874.95766600001
+system.switch_cpus.branchPred.btb.hit_vector::400 12.122046
+system.switch_cpus.branchPred.btb.hit_vector::401 64833.60020000001
+system.switch_cpus.branchPred.btb.hit_vector::402 3.1094749999999998
+system.switch_cpus.branchPred.btb.hit_vector::403 5550.143499
+system.switch_cpus.branchPred.btb.hit_vector::404 432.062445
+system.switch_cpus.branchPred.btb.hit_vector::405 15443.508666000002
+system.switch_cpus.branchPred.btb.hit_vector::406 5830.789637
+system.switch_cpus.branchPred.btb.hit_vector::407 57.00553
+system.switch_cpus.branchPred.btb.hit_vector::408 90644.530014
+system.switch_cpus.branchPred.btb.hit_vector::409 0.0
+system.switch_cpus.branchPred.btb.hit_vector::410 4093.7268950000002
+system.switch_cpus.branchPred.btb.hit_vector::411 372.197399
+system.switch_cpus.branchPred.btb.hit_vector::412 96.092094
+system.switch_cpus.branchPred.btb.hit_vector::413 2887.7827559999996
+system.switch_cpus.branchPred.btb.hit_vector::414 21852.624978
+system.switch_cpus.branchPred.btb.hit_vector::415 38725.51585200001
+system.switch_cpus.branchPred.btb.hit_vector::416 441.29471600000005
+system.switch_cpus.branchPred.btb.hit_vector::417 6769.387323
+system.switch_cpus.branchPred.btb.hit_vector::418 742.8061029999999
+system.switch_cpus.branchPred.btb.hit_vector::419 7396.359140999999
+system.switch_cpus.branchPred.btb.hit_vector::420 4942.243360999999
+system.switch_cpus.branchPred.btb.hit_vector::421 13789.641038999998
+system.switch_cpus.branchPred.btb.hit_vector::422 21125.474072
+system.switch_cpus.branchPred.btb.hit_vector::423 96797.67732000002
+system.switch_cpus.branchPred.btb.hit_vector::424 0.0
+system.switch_cpus.branchPred.btb.hit_vector::425 15357.991624
+system.switch_cpus.branchPred.btb.hit_vector::426 48917.78157300002
+system.switch_cpus.branchPred.btb.hit_vector::427 102941.33082200002
+system.switch_cpus.branchPred.btb.hit_vector::428 570.415892
+system.switch_cpus.branchPred.btb.hit_vector::429 3697.6907090000004
+system.switch_cpus.branchPred.btb.hit_vector::430 1.024479
+system.switch_cpus.branchPred.btb.hit_vector::431 605.4778920000001
+system.switch_cpus.branchPred.btb.hit_vector::432 43168.457189999994
+system.switch_cpus.branchPred.btb.hit_vector::433 108497.21805200001
+system.switch_cpus.branchPred.btb.hit_vector::434 2864.401942
+system.switch_cpus.branchPred.btb.hit_vector::435 112198.632752
+system.switch_cpus.branchPred.btb.hit_vector::436 540.8059400000001
+system.switch_cpus.branchPred.btb.hit_vector::437 72121.97969200001
+system.switch_cpus.branchPred.btb.hit_vector::438 5267.58331
+system.switch_cpus.branchPred.btb.hit_vector::439 24882.074364000004
+system.switch_cpus.branchPred.btb.hit_vector::440 22073.402356999995
+system.switch_cpus.branchPred.btb.hit_vector::441 0.0
+system.switch_cpus.branchPred.btb.hit_vector::442 9100.475456999999
+system.switch_cpus.branchPred.btb.hit_vector::443 1815.2796220000002
+system.switch_cpus.branchPred.btb.hit_vector::444 1.744081
+system.switch_cpus.branchPred.btb.hit_vector::445 13.325035999999997
+system.switch_cpus.branchPred.btb.hit_vector::446 7285.64455
+system.switch_cpus.branchPred.btb.hit_vector::447 168.736457
+system.switch_cpus.branchPred.btb.hit_vector::448 5464.879080999998
+system.switch_cpus.branchPred.btb.hit_vector::449 4377.185755
+system.switch_cpus.branchPred.btb.hit_vector::450 333.546898
+system.switch_cpus.branchPred.btb.hit_vector::451 39.987761000000006
+system.switch_cpus.branchPred.btb.hit_vector::452 16365.488223999997
+system.switch_cpus.branchPred.btb.hit_vector::453 50080.11932199999
+system.switch_cpus.branchPred.btb.hit_vector::454 143.133463
+system.switch_cpus.branchPred.btb.hit_vector::455 7.151635000000001
+system.switch_cpus.branchPred.btb.hit_vector::456 2433.913014
+system.switch_cpus.branchPred.btb.hit_vector::457 40.564386999999996
+system.switch_cpus.branchPred.btb.hit_vector::458 2047.1511830000002
+system.switch_cpus.branchPred.btb.hit_vector::459 24.759286000000003
+system.switch_cpus.branchPred.btb.hit_vector::460 8.654852
+system.switch_cpus.branchPred.btb.hit_vector::461 64555.70204499999
+system.switch_cpus.branchPred.btb.hit_vector::462 65008.550727
+system.switch_cpus.branchPred.btb.hit_vector::463 60810.017363
+system.switch_cpus.branchPred.btb.hit_vector::464 3.3206070000000003
+system.switch_cpus.branchPred.btb.hit_vector::465 344.44903400000004
+system.switch_cpus.branchPred.btb.hit_vector::466 10676.282539999998
+system.switch_cpus.branchPred.btb.hit_vector::467 185251.82929700005
+system.switch_cpus.branchPred.btb.hit_vector::468 7941.138940999999
+system.switch_cpus.branchPred.btb.hit_vector::469 11908.585070000001
+system.switch_cpus.branchPred.btb.hit_vector::470 3200.5918520000005
+system.switch_cpus.branchPred.btb.hit_vector::471 66187.74129100001
+system.switch_cpus.branchPred.btb.hit_vector::472 31997.843625000005
+system.switch_cpus.branchPred.btb.hit_vector::473 1395.210279
+system.switch_cpus.branchPred.btb.hit_vector::474 52819.172692
+system.switch_cpus.branchPred.btb.hit_vector::475 15206.98721
+system.switch_cpus.branchPred.btb.hit_vector::476 358.195021
+system.switch_cpus.branchPred.btb.hit_vector::477 11.19892
+system.switch_cpus.branchPred.btb.hit_vector::478 397.59044199999994
+system.switch_cpus.branchPred.btb.hit_vector::479 1133.8015309999998
+system.switch_cpus.branchPred.btb.hit_vector::480 4609.939018
+system.switch_cpus.branchPred.btb.hit_vector::481 187411.45712099998
+system.switch_cpus.branchPred.btb.hit_vector::482 21356.96702
+system.switch_cpus.branchPred.btb.hit_vector::483 807.0152589999997
+system.switch_cpus.branchPred.btb.hit_vector::484 10684.790114000001
+system.switch_cpus.branchPred.btb.hit_vector::485 424.44431099999997
+system.switch_cpus.branchPred.btb.hit_vector::486 187789.20688299998
+system.switch_cpus.branchPred.btb.hit_vector::487 10864.969367
+system.switch_cpus.branchPred.btb.hit_vector::488 9312.049912
+system.switch_cpus.branchPred.btb.hit_vector::489 570.835382
+system.switch_cpus.branchPred.btb.hit_vector::490 6388.257628999999
+system.switch_cpus.branchPred.btb.hit_vector::491 54656.77874499999
+system.switch_cpus.branchPred.btb.hit_vector::492 0.0
+system.switch_cpus.branchPred.btb.hit_vector::493 0.0
+system.switch_cpus.branchPred.btb.hit_vector::494 0.0
+system.switch_cpus.branchPred.btb.hit_vector::495 48585.39495000001
+system.switch_cpus.branchPred.btb.hit_vector::496 1655.1905839999997
+system.switch_cpus.branchPred.btb.hit_vector::497 3.930531
+system.switch_cpus.branchPred.btb.hit_vector::498 0.0
+system.switch_cpus.branchPred.btb.hit_vector::499 5417.107281
+system.switch_cpus.branchPred.btb.hit_vector::500 102.718816
+system.switch_cpus.branchPred.btb.hit_vector::501 0.265438
+system.switch_cpus.branchPred.btb.hit_vector::502 127050.87887499997
+system.switch_cpus.branchPred.btb.hit_vector::503 22317.886636000003
+system.switch_cpus.branchPred.btb.hit_vector::504 2874.879962
+system.switch_cpus.branchPred.btb.hit_vector::505 9960.462900000002
+system.switch_cpus.branchPred.btb.hit_vector::506 6348.981278
+system.switch_cpus.branchPred.btb.hit_vector::507 1872.1168249999998
+system.switch_cpus.branchPred.btb.hit_vector::508 9.938889000000001
+system.switch_cpus.branchPred.btb.hit_vector::509 1.6972390000000002
+system.switch_cpus.branchPred.btb.hit_vector::510 0.0
+system.switch_cpus.branchPred.btb.hit_vector::511 1585.861701
+system.switch_cpus.branchPred.btb.replace_way_vector::0 56.155515
+system.switch_cpus.branchPred.btb.replace_way_vector::1 92.62615000000001
+system.switch_cpus.branchPred.btb.replace_way_vector::2 89.37664399999998
+system.switch_cpus.branchPred.btb.replace_way_vector::3 59.19491
+system.switch_cpus.branchPred.btb.replace_way_vector::4 26.843778000000004
+system.switch_cpus.branchPred.btb.replace_way_vector::5 8.385046999999998
+system.switch_cpus.branchPred.btb.replace_way_vector::6 2.9069339999999997
+system.switch_cpus.branchPred.btb.replace_way_vector::7 0.843127
+system.switch_cpus.branchPred.btb.hit_way_vector::0 10946969.091782002
+system.switch_cpus.branchPred.btb.hit_way_vector::1 3815061.075435
+system.switch_cpus.branchPred.btb.hit_way_vector::2 865466.8070179999
+system.switch_cpus.branchPred.btb.hit_way_vector::3 282361.407908
+system.switch_cpus.branchPred.btb.hit_way_vector::4 56573.327872999995
+system.switch_cpus.branchPred.btb.hit_way_vector::5 1937.487343
+system.switch_cpus.branchPred.btb.hit_way_vector::6 51.57795100000001
+system.switch_cpus.branchPred.btb.hit_way_vector::7 18.638005
+system.switch_cpus.branchPred.btb.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.switch_cpus.branchPred.indirectBranchPred.mainlookupHit 2860.664539000001
+system.switch_cpus.branchPred.ras.pushes 1163894.774684
+system.switch_cpus.branchPred.ras.pops 1163893.6780580003
+system.switch_cpus.branchPred.ras.squashes 452352.8757769999
+system.switch_cpus.branchPred.ras.used 711540.7686559998
+system.switch_cpus.branchPred.ras.correct 711347.5396589999
+system.switch_cpus.branchPred.ras.incorrect 193.228997
+system.switch_cpus.commit.commitSquashedInsts 18616204.147469994
+system.switch_cpus.commit.branchMispredicts 1249796.1192659996
+system.switch_cpus.commit.numCommittedDist::samples 67946890.95589402
+system.switch_cpus.commit.numCommittedDist::mean 1.601213988829
+system.switch_cpus.commit.numCommittedDist::stdev 1.5998807867930005
+system.switch_cpus.commit.numCommittedDist::underflows 0.0
+system.switch_cpus.commit.numCommittedDist::0 25371013.291513998
+system.switch_cpus.commit.numCommittedDist::1 14178687.147298003
+system.switch_cpus.commit.numCommittedDist::2 7409620.7097390015
+system.switch_cpus.commit.numCommittedDist::3 4634676.554304001
+system.switch_cpus.commit.numCommittedDist::4 16352893.253039002
+system.switch_cpus.commit.numCommittedDist::overflows 0.0
+system.switch_cpus.commit.numCommittedDist::min_value 0.0
+system.switch_cpus.commit.numCommittedDist::max_value 3.9999920000000007
+system.switch_cpus.commit.numCommittedDist::total 67946890.95589402
+system.switch_cpus.commit.amos 0.0
+system.switch_cpus.commit.membars 18.847307999999998
+system.switch_cpus.commit.functionCalls 711541.722856
+system.switch_cpus.commit.committedInstType_0::No_OpClass 36.854834999999994
+system.switch_cpus.commit.committedInstType_0::IntAlu 66136563.47265399
+system.switch_cpus.commit.committedInstType_0::IntMult 1190528.216948
+system.switch_cpus.commit.committedInstType_0::IntDiv 350829.463971
+system.switch_cpus.commit.committedInstType_0::FloatAdd 50918.84919000001
+system.switch_cpus.commit.committedInstType_0::FloatCmp 6363.158636
+system.switch_cpus.commit.committedInstType_0::FloatCvt 51298.936821
+system.switch_cpus.commit.committedInstType_0::FloatMult 0.00688
+system.switch_cpus.commit.committedInstType_0::FloatMultAcc 0.0
+system.switch_cpus.commit.committedInstType_0::FloatDiv 372.890837
+system.switch_cpus.commit.committedInstType_0::FloatMisc 302302.301697
+system.switch_cpus.commit.committedInstType_0::FloatSqrt 0.0
+system.switch_cpus.commit.committedInstType_0::SimdAdd 13268.284448999999
+system.switch_cpus.commit.committedInstType_0::SimdAddAcc 0.0
+system.switch_cpus.commit.committedInstType_0::SimdAlu 1260853.6552970002
+system.switch_cpus.commit.committedInstType_0::SimdCmp 1155.5857839999999
+system.switch_cpus.commit.committedInstType_0::SimdCvt 52222.38226599999
+system.switch_cpus.commit.committedInstType_0::SimdMisc 345770.52375
+system.switch_cpus.commit.committedInstType_0::SimdMult 0.0
+system.switch_cpus.commit.committedInstType_0::SimdMultAcc 0.0
+system.switch_cpus.commit.committedInstType_0::SimdMatMultAcc 0.0
+system.switch_cpus.commit.committedInstType_0::SimdShift 953892.1145109999
+system.switch_cpus.commit.committedInstType_0::SimdShiftAcc 0.0
+system.switch_cpus.commit.committedInstType_0::SimdDiv 0.0
+system.switch_cpus.commit.committedInstType_0::SimdSqrt 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatAdd 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatAlu 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatCmp 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatCvt 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatDiv 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatMisc 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatMult 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatMultAcc 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatMatMultAcc 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatSqrt 0.0
+system.switch_cpus.commit.committedInstType_0::SimdReduceAdd 0.0
+system.switch_cpus.commit.committedInstType_0::SimdReduceAlu 0.0
+system.switch_cpus.commit.committedInstType_0::SimdReduceCmp 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatReduceAdd 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatReduceCmp 0.0
+system.switch_cpus.commit.committedInstType_0::SimdAes 0.0
+system.switch_cpus.commit.committedInstType_0::SimdAesMix 0.0
+system.switch_cpus.commit.committedInstType_0::SimdSha1Hash 0.0
+system.switch_cpus.commit.committedInstType_0::SimdSha1Hash2 0.0
+system.switch_cpus.commit.committedInstType_0::SimdSha256Hash 0.0
+system.switch_cpus.commit.committedInstType_0::SimdSha256Hash2 0.0
+system.switch_cpus.commit.committedInstType_0::SimdShaSigma2 0.0
+system.switch_cpus.commit.committedInstType_0::SimdShaSigma3 0.0
+system.switch_cpus.commit.committedInstType_0::SimdPredAlu 0.0
+system.switch_cpus.commit.committedInstType_0::Matrix 0.0
+system.switch_cpus.commit.committedInstType_0::MatrixMov 0.0
+system.switch_cpus.commit.committedInstType_0::MatrixOP 0.0
+system.switch_cpus.commit.committedInstType_0::MemRead 27369484.951624002
+system.switch_cpus.commit.committedInstType_0::MemWrite 10227669.591694
+system.switch_cpus.commit.committedInstType_0::FloatMemRead 0.0
+system.switch_cpus.commit.committedInstType_0::FloatMemWrite 0.0
+system.switch_cpus.commit.committedInstType_0::IprAccess 0.0
+system.switch_cpus.commit.committedInstType_0::InstPrefetch 0.0
+system.switch_cpus.commit.committedInstType_0::SimdUnitStrideLoad 0.0
+system.switch_cpus.commit.committedInstType_0::SimdUnitStrideStore 0.0
+system.switch_cpus.commit.committedInstType_0::SimdUnitStrideMaskLoad 0.0
+system.switch_cpus.commit.committedInstType_0::SimdUnitStrideMaskStore 0.0
+system.switch_cpus.commit.committedInstType_0::SimdStridedLoad 0.0
+system.switch_cpus.commit.committedInstType_0::SimdStridedStore 0.0
+system.switch_cpus.commit.committedInstType_0::SimdIndexedLoad 0.0
+system.switch_cpus.commit.committedInstType_0::SimdIndexedStore 0.0
+system.switch_cpus.commit.committedInstType_0::SimdWholeRegisterLoad 0.0
+system.switch_cpus.commit.committedInstType_0::SimdWholeRegisterStore 0.0
+system.switch_cpus.commit.committedInstType_0::SimdUnitStrideFaultOnlyFirstLoad 0.0
+system.switch_cpus.commit.committedInstType_0::SimdUnitStrideSegmentedLoad 0.0
+system.switch_cpus.commit.committedInstType_0::SimdUnitStrideSegmentedStore 0.0
+system.switch_cpus.commit.committedInstType_0::SimdExt 0.0
+system.switch_cpus.commit.committedInstType_0::SimdFloatExt 0.0
+system.switch_cpus.commit.committedInstType_0::SimdConfig 0.0
+system.switch_cpus.commit.committedInstType_0::total 108313531.241844
+system.switch_cpus.commit.commitEligibleSamples 16352893.253039002
+system.switch_cpus.commit.memOrderViolationEvents 34465.076338000006
+system.switch_cpus.commit.PNDLoadViolations 2906.8593410000003
+system.switch_cpus.commitStats0.numInsts 100002765.61001098
+system.switch_cpus.commitStats0.numOps 108313531.241844
+system.switch_cpus.commitStats0.numInstsNotNOP 99999800.29530598
+system.switch_cpus.commitStats0.numOpsNotNOP 108310565.927139
+system.switch_cpus.commitStats0.cpi 0.7323564415910001
+system.switch_cpus.commitStats0.ipc 1.371410316428
+system.switch_cpus.commitStats0.numMemRefs 37597154.543317996
+system.switch_cpus.commitStats0.numFpInsts 0.0
+system.switch_cpus.commitStats0.numIntInsts 95324829.44356498
+system.switch_cpus.commitStats0.numLoadInsts 27369484.951624002
+system.switch_cpus.commitStats0.numRMWLoadInsts 0.0
+system.switch_cpus.commitStats0.numRMWALoadInsts 0.0
+system.switch_cpus.commitStats0.numStoreInsts 10227650.435314
+system.switch_cpus.commitStats0.numRMWStoreInsts 0.0
+system.switch_cpus.commitStats0.numRMWAStoreInsts 0.0
+system.switch_cpus.commitStats0.numVecInsts 6263906.874051999
+system.switch_cpus.commitStats0.committedInstType::No_OpClass 36.854834999999994
+system.switch_cpus.commitStats0.committedInstType::IntAlu 66136563.47265399
+system.switch_cpus.commitStats0.committedInstType::IntMult 1190528.216948
+system.switch_cpus.commitStats0.committedInstType::IntDiv 350829.463971
+system.switch_cpus.commitStats0.committedInstType::FloatAdd 50918.84919000001
+system.switch_cpus.commitStats0.committedInstType::FloatCmp 6363.158636
+system.switch_cpus.commitStats0.committedInstType::FloatCvt 51298.936821
+system.switch_cpus.commitStats0.committedInstType::FloatMult 0.00688
+system.switch_cpus.commitStats0.committedInstType::FloatMultAcc 0.0
+system.switch_cpus.commitStats0.committedInstType::FloatDiv 372.890837
+system.switch_cpus.commitStats0.committedInstType::FloatMisc 302302.301697
+system.switch_cpus.commitStats0.committedInstType::FloatSqrt 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdAdd 13268.284448999999
+system.switch_cpus.commitStats0.committedInstType::SimdAddAcc 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdAlu 1260853.6552970002
+system.switch_cpus.commitStats0.committedInstType::SimdCmp 1155.5857839999999
+system.switch_cpus.commitStats0.committedInstType::SimdCvt 52222.38226599999
+system.switch_cpus.commitStats0.committedInstType::SimdMisc 345770.52375
+system.switch_cpus.commitStats0.committedInstType::SimdMult 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdMultAcc 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdMatMultAcc 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdShift 953892.1145109999
+system.switch_cpus.commitStats0.committedInstType::SimdShiftAcc 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdDiv 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdSqrt 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatAdd 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatAlu 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatCmp 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatCvt 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatDiv 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatMisc 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatMult 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatMultAcc 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatMatMultAcc 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatSqrt 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdReduceAdd 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdReduceAlu 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdReduceCmp 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatReduceAdd 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatReduceCmp 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdAes 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdAesMix 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdSha1Hash 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdSha1Hash2 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdSha256Hash 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdSha256Hash2 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdShaSigma2 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdShaSigma3 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdPredAlu 0.0
+system.switch_cpus.commitStats0.committedInstType::Matrix 0.0
+system.switch_cpus.commitStats0.committedInstType::MatrixMov 0.0
+system.switch_cpus.commitStats0.committedInstType::MatrixOP 0.0
+system.switch_cpus.commitStats0.committedInstType::MemRead 27369484.951624002
+system.switch_cpus.commitStats0.committedInstType::MemWrite 10227669.591694
+system.switch_cpus.commitStats0.committedInstType::FloatMemRead 0.0
+system.switch_cpus.commitStats0.committedInstType::FloatMemWrite 0.0
+system.switch_cpus.commitStats0.committedInstType::IprAccess 0.0
+system.switch_cpus.commitStats0.committedInstType::InstPrefetch 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdUnitStrideLoad 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdUnitStrideStore 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdUnitStrideMaskLoad 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdUnitStrideMaskStore 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdStridedLoad 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdStridedStore 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdIndexedLoad 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdIndexedStore 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdWholeRegisterLoad 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdWholeRegisterStore 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdUnitStrideFaultOnlyFirstLoad 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdUnitStrideSegmentedLoad 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdUnitStrideSegmentedStore 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdExt 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdFloatExt 0.0
+system.switch_cpus.commitStats0.committedInstType::SimdConfig 0.0
+system.switch_cpus.commitStats0.committedInstType::total 108313531.241844
+system.switch_cpus.commitStats0.committedControl::IsControl 13643898.360307999
+system.switch_cpus.commitStats0.committedControl::IsDirectControl 12929409.412395997
+system.switch_cpus.commitStats0.committedControl::IsIndirectControl 714488.9479120001
+system.switch_cpus.commitStats0.committedControl::IsCondControl 10946121.173009
+system.switch_cpus.commitStats0.committedControl::IsUncondControl 2697777.187298999
+system.switch_cpus.commitStats0.committedControl::IsCall 711541.722856
+system.switch_cpus.commitStats0.committedControl::IsReturn 711540.7686559998
+system.switch_cpus.decode.idleCycles 22033552.041531995
+system.switch_cpus.decode.blockedCycles 9906653.087008998
+system.switch_cpus.decode.runCycles 38213038.718429
+system.switch_cpus.decode.unblockCycles 1769962.366856
+system.switch_cpus.decode.squashCycles 1292734.20021
+system.switch_cpus.decode.branchResolved 9161614.116711002
+system.switch_cpus.decode.branchMispred 155.570595
+system.switch_cpus.decode.decodedInsts 134634986.750287
+system.switch_cpus.decode.squashedInsts 312.6535
+system.switch_cpus.executeStats0.numInsts 119701530.979832
+system.switch_cpus.executeStats0.numNop 3005.41036
+system.switch_cpus.executeStats0.numBranches 14986170.004587
+system.switch_cpus.executeStats0.numLoadInsts 31032399.715657
+system.switch_cpus.executeStats0.numStoreInsts 10834052.543476
+system.switch_cpus.executeStats0.instRate 1.6409185304340002
+system.switch_cpus.executeStats0.numCCRegReads 38903826.05791501
+system.switch_cpus.executeStats0.numCCRegWrites 39506917.131824
+system.switch_cpus.executeStats0.numFpRegWrites 0.0
+system.switch_cpus.executeStats0.numIntRegReads 146807426.645585
+system.switch_cpus.executeStats0.numIntRegWrites 78968333.190911
+system.switch_cpus.executeStats0.numMemRefs 41866452.259132996
+system.switch_cpus.executeStats0.numMiscRegReads 21228155.992236003
+system.switch_cpus.executeStats0.numMiscRegWrites 161194.926083
+system.switch_cpus.executeStats0.numVecAluAccesses 0.0
+system.switch_cpus.executeStats0.numVecPredRegReads 507.91006099999987
+system.switch_cpus.executeStats0.numVecPredRegWrites 189.95978499999998
+system.switch_cpus.executeStats0.numVecRegReads 6924885.442152999
+system.switch_cpus.executeStats0.numVecRegWrites 4539719.0320770005
+system.switch_cpus.executeStats0.numDiscardedOps 0.0
+system.switch_cpus.fetch.predictedBranches 10377909.761357
+system.switch_cpus.fetch.cycles 46067020.382582
+system.switch_cpus.fetch.squashCycles 2585774.5070740003
+system.switch_cpus.fetch.cacheLines 25075950.335966
+system.switch_cpus.fetch.icacheSquashes 458953.986132
+system.switch_cpus.fetch.nisnDist::samples 73215940.41403602
+system.switch_cpus.fetch.nisnDist::mean 1.8911429918360003
+system.switch_cpus.fetch.nisnDist::stdev 1.825851571634
+system.switch_cpus.fetch.nisnDist::underflows 0.0
+system.switch_cpus.fetch.nisnDist::0 31354944.407538
+system.switch_cpus.fetch.nisnDist::1 5342802.428702
+system.switch_cpus.fetch.nisnDist::2 4717797.052019999
+system.switch_cpus.fetch.nisnDist::3 4040852.668196
+system.switch_cpus.fetch.nisnDist::4 27759543.85758
+system.switch_cpus.fetch.nisnDist::overflows 0.0
+system.switch_cpus.fetch.nisnDist::min_value 0.0
+system.switch_cpus.fetch.nisnDist::max_value 3.9999920000000007
+system.switch_cpus.fetch.nisnDist::total 73215940.41403602
+system.switch_cpus.fetchStats0.numInsts 127633300.94134502
+system.switch_cpus.fetchStats0.numOps 0.0
+system.switch_cpus.fetchStats0.fetchRate 1.7497861662730003
+system.switch_cpus.fetchStats0.numBranches 18623316.252144996
+system.switch_cpus.fetchStats0.branchRate 0.25530917309199996
+system.switch_cpus.fetchStats0.icacheStallCycles 25855950.923074003
+system.switch_cpus.fetchStats0.numFetchSuspends 0.0
+system.switch_cpus.iew.idleCycles 0.0
+system.switch_cpus.iew.squashCycles 1292734.20021
+system.switch_cpus.iew.blockCycles 4796130.267638001
+system.switch_cpus.iew.unblockCycles 1088127.221767
+system.switch_cpus.iew.dispatchedInsts 126929638.96956798
+system.switch_cpus.iew.dispSquashedInsts 94545.38047199999
+system.switch_cpus.iew.dispLoadInsts 32519487.359994
+system.switch_cpus.iew.dispStoreInsts 11505804.458997
+system.switch_cpus.iew.dispNonSpecInsts 78.052269
+system.switch_cpus.iew.iqFullEvents 19157.593739
+system.switch_cpus.iew.lsqFullEvents 1032753.9026109999
+system.switch_cpus.iew.predictedTakenIncorrect 782187.208709
+system.switch_cpus.iew.predictedNotTakenIncorrect 569777.68861
+system.switch_cpus.iew.branchMispredicts 1351964.8973190002
+system.switch_cpus.iew.instsToCommit 118775083.86462298
+system.switch_cpus.iew.writebackCount 118193036.03559099
+system.switch_cpus.iew.producerInst 70393232.710618
+system.switch_cpus.iew.consumerInst 110841528.058483
+system.switch_cpus.iew.wbRate 1.6202646634330002
+system.switch_cpus.iew.wbFanout 0.6351193148400001
+system.switch_cpus.lsq0.forwLoads 585787.707458
+system.switch_cpus.lsq0.squashedLoads 5150002.681550999
+system.switch_cpus.lsq0.ignoredResponses 1724.40496
+system.switch_cpus.lsq0.memOrderViolation 46032.002294000005
+system.switch_cpus.lsq0.squashedStores 1278136.5217719998
+system.switch_cpus.lsq0.rescheduledLoads 83315.34513599999
+system.switch_cpus.lsq0.blockedByCache 5120.018827
+system.switch_cpus.lsq0.loadToUse::samples 27369484.837474998
+system.switch_cpus.lsq0.loadToUse::mean 4.0497710791
+system.switch_cpus.lsq0.loadToUse::stdev 6.936839258468002
+system.switch_cpus.lsq0.loadToUse::0-9 26808058.090452004
+system.switch_cpus.lsq0.loadToUse::10-19 27918.439382
+system.switch_cpus.lsq0.loadToUse::20-29 415281.645277
+system.switch_cpus.lsq0.loadToUse::30-39 59798.82187299999
+system.switch_cpus.lsq0.loadToUse::40-49 901.864728
+system.switch_cpus.lsq0.loadToUse::60-69 655.2139719999999
+system.switch_cpus.lsq0.loadToUse::70-79 1367.7504430000001
+system.switch_cpus.lsq0.loadToUse::80-89 806.3966519999999
+system.switch_cpus.lsq0.loadToUse::90-99 889.1936559999999
+system.switch_cpus.lsq0.loadToUse::100-109 1317.8567400000002
+system.switch_cpus.lsq0.loadToUse::110-119 985.8698050000002
+system.switch_cpus.lsq0.loadToUse::120-129 1312.3994500000001
+system.switch_cpus.lsq0.loadToUse::130-139 2118.1462589999996
+system.switch_cpus.lsq0.loadToUse::140-149 28488.380062000007
+system.switch_cpus.lsq0.loadToUse::150-159 2061.5335730000006
+system.switch_cpus.lsq0.loadToUse::160-169 683.090548
+system.switch_cpus.lsq0.loadToUse::170-179 4229.111012
+system.switch_cpus.lsq0.loadToUse::180-189 818.559018
+system.switch_cpus.lsq0.loadToUse::190-199 1471.908836
+system.switch_cpus.lsq0.loadToUse::200-209 6138.5085899999995
+system.switch_cpus.lsq0.loadToUse::210-219 430.28464599999995
+system.switch_cpus.lsq0.loadToUse::220-229 49.16601800000001
+system.switch_cpus.lsq0.loadToUse::240-249 35.331832999999996
+system.switch_cpus.lsq0.loadToUse::250-259 36.22144800000001
+system.switch_cpus.lsq0.loadToUse::overflows 2402.7599909999994
+system.switch_cpus.lsq0.loadToUse::min_value 1.000428
+system.switch_cpus.lsq0.loadToUse::max_value 833.2509080000001
+system.switch_cpus.lsq0.loadToUse::total 27369484.837474998
+system.switch_cpus.mmu.alignFaults 0.0
+system.switch_cpus.mmu.prefetchFaults 0.0
+system.switch_cpus.mmu.domainFaults 0.0
+system.switch_cpus.mmu.permsFaults 0.0
+system.switch_cpus.mmu.dtb.readHits 0.0
+system.switch_cpus.mmu.dtb.readMisses 0.0
+system.switch_cpus.mmu.dtb.writeHits 0.0
+system.switch_cpus.mmu.dtb.writeMisses 0.0
+system.switch_cpus.mmu.dtb.inserts 0.0
+system.switch_cpus.mmu.dtb.flushTlb 0.077268
+system.switch_cpus.mmu.dtb.flushedEntries 0.0
+system.switch_cpus.mmu.dtb.readAccesses 0.0
+system.switch_cpus.mmu.dtb.writeAccesses 0.0
+system.switch_cpus.mmu.dtb.hits 0.0
+system.switch_cpus.mmu.dtb.misses 0.0
+system.switch_cpus.mmu.dtb.accesses 0.0
+system.switch_cpus.mmu.dtb_walker.walks 0.0
+system.switch_cpus.mmu.dtb_walker.requestOrigin_Requested::Data 0.0
+system.switch_cpus.mmu.dtb_walker.requestOrigin_Requested::Inst 0.0
+system.switch_cpus.mmu.dtb_walker.requestOrigin_Requested::total 0.0
+system.switch_cpus.mmu.dtb_walker.requestOrigin_Completed::Data 0.0
+system.switch_cpus.mmu.dtb_walker.requestOrigin_Completed::Inst 0.0
+system.switch_cpus.mmu.dtb_walker.requestOrigin_Completed::total 0.0
+system.switch_cpus.mmu.dtb_walker.requestOrigin::total 0.0
+system.switch_cpus.mmu.dtb_walker.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.switch_cpus.mmu.itb.instHits 0.0
+system.switch_cpus.mmu.itb.instMisses 0.0
+system.switch_cpus.mmu.itb.inserts 0.0
+system.switch_cpus.mmu.itb.flushTlb 0.077268
+system.switch_cpus.mmu.itb.flushedEntries 0.0
+system.switch_cpus.mmu.itb.instAccesses 0.0
+system.switch_cpus.mmu.itb.hits 0.0
+system.switch_cpus.mmu.itb.misses 0.0
+system.switch_cpus.mmu.itb.accesses 0.0
+system.switch_cpus.mmu.itb_walker.walks 0.0
+system.switch_cpus.mmu.itb_walker.requestOrigin_Requested::Data 0.0
+system.switch_cpus.mmu.itb_walker.requestOrigin_Requested::Inst 0.0
+system.switch_cpus.mmu.itb_walker.requestOrigin_Requested::total 0.0
+system.switch_cpus.mmu.itb_walker.requestOrigin_Completed::Data 0.0
+system.switch_cpus.mmu.itb_walker.requestOrigin_Completed::Inst 0.0
+system.switch_cpus.mmu.itb_walker.requestOrigin_Completed::total 0.0
+system.switch_cpus.mmu.itb_walker.requestOrigin::total 0.0
+system.switch_cpus.mmu.itb_walker.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.switch_cpus.mmu.l2_shared.instHits 0.0
+system.switch_cpus.mmu.l2_shared.instMisses 0.0
+system.switch_cpus.mmu.l2_shared.inserts 0.0
+system.switch_cpus.mmu.l2_shared.flushTlb 0.077268
+system.switch_cpus.mmu.l2_shared.flushedEntries 0.0
+system.switch_cpus.mmu.l2_shared.instAccesses 0.0
+system.switch_cpus.mmu.l2_shared.hits 0.0
+system.switch_cpus.mmu.l2_shared.misses 0.0
+system.switch_cpus.mmu.l2_shared.accesses 0.0
+system.switch_cpus.mmu.stage2_dtb.readHits 0.0
+system.switch_cpus.mmu.stage2_dtb.readMisses 0.0
+system.switch_cpus.mmu.stage2_dtb.writeHits 0.0
+system.switch_cpus.mmu.stage2_dtb.writeMisses 0.0
+system.switch_cpus.mmu.stage2_dtb.inserts 0.0
+system.switch_cpus.mmu.stage2_dtb.flushTlb 0.077268
+system.switch_cpus.mmu.stage2_dtb.flushedEntries 0.0
+system.switch_cpus.mmu.stage2_dtb.readAccesses 0.0
+system.switch_cpus.mmu.stage2_dtb.writeAccesses 0.0
+system.switch_cpus.mmu.stage2_dtb.hits 0.0
+system.switch_cpus.mmu.stage2_dtb.misses 0.0
+system.switch_cpus.mmu.stage2_dtb.accesses 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.walks 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.requestOrigin_Requested::Data 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.requestOrigin_Requested::Inst 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.requestOrigin_Requested::total 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.requestOrigin_Completed::Data 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.requestOrigin_Completed::Inst 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.requestOrigin_Completed::total 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.requestOrigin::total 0.0
+system.switch_cpus.mmu.stage2_dtb_walker.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.switch_cpus.mmu.stage2_itb.instHits 0.0
+system.switch_cpus.mmu.stage2_itb.instMisses 0.0
+system.switch_cpus.mmu.stage2_itb.inserts 0.0
+system.switch_cpus.mmu.stage2_itb.flushTlb 0.077268
+system.switch_cpus.mmu.stage2_itb.flushedEntries 0.0
+system.switch_cpus.mmu.stage2_itb.instAccesses 0.0
+system.switch_cpus.mmu.stage2_itb.hits 0.0
+system.switch_cpus.mmu.stage2_itb.misses 0.0
+system.switch_cpus.mmu.stage2_itb.accesses 0.0
+system.switch_cpus.mmu.stage2_itb_walker.walks 0.0
+system.switch_cpus.mmu.stage2_itb_walker.requestOrigin_Requested::Data 0.0
+system.switch_cpus.mmu.stage2_itb_walker.requestOrigin_Requested::Inst 0.0
+system.switch_cpus.mmu.stage2_itb_walker.requestOrigin_Requested::total 0.0
+system.switch_cpus.mmu.stage2_itb_walker.requestOrigin_Completed::Data 0.0
+system.switch_cpus.mmu.stage2_itb_walker.requestOrigin_Completed::Inst 0.0
+system.switch_cpus.mmu.stage2_itb_walker.requestOrigin_Completed::total 0.0
+system.switch_cpus.mmu.stage2_itb_walker.requestOrigin::total 0.0
+system.switch_cpus.mmu.stage2_itb_walker.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.switch_cpus.power_state.pwrStateResidencyTicks::OFF 36618944091.002
+system.switch_cpus.rename.squashCycles 1292734.20021
+system.switch_cpus.rename.idleCycles 23060250.736683
+system.switch_cpus.rename.blockCycles 6125391.542703999
+system.switch_cpus.rename.serializeStallCycles 247568.90218
+system.switch_cpus.rename.runCycles 38864063.161511004
+system.switch_cpus.rename.unblockCycles 3625931.870748
+system.switch_cpus.rename.renamedInsts 132247030.86556798
+system.switch_cpus.rename.ROBFullEvents 11794.520479
+system.switch_cpus.rename.IQFullEvents 205267.813906
+system.switch_cpus.rename.LQFullEvents 185397.73423399997
+system.switch_cpus.rename.SQFullEvents 1919587.11223
+system.switch_cpus.rename.fullRegistersEvents 1130741.9834359998
+system.switch_cpus.rename.renamedOperands 151965862.03675503
+system.switch_cpus.rename.lookups 239596322.071237
+system.switch_cpus.rename.intLookups 162308921.47548097
+system.switch_cpus.rename.vecLookups 7031435.671065999
+system.switch_cpus.rename.vecPredLookups 398.159275
+system.switch_cpus.rename.committedMaps 122907911.012678
+system.switch_cpus.rename.undoneMaps 29057950.298685998
+system.switch_cpus.rename.serializing 9705.157786000002
+system.switch_cpus.rename.tempSerializing 2.057164
+system.switch_cpus.rename.skidInsts 2151820.2648699996
+system.switch_cpus.rob.reads 178523281.074369
+system.switch_cpus.rob.writes 259154011.307129
+system.switch_cpus.rob.squashedLoads 5301923.232791999
+system.switch_cpus.rob.squashedRMWLoads 0.0
+system.switch_cpus.rob.squashedRMWALoads 0.0
+system.switch_cpus.rob.squashedStores 1339049.7228599999
+system.switch_cpus.rob.squashedRMWStores 0.0
+system.switch_cpus.rob.squashedRMWAStores 0.0
+system.switch_cpus.thread_0.numInsts 99999800.29530598
+system.switch_cpus.thread_0.numOps 108310565.927139
+system.switch_cpus.thread_0.numMemRefs 0.0
+system.tol2bus.transDist::ReadResp 257154.84148200005
+system.tol2bus.transDist::WritebackDirty 175859.83617200004
+system.tol2bus.transDist::CleanEvict 153815.142463
+system.tol2bus.transDist::ReadExReq 55201.728779
+system.tol2bus.transDist::ReadExResp 55201.728779
+system.tol2bus.transDist::ReadCleanReq 262.670347
+system.tol2bus.transDist::ReadSharedReq 256892.181455
+system.tol2bus.pktCount::total 937388.2409969999
+system.tol2bus.pktSize::total 30765531.705536004
+system.tol2bus.snoops 17430.543896000003
+system.tol2bus.snoopTraffic 482603.282944
+system.tol2bus.snoopFanout::samples 329982.2141789999
+system.tol2bus.snoopFanout::mean 0.00047918634999999995
+system.tol2bus.snoopFanout::stdev 0.013066617429999998
+system.tol2bus.snoopFanout::underflows 0.0
+system.tol2bus.snoopFanout::0 329787.893555
+system.tol2bus.snoopFanout::1 194.320624
+system.tol2bus.snoopFanout::2 0.0
+system.tol2bus.snoopFanout::overflows 0.0
+system.tol2bus.snoopFanout::min_value 0.0
+system.tol2bus.snoopFanout::max_value 0.517211
+system.tol2bus.snoopFanout::total 329982.2141789999
+system.tol2bus.power_state.pwrStateResidencyTicks::UNDEFINED 36618944091.002
+system.tol2bus.reqLayer0.occupancy 480775529.46000004
+system.tol2bus.reqLayer0.utilization 0.0
+system.tol2bus.respLayer0.occupancy 394179.59207400004
+system.tol2bus.respLayer0.utilization 0.0
+system.tol2bus.respLayer1.occupancy 468239606.0945
+system.tol2bus.respLayer1.utilization 0.0
+system.tol2bus.snoop_filter.totRequests 624836.5707140001
+system.tol2bus.snoop_filter.hitSingleRequests 312282.87235700013
+system.tol2bus.snoop_filter.hitMultiRequests 48.726429
+system.tol2bus.snoop_filter.totSnoops 145.25383599999998
+system.tol2bus.snoop_filter.hitSingleSnoops 145.25383599999998
+system.tol2bus.snoop_filter.hitMultiSnoops 0.0
+system.voltage_domain.voltage 0.9999980000000002
+system.workload.inst.arm 0.0
+system.workload.inst.quiesce 0.0
+system.l2.tags.ageTaskId_1024::4 21893.572377
+system.switch_cpus.nonSpecInstsAdded 78.052269
+system.switch_cpus.squashedNonSpecRemoved 39.584973
+system.switch_cpus.lsq0.loadToUse::50-59 608.4659889999999
+system.switch_cpus.lsq0.loadToUse::230-239 31.319402000000007
+system.switch_cpus.lsq0.loadToUse::270-279 136.11551599999996
+system.switch_cpus.lsq0.loadToUse::290-299 78.52648600000003
+system.l2.ReadExReq.misses::cpu.data 0.462563
+system.l2.ReadExReq.accesses::cpu.data 0.462563
+system.l2.ReadExReq.missRate::cpu.data 0.334521
+system.switch_cpus.lsq0.loadToUse::260-269 68.004031
+system.switch_cpus.lsq0.loadToUse::280-289 349.93899000000005
+system.l2.InvalidateReq.misses::switch_cpus.data 79.25449699999999
+system.l2.InvalidateReq.misses::total 79.25449699999999
+system.l2.InvalidateReq.accesses::switch_cpus.data 196.18976199999994
+system.l2.InvalidateReq.accesses::total 196.18976199999994
+system.l2.InvalidateReq.missRate::switch_cpus.data 0.35016559379400003
+system.l2.InvalidateReq.missRate::total 0.35016559379400003
+system.l2.InvalidateReq.mshrMisses::switch_cpus.data 79.25449699999999
+system.l2.InvalidateReq.mshrMisses::total 79.25449699999999
+system.l2.InvalidateReq.mshrMissLatency::switch_cpus.data 1510493.6644999997
+system.l2.InvalidateReq.mshrMissLatency::total 1510493.6644999997
+system.l2.InvalidateReq.mshrMissRate::switch_cpus.data 0.35016559379400003
+system.l2.InvalidateReq.mshrMissRate::total 0.35016559379400003
+system.l2.InvalidateReq.avgMshrMissLatency::switch_cpus.data 10848.556848389866
+system.l2.InvalidateReq.avgMshrMissLatency::total 10848.556848389866
+system.l2.tags.occupancies::writebacks 41.83528064861
+system.l2.tags.avgOccs::writebacks 0.0006383264679999999
+system.membus.transDist::InvalidateReq 79.25449699999999
+system.tol2bus.transDist::InvalidateReq 196.18976199999994
+system.tol2bus.transDist::InvalidateResp 196.18976199999994
+system.l2.InvalidateReq.hits::switch_cpus.data 117.01800399999998
+system.l2.InvalidateReq.hits::total 117.01800399999998
+system.l2.tags.ageTaskId_1024::0 1.881419
+system.l2.demandHits::switch_cpus.inst 21.461529
+system.l2.overallHits::switch_cpus.inst 21.461529
+system.l2.writebacks::writebacks 7538.294830999999
+system.l2.writebacks::total 7538.294830999999
+system.l2.ReadCleanReq.hits::switch_cpus.inst 21.461529
+system.l2.ReadCleanReq.hits::total 21.461529
+system.l2.WritebackClean.hits::writebacks 35.70276200000001
+system.l2.WritebackClean.hits::total 35.70276200000001
+system.l2.WritebackClean.accesses::writebacks 35.70276200000001
+system.l2.WritebackClean.accesses::total 35.70276200000001
+system.mem_ctrls.avgPriority_writebacks::samples 7538.294830999999
+system.mem_ctrls.rdPerTurnAround::samples 467.22739799999994
+system.mem_ctrls.rdPerTurnAround::mean 72.00337785323
+system.mem_ctrls.rdPerTurnAround::gmean 20.854690672944997
+system.mem_ctrls.rdPerTurnAround::stdev 495.69167283723607
+system.mem_ctrls.rdPerTurnAround::0-2047 458.170392
+system.mem_ctrls.rdPerTurnAround::2048-4095 0.031228
+system.mem_ctrls.rdPerTurnAround::38912-40959 0.015614
+system.mem_ctrls.rdPerTurnAround::total 467.22739799999994
+system.mem_ctrls.wrPerTurnAround::samples 467.22739799999994
+system.mem_ctrls.wrPerTurnAround::mean 4.483309445641
+system.mem_ctrls.wrPerTurnAround::gmean 4.480541453633
+system.mem_ctrls.wrPerTurnAround::stdev 0.161211556757
+system.mem_ctrls.wrPerTurnAround::16 441.959428
+system.mem_ctrls.wrPerTurnAround::17 1.96241
+system.mem_ctrls.wrPerTurnAround::18 18.346348
+system.mem_ctrls.wrPerTurnAround::19 3.222332
+system.mem_ctrls.wrPerTurnAround::20 1.068686
+system.mem_ctrls.wrPerTurnAround::21 0.512054
+system.mem_ctrls.wrPerTurnAround::22 0.14052599999999998
+system.mem_ctrls.wrPerTurnAround::38 0.015614
+system.mem_ctrls.wrPerTurnAround::total 467.22739799999994
+system.mem_ctrls.requestorWriteBytes::writebacks 482046.85747199995
+system.mem_ctrls.requestorWriteRate::writebacks 10649373.440945985
+system.mem_ctrls.requestorWriteAccesses::writebacks 7538.294830999999
+system.mem_ctrls.requestorWriteTotalLat::writebacks 160389462803.5735
+system.mem_ctrls.requestorWriteAvgLat::writebacks 24002765.22430531
+system.mem_ctrls.dram.bytesWritten::writebacks 482450.86918399995
+system.mem_ctrls.dram.bytesWritten::total 482450.86918399995
+system.mem_ctrls.dram.numWrites::writebacks 7538.294830999999
+system.mem_ctrls.dram.numWrites::total 7538.294830999999
+system.mem_ctrls.dram.bwWrite::writebacks 10659800.332647
+system.mem_ctrls.dram.bwWrite::total 10659800.332647
+system.mem_ctrls.dram.bwTotal::writebacks 10659800.332647
+system.membus.transDist::WritebackDirty 7538.294830999999
+system.membus.transDist::CleanEvict 9744.613763999998
+system.switch_cpus.commit.commitNonSpecStalls 38.467296
+system.tol2bus.transDist::WritebackClean 35.70276200000001
+system.l2.UpgradeReq.hits::switch_cpus.data 1.2917249999999998
+system.l2.UpgradeReq.hits::total 1.2917249999999998
+system.l2.UpgradeReq.accesses::switch_cpus.data 1.2917249999999998
+system.l2.UpgradeReq.accesses::total 1.2917249999999998
+system.mem_ctrls.rdPerTurnAround::0-1023 8.017852
+system.mem_ctrls.rdPerTurnAround::1024-2047 0.568414
+system.mem_ctrls.rdPerTurnAround::2048-3071 0.065773
+system.mem_ctrls.rdPerTurnAround::4096-5119 0.081202
+system.mem_ctrls.rdPerTurnAround::29696-30719 0.065773
+system.switch_cpus.fetch.miscStallCycles 12.18578
+system.switch_cpus.fetch.pendingTrapStallCycles 68.283225
+system.tol2bus.transDist::UpgradeReq 1.2917249999999998
+system.tol2bus.transDist::UpgradeResp 1.2917249999999998
+system.mem_ctrls.rdPerTurnAround::45056-47103 0.077268
+system.switch_cpus.fetch.icacheWaitRetryStallCycles 1.385838
+system.mem_ctrls.dram.bytesPerActivate::64-71 2.12162
+system.mem_ctrls.rdPerTurnAround::3072-4095 0.015429
+system.mem_ctrls.rdPerTurnAround::30720-31743 0.015429
+system.mem_ctrls.rdPerTurnAround::47104-49151 0.103024
+CPI 0.7323803513991198
+
+Per-Address PND Load Violations:
+4204752 0.0 3105.708067999999
+4204908 0.0 318.3787810000001
+4204976 0.0 322.32714899999996
+4205160 0.0 183.97020399999994
+4205228 0.0 182.117549
+4205884 0.0 117.740383
+4205956 0.0 112.083367
+4206372 0.0 92.864804
+4206452 0.0 93.25309500000002
+4208088 0.0 15410.141398000005
+4208092 0.0 15409.802940000003
+4208328 0.0 109110.69382200002
+4208344 0.0 20288.418122
+4208352 0.0 9873.235406000002
+4208368 0.0 9845.072456000004
+4208404 0.0 6352.150293000001
+4208424 0.0 6472.5285060000015
+4208528 0.0 215666.959661
+4208852 0.0 2640.021542000001
+4208860 0.0 6.842071000000001
+4209004 0.0 148836.142355
+4209016 0.0 148527.672035
+4209024 0.0 120937.647988
+4209080 0.0 150015.51564099998
+4209144 0.0 148747.24210599996
+4209152 0.0 146439.387742
+4209244 0.10394599999999998 45297.65720100001
+4209256 0.0 45126.46385300001
+4209268 0.0 45124.876322000004
+4209284 0.0 45123.723389
+4209604 0.0 62867.81289199999
+4209612 0.0 61935.25806199999
+4209632 5.6256699999999995 58681.66787699999
+4209664 0.0 76235.43091699998
+4209672 0.0 75323.56989000001
+4209692 2.1011780000000004 72869.57268800001
+4209736 0.0 75672.585464
+4209744 0.0 74938.973585
+4209764 0.20647800000000002 70524.320425
+4209796 0.0 64946.82942400002
+4209804 0.0 64217.330729
+4209824 0.309072 60803.39661399999
+4214408 0.0 0.202982
+4214420 0.0 0.202982
+4231412 0.0 60794.248735
+4231432 0.0 60793.141297
+4231464 0.0 60790.151285
+4231508 0.0 60788.68227999999
+4231556 0.0 57502.826321000015
+4231568 0.0 77661.88852400001
+4231636 0.0 54218.65317499998
+4231656 0.0 83311.13354400001
+4231724 253.92450399999998 50712.082061999994
+4231768 0.0 22441.093388
+4231796 0.0 21097.576674000007
+4231816 0.0 20957.115925
+4231864 0.0 20943.729557
+4231908 0.0 16378.029062000003
+4231928 0.0 26859.987345999994
+4231996 0.0 19068.253296000003
+4232016 0.0 28049.792854
+4232084 293.6634109999998 17532.508821999996
+4234184 0.0 41.860521999999996
+4234188 0.0 41.860521999999996
+4234392 0.102286 147722.87632900002
+4234412 0.0 112510.59402099997
+4234428 0.0 7519.9137789999995
+4234444 0.0 5713.963116
+4234460 0.0 48303.564665000005
+4234476 0.0 19798.446211
+4234504 0.0 46844.687787
+4234520 0.0 10824.156088
+4234536 0.0 5472.00311
+4234552 0.0 63285.732523
+4234568 0.0 21533.596568999994
+4234596 0.0 94514.011039
+4234612 0.0 7337.759745000001
+4234628 0.0 9804.946369
+4234644 0.0 65173.599057
+4234660 0.0 23088.314959999996
+4234688 0.0 314561.0964389999
+4234704 0.0 9409.240491999999
+4234720 0.0 1803.940961
+4234736 0.0 76393.65349000001
+4234752 0.0 25157.157802000005
+4234876 0.0 58606.86068799999
+4235064 0.0 12619.376720000002
+4235072 0.0 12038.931766
+4235076 0.0 12028.052575
+4235084 0.0 3985.9570109999995
+4235156 0.0 9484.415017
+4235192 0.0 9891.031708000002
+4235196 0.0 9891.031708000002
+4235212 0.0 9406.923956
+4235252 0.0 7820.245006999999
+4235256 0.196517 7820.1408729999985
+4235296 0.0 6990.890603000001
+4235316 0.0 9629.653888
+4235328 0.0 8645.544710999999
+4235388 0.0 6734.3567090000015
+4235404 0.0 10174.610493000002
+4235416 0.0 10160.387748999998
+4237104 0.0 61977.933670000006
+4237116 0.0 61754.83234299999
+4237124 0.0 34430.53506999999
+4237136 0.0 22759.520796000004
+4237140 0.0 21980.62467
+4237164 0.0 1247.197895
+4237184 0.0 452.35766400000006
+4237216 0.0 72.17248199999999
+4237232 0.0 1944.5133229999994
+4237236 0.0 1953.701664
+4237244 0.0 1953.1059549999998
+4237252 0.0 1005.4652999999998
+4237264 0.0 2831.698541999999
+4237284 0.0 553.3421320000001
+4237300 0.0 1536.8053669999997
+4237316 0.0 335.2848159999999
+4237332 0.0 3572.6476150000008
+4237376 0.0 64727.60516
+4237384 0.0 59429.59626200001
+4237396 0.0 30603.208425999997
+4237400 0.0 30170.692693
+4237424 0.0 1368.4327570000005
+4237444 0.0 497.81089999999995
+4237468 0.0 111.06908800000001
+4237484 0.0 2354.277083
+4237488 0.0 2337.948903
+4237496 0.0 2323.6801980000005
+4237504 0.0 526.45359
+4237516 0.0 2516.389649
+4237536 0.0 525.3193509999999
+4237552 0.0 1711.9872940000002
+4237568 0.0 2222.5783440000005
+4237584 0.0 145.14606900000004
+4237628 0.0 67104.082316
+4237636 0.0 61184.110342
+4237648 0.0 34993.184945
+4237652 0.0 36809.394692
+4237676 0.0 1384.9658949999998
+4237696 0.0 387.81740199999996
+4237720 0.0 90.950484
+4237736 0.0 2144.417211000001
+4237740 0.0 2146.9267960000006
+4237748 0.0 2137.27202
+4237756 0.0 446.34352600000005
+4237768 0.0 2453.4357330000003
+4237788 0.0 143.51450200000002
+4237804 0.0 818.8593209999999
+4237820 0.0 2038.468199
+4237836 0.0 3607.4496759999993
+4237880 0.0 66332.09922799996
+4237888 0.0 86603.494301
+4237900 0.0 43892.38374700001
+4237904 0.0 42512.265444
+4237928 0.0 1643.249961
+4237948 0.0 437.37850199999986
+4237972 0.0 193.05415
+4237988 0.0 2458.9410230000003
+4237992 0.0 2462.579271000001
+4238000 0.0 2440.548464
+4238008 0.0 362.341275
+4238020 0.0 2467.420009000001
+4238040 0.0 528.2061600000001
+4238056 0.0 107.29941899999999
+4238072 0.0 2163.003861
+4238088 0.0 3119.9453419999995
+4238600 21.270495999999994 9582.474452
+4238732 12.936726000000007 9069.324286999998
+4238864 7.907603000000001 10216.257481999997
+4238996 0.0 101149.88951599997
+4239008 0.0 104032.904681
+4239024 0.0 49731.106023
+4239032 0.0 17398.238823
+4239064 0.0 20673.098943999994
+4239108 0.0 50598.4752
+4239116 0.0 23474.756042999994
+4239148 0.0 17128.356443
+4239192 0.0 51359.233687000014
+4239200 0.0 34212.702129
+4239232 0.0 22758.74357499999
+4239276 0.0 48167.32527
+4239284 0.0 122236.58148600002
+4239316 0.0 26487.743343
+4239744 0.0 80.71573
+4239748 0.0 80.71573
+4239752 0.0 80.71573
+4239756 0.0 80.71573
+4239760 0.0 80.71573
+4239764 0.0 80.71573
+4239768 0.0 80.71229
+4239772 0.0 80.71229
+4240992 0.0 0.03913
+4241036 0.0 0.03483
+4241180 0.0 80.71186
+4241276 0.0 81.50908
+4241284 0.0 81.52154999999999
+4241312 0.0 0.03956
+4241352 0.0 0.046439999999999995
+4241360 0.0 0.04171
+4241456 0.0 81.11391
+4252460 0.0 5006.418624
+4252464 0.0 4999.370630999999
+4252476 0.0 4990.1330800000005
+4252488 0.0 4978.687959
+4252496 0.0 1129.020512
+4252508 0.0 3585.019965
+4252512 0.0 2309.7180379999995
+4252524 0.0 4773.434635
+4252532 0.0 2281.243635
+4252544 0.0 2746.500502
+4252548 0.0 3027.806400999999
+4252560 0.0 4267.571099
+4252568 0.0 5714.555423999999
+4252580 0.0 2396.292955
+4252584 0.0 2919.797605
+4252596 0.0 2598.8845859999997
+4252604 0.0 7382.409879
+4252616 0.0 1467.8896620000003
+4252620 0.0 1905.154367
+4252732 0.0 3374.545564
+4252744 0.0 7775.947248000002
+4252764 0.0 1420.83421
+4252780 0.0 3659.7870399999997
+4252796 0.0 2536.043130000001
+4252812 0.0 8942.798039000001
+4253012 0.0 3416.1599040000006
+4253024 0.0 7681.985752999999
+4253044 0.0 1096.841748
+4253060 0.0 4580.432947000001
+4253076 0.0 6313.589183
+4253092 0.0 3460.2912730000003
+4253292 0.0 3115.3009710000006
+4253304 0.0 8041.126296999998
+4253324 0.0 768.6962039999999
+4253340 0.0 3800.4560290000018
+4253356 0.0 5647.048508000002
+4253372 0.0 8870.507947000002
+4253572 0.0 5478.401237
+4253584 0.0 10617.227346999998
+4253604 0.0 1374.7980519999999
+4253620 0.0 1632.0312019999994
+4253636 0.0 7012.084366999998
+4253652 0.0 11715.269203999997
+4254368 0.0 1157.232833
+4254436 0.33286099999999996 147620.13786500003
+4254576 0.0 164582.39860999995
+4254580 0.0 164580.70221599998
+4254592 0.0 148965.36930300004
+4254600 0.0 148946.794141
+4254604 0.0 148942.653624
+4254632 0.0 137534.013047
+4254644 0.0 135015.78344000003
+4254652 0.0 132680.47594899999
+4254660 0.0 130921.44957700002
+4254664 0.0 130916.700565
+4254668 0.0 130835.32454100001
+4254676 0.0 130166.59393699998
+4254680 0.0 130166.59393699998
+4254688 0.0 1594.555694
+4254696 0.0 128605.52120599999
+4254700 0.0 128482.76205900003
+4254716 0.0 127704.93773200002
+4254720 0.0 126699.222525
+4254724 0.0 126697.86040300001
+4254740 0.0 253274.687873
+4254748 0.0 126253.01804799995
+4254764 0.0 125745.89321900005
+4254780 0.0 125142.31425399998
+4254788 0.0 1353.0969980000004
+4254800 0.0 912.5559820000001
+4254808 0.0 122657.97152599996
+4254824 0.0 121761.190806
+4254840 0.0 121752.83209899995
+4254844 0.0 121699.02171200002
+4254848 0.0 121698.999767
+4254856 0.0 121698.999767
+4254876 0.0 121698.37086400001
+4254888 0.0 244709.45933599994
+4254896 0.0 244215.792831
+4254920 0.0 122368.76896700001
+4254940 0.0 123559.08483000005
+4254952 0.0 123379.64377700002
+4254960 0.0 124680.166651
+4254964 0.0 124674.532837
+4254976 0.0 125217.10076599999
+4254980 0.0 125216.88979999999
+4255000 0.0 117146.70620900001
+4255016 0.0 108864.03409999999
+4255032 0.0 100316.61264900002
+4255048 0.0 88146.90352099999
+4255064 0.0 76698.62949899999
+4255080 0.0 54921.288882999994
+4255096 0.0 39563.02306399999
+4255348 2145.950978 34007.419248
+4257220 796.5793130000002 140199.88643199997
+4257864 0.0 191583.284203
+4257876 0.0 188083.48309
+4257880 0.0 187928.69838999995
+4257912 0.0 60407.38650000001
+4257916 0.0 60403.098399999995
+4257952 0.0 60267.405116
+4257972 0.0 53688.080154999996
+4258032 0.0 167819.41973300005
+4258048 0.0 83068.930944
+4258052 0.0 83066.504592
+4258064 0.0 82826.586449
+4258068 0.0 9790.645323
+4258088 0.0 13940.907586000003
+4258092 0.0 27551.767397000007
+4258112 0.0 109140.71009800004
+4258116 0.0 168561.06188800003
+4258252 0.0 11793.404054000002
+4258264 0.0 11121.445679000002
+4258268 0.0 10946.826071000001
+4258300 0.0 5559.704757999999
+4258304 0.0 5487.833763000001
+4258340 0.0 5465.234372000001
+4258360 0.0 5122.855503999999
+4258420 0.0 7246.833765999999
+4258436 0.0 6363.350065999998
+4258440 0.0 6363.313982999999
+4258452 0.0 6312.722915
+4258456 0.0 2208.1670880000006
+4258476 0.0 1854.8644620000002
+4258480 0.0 1737.951773
+4258500 0.0 8014.063816999999
+4258504 0.0 11621.879337999999
+4258616 0.0 198910.14079700006
+4258628 0.0 194002.02466899998
+4258632 0.0 193639.60016100004
+4258664 0.0 61491.998949
+4258668 0.0 61434.141092
+4258704 0.0 60804.915807000005
+4258724 0.0 57744.76285499999
+4258784 0.0 167606.24762500002
+4258800 0.0 81388.43016199999
+4258804 0.0 81335.494959
+4258816 0.0 80359.34711999999
+4258820 0.0 3935.7979889999997
+4258840 0.0 6661.8355599999995
+4258844 0.0 22793.04890400001
+4258864 0.0 134698.588636
+4258868 0.0 194809.51580999998
+4258932 0.0 15317.582337
+4258944 0.0 14098.280920000003
+4258948 0.0 14067.756209999996
+4258980 0.0 5055.243295000002
+4258984 0.0 5044.814996
+4259020 0.0 4938.598658999999
+4259040 0.0 4083.6153280000008
+4259100 0.0 10204.24495
+4259116 0.0 6366.18084
+4259120 0.0 6484.313153
+4259132 0.0 6297.0226360000015
+4259136 0.0 644.2901490000002
+4259156 0.0 1684.795843999999
+4259160 0.0 2279.144953
+4259180 0.0 7968.507463000001
+4259184 0.0 12862.084448
+4260588 0.0 733.3902479999997
+4261724 0.0 1.1143329999999998
+4261764 0.0 1345.8713730000002
+4261784 0.0 676.043399
+4261800 0.0 136.510369
+4261808 0.0 135.591267
+4261828 0.0 131.603076
+4261856 0.0 1.508543
+4261868 0.0 116.169326
+4261872 0.0 118.15375200000001
+4261888 0.0 72.995742
+4261900 0.0 139.330815
+4261904 0.0 135.37456
+4261920 0.0 192.626178
+4261952 0.0 124.96679700000001
+4261964 0.0 97.35895000000001
+4261988 0.0 6.999103999999999
+4262000 0.0 119.04471799999997
+4262004 0.0 119.30793299999999
+4262020 0.0 1797.5757599999995
+4262032 0.0 191.85841799999997
+4262036 0.0 192.44312399999998
+4262052 0.0 146.09419100000002
+4262080 0.0 2195.988654
+4262092 0.0 193.169731
+4262096 0.0 191.24215900000002
+4262116 0.0 821.2994100000002
+4262128 0.0 161.52581000000004
+4262136 0.0 159.202916
+4262156 0.0 5.832528
+4262176 0.0 779.8274090000001
+4262188 0.0 165.363021
+4262192 0.0 165.22206899999998
+4263456 0.0 249.32343499999996
+4263980 0.0 105.00226699999999
+4263984 0.0 104.491448
+4263988 0.0 104.347663
+4263996 0.0 69.474975
+4264068 0.0 5.080899
+4264108 0.0 101.150556
+4264172 0.0 33.764723
+4264176 0.0 32.763128
+4264184 0.0 32.619343
+4264240 0.0 15.154728
+4264244 0.0 15.154728
+4264252 0.0 15.154728
+4264336 0.0 142.17762699999997
+4264340 0.0 142.17762699999997
+4264344 0.0 142.084745
+4264352 0.0 104.27794200000001
+4264424 0.0 24.876694000000004
+4264464 0.0 133.597038
+4264528 0.0 85.18582
+4264532 0.0 85.27870200000001
+4264540 0.0 85.18582
+4264596 0.0 49.458945
+4264600 0.0 49.458945
+4264608 0.0 47.02637
+4264724 0.0 255.31006799999997
+4264728 0.0 253.88930799999997
+4264732 0.0 253.96657599999998
+4264740 0.0 191.291975
+4264812 0.0 78.93992800000001
+4264852 0.0 218.11840700000005
+4264944 0.0 1.4644050000000002
+4264948 0.0 1.387137
+4264956 0.0 1.4644050000000002
+4265016 0.0 140.09074900000002
+4265020 0.0 138.669989
+4265028 0.0 129.435443
+4265140 0.0 168.81881800000002
+4265144 0.0 167.013536
+4265148 0.0 167.07930900000002
+4265156 0.0 126.132521
+4265228 0.0 51.313585
+4265268 0.0 144.512611
+4265336 0.0 0.9181210000000001
+4265340 0.0 0.8523480000000001
+4265348 0.0 0.565527
+4265408 0.0 90.39841200000001
+4265412 0.0 88.59312999999999
+4265420 0.0 90.39841200000001
+4265548 0.0 66.42844500000001
+4265552 0.0 66.42844500000001
+4265560 0.0 66.42844500000001
+4265664 0.0 56.196701000000004
+4265668 0.0 56.196701000000004
+4265672 0.0 56.196701000000004
+4265712 0.0 62.73042900000001
+4265752 0.0 76.995581
+4265756 0.0 76.995581
+4265760 0.0 76.931837
+4265768 0.0 60.86246499999999
+4265840 0.0 25.534793999999998
+4266020 0.0 0.077268
+4266024 0.0 0.077268
+4266028 0.0 0.077268
+4266064 0.0 49.78064
+4266120 0.0 43.115739000000005
+4266124 0.0 42.92278100000001
+4266132 0.0 86.551114
+4266136 0.0 86.551114
+4266208 0.015614 69.14742700000001
+4266244 0.0 66.05932600000001
+4266248 0.0 66.252284
+4266328 0.0 0.920153
+4266352 0.0 0.7532599999999999
+4266364 0.0 0.7532599999999999
+4269208 0.0 232.68443799999997
+4269212 1.1680000000000001 233.85243799999998
+4269292 0.0 76.61860300000001
+4269352 0.0 28.680867000000003
+4269384 0.0 95.54882300000001
+4269388 0.0 93.872694
+4269392 0.0 93.872694
+4269428 0.0 141.48348899999996
+4269432 0.0 137.45428499999997
+4269440 0.0 120.30962199999998
+4269484 0.0 0.115625
+4269488 0.0 0.115625
+4269496 0.0 0.115625
+4269580 0.0 90.85382299999999
+4269588 0.0 90.85382299999999
+4269596 0.0 90.369129
+4269628 0.0 1.019863
+4269632 0.0 0.689519
+4269636 0.0 0.689519
+4269664 0.0 6.128029
+4269668 0.0 6.128029
+4269676 0.0 6.128029
