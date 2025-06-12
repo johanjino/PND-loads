@@ -50,6 +50,11 @@
 #include "base/stats/output.hh"
 #include "base/stats/types.hh"
 
+// #include <unordered_map>
+// #include "base/pnd_map.hh"
+// extern std::unordered_map<uint64_t, uint64_t> pnd_violation_count;
+// extern std::unordered_map<uint64_t, uint64_t> pnd_exec_count;
+
 namespace gem5
 {
 

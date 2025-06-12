@@ -136,6 +136,7 @@
 #include "llvm/Transforms/Vectorize/SLPVectorizer.h"
 #include "llvm/Transforms/Vectorize/VectorCombine.h"
 #include "llvm/Transforms/AliasHints/AliasHints.h"
+// #include "llvm/Transforms/AliasHintsInstrumentation/AliasHintsInstrumentation.h"
 
 using namespace llvm;
 
@@ -1491,6 +1492,7 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   FunctionPassManager OptimizePM2;
   LoopPassManager LPM2;
   LPM2.addPass(AliasHintsPass());
+  // MPM.addPass(AliasHintsInstrumentationPass());
   OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
   // Add the core optimizing pipeline.
@@ -1618,6 +1620,7 @@ PassBuilder::buildThinLTOPreLinkDefaultPipeline(OptimizationLevel Level) {
   FunctionPassManager OptimizePM2;
   LoopPassManager LPM2;
   LPM2.addPass(AliasHintsPass());
+  // MPM.addPass(AliasHintsInstrumentationPass());
   OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
   // Add the core optimizing pipeline.
@@ -2008,6 +2011,7 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   FunctionPassManager OptimizePM2;
   LoopPassManager LPM2;
   LPM2.addPass(AliasHintsPass());
+  // MPM.addPass(AliasHintsInstrumentationPass());
   OptimizePM2.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM2), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
   // Add the core optimizing pipeline.

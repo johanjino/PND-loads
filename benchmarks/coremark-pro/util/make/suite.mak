@@ -1,1 +1,0 @@
-MULTIBENCH_SUITE=coremarkpro

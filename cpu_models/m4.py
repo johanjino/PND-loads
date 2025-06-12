@@ -152,8 +152,17 @@ class BaseO3CPU(BaseCPU):
         "Number of load/store insts before the dep predictor "
         "should be invalidated",
     )
-    LFSTSize = Param.Unsigned(128, "Last fetched store table size")
-    SSITSize = Param.Unsigned(128, "Store set ID table size")
+    LFSTSize = Param.Unsigned(512, "Last fetched store table size")
+    SSITSize = Param.Unsigned(512, "Store set ID table size")
+
+    # phast_num_rows = Param.Unsigned(32, "Number of rows per table")
+    # phast_associativity = Param.Unsigned(2, "Number of entries per row")
+    # phast_tag_bits = Param.Unsigned(8, "Size of entry tags")
+    # phast_max_counter = Param.Unsigned(4, "Max confidence counter value")
+    phast_num_rows = Param.Unsigned(128, "Number of rows per table")
+    phast_associativity = Param.Unsigned(4, "Number of entries per row")
+    phast_tag_bits = Param.Unsigned(16, "Size of entry tags")
+    phast_max_counter = Param.Unsigned(16, "Max confidence counter value")
 
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers")
 
@@ -187,12 +196,12 @@ class BaseO3CPU(BaseCPU):
     smtROBThreshold = Param.Int(100, "SMT ROB Threshold Sharing Parameter")
     smtCommitPolicy = Param.CommitPolicy("RoundRobin", "SMT Commit Policy")
 
-    #branchPred = Param.BranchPredictor(
+    # branchPred = Param.BranchPredictor(
     #    TAGE(numThreads=Parent.numThreads, tage=LTAGE_TAGE(), indirectBranchPred=ITTAGE()), "Branch Predictor"
-    #)
+    # )
 
     branchPred = Param.BranchPredictor(
-        TAGE_EMILIO(numThreads=Parent.numThreads, indirectBranchPred=ITTAGE(), BTB=AssociativeBTB()), "Branch Predictor"
+        TAGE_EMILIO(numThreads=Parent.numThreads, indirectBranchPred=ITTAGE(), btb=AssociativeBTB()), "Branch Predictor"
     )
-
+    
     needsTSO = Param.Bool(False, "Enable TSO Memory model")

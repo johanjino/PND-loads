@@ -148,12 +148,17 @@ class BaseO3CPU(BaseCPU):
         "loads & stores or just stores",
     )
     store_set_clear_period = Param.Unsigned(
-        64*244,
+        128*244,
         "Number of load/store insts before the dep predictor "
         "should be invalidated",
     )
-    LFSTSize = Param.Unsigned(64, "Last fetched store table size")
-    SSITSize = Param.Unsigned(64, "Store set ID table size")
+    LFSTSize = Param.Unsigned(128, "Last fetched store table size")
+    SSITSize = Param.Unsigned(128, "Store set ID table size")
+
+    phast_num_rows = Param.Unsigned(16, "Number of rows per table")
+    phast_associativity = Param.Unsigned(1, "Number of entries per row")
+    phast_tag_bits = Param.Unsigned(8, "Size of entry tags")
+    phast_max_counter = Param.Unsigned(4, "Max confidence counter value")
 
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers")
 

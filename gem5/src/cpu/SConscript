@@ -82,6 +82,7 @@ CompoundFlag('ExecNoTicks', [ 'Exec', 'FmtTicksOff' ])
 
 Source('func_unit.cc')
 Source('pc_event.cc')
+Source('pnd_map.cc')
 
 SimObject('FuncUnit.py', sim_objects=['OpDesc', 'FUDesc'], enums=['OpClass'])
 SimObject('StaticInstFlags.py', enums=['StaticInstFlags'])

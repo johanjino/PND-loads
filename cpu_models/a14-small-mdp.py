@@ -155,6 +155,11 @@ class BaseO3CPU(BaseCPU):
     LFSTSize = Param.Unsigned(16, "Last fetched store table size")
     SSITSize = Param.Unsigned(16, "Store set ID table size")
 
+    phast_num_rows = Param.Unsigned(8, "Number of rows per table")
+    phast_associativity = Param.Unsigned(1, "Number of entries per row")
+    phast_tag_bits = Param.Unsigned(6, "Size of entry tags")
+    phast_max_counter = Param.Unsigned(2, "Max confidence counter value")
+
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers")
 
     numPhysIntRegs = Param.Unsigned(

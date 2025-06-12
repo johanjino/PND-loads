@@ -113,6 +113,8 @@ class StaticInst : public RefCounted, public StaticInstFlags
 
     std::array<uint8_t, MiscRegClass + 1> _numTypedDestRegs = {};
 
+    Addr PNDAddr = 0;
+
   public:
 
     /// @name Register information.
@@ -200,6 +202,8 @@ class StaticInst : public RefCounted, public StaticInstFlags
     bool isPND() const { return flags[IsPND]; }
     void setPND() { flags[IsPND] = true; }
     void unsetPND() { flags[IsPND] = false; }
+    void setAddr(Addr addr) { PNDAddr = addr; }
+    Addr getAddr() { return PNDAddr; }
 
     bool isInvalid() const { return flags[IsInvalid]; }
 

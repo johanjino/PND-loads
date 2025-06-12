@@ -1,0 +1,29 @@
+Global frequency set at 1000000000000 ticks per second
+gem5 Simulator System.  https://www.gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 24.0.0.1
+gem5 compiled May 29 2025 01:57:36
+gem5 started May 29 2025 01:59:08
+gem5 executing on spectral, pid 2635845
+command line: /work/johan/PND-Loads/gem5/build/ARM/gem5.fast --outdir=/work/johan/results/train/debug/m4/xalancbmk.0/raw/1.out /work/johan/PND-Loads/gem5/configs/deprecated/example/se.py --cpu-type=DerivO3CPU --caches --l2cache --restore-simpoint-checkpoint -r 9 --checkpoint-dir /mnt/data/checkpoints/623.xalancbmk_s/checkpoints.0 --restore-with-cpu=AtomicSimpleCPU --mem-size=50GB -c /work/johan/spec2017/benchspec/CPU/623.xalancbmk_s/run/run_peak_refspeed_withPGObinary-64.0000/../run_peak_refspeed_withPGObinary-64.0000/xalancbmk_s_peak.withPGObinary-64 '--options=-v t5.xml xalanc.xsl'
+
+Resuming from /mnt/data/checkpoints/623.xalancbmk_s/checkpoints.0/cpt.simpoint_08_inst_413490000000_weight_0.023141_interval_100000000_warmup_10000000
+Resuming from SimPoint #8, start_inst:413490000000, weight:0.023141, interval:100000000, warmup:10000000
+Switch at curTick count:10000
+Load = 6432108:499775552:8
+[0x1dd2c840:0x1dd2c848]
+Load = 6432120:499775560:8
+[0x1dd2c848:0x1dd2c850]
+Load = 6432132:499775568:8
+[0x1dd2c850:0x1dd2c858]
+Load = 6432144:499775576:8
+[0x1dd2c858:0x1dd2c860]
+Load = 6432108:499775584:8
+[0x1dd2c860:0x1dd2c868]
+Load = 6432120:499775592:8
+[0x1dd2c868:0x1dd2c870]
+Switched CPUS @ tick 238163203043000
+switching cpus
+Warmed up! Dumping and resetting stats!
+Done running SimPoint!

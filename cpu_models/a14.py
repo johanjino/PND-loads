@@ -148,12 +148,21 @@ class BaseO3CPU(BaseCPU):
         "loads & stores or just stores",
     )
     store_set_clear_period = Param.Unsigned(
-        32*244,
+        64*244,
         "Number of load/store insts before the dep predictor "
         "should be invalidated",
     )
-    LFSTSize = Param.Unsigned(32, "Last fetched store table size")
-    SSITSize = Param.Unsigned(32, "Store set ID table size")
+    LFSTSize = Param.Unsigned(64, "Last fetched store table size")
+    SSITSize = Param.Unsigned(64, "Store set ID table size")
+
+    #phast_num_rows = Param.Unsigned(64, "Number of rows per table")
+    #phast_associativity = Param.Unsigned(1, "Number of entries per row")
+    #phast_tag_bits = Param.Unsigned(12, "Size of entry tags")
+    #phast_max_counter = Param.Unsigned(4, "Max confidence counter value")
+    phast_num_rows = Param.Unsigned(8, "Number of rows per table")
+    phast_associativity = Param.Unsigned(1, "Number of entries per row")
+    phast_tag_bits = Param.Unsigned(6, "Size of entry tags")
+    phast_max_counter = Param.Unsigned(2, "Max confidence counter value")
 
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers")
 
@@ -192,6 +201,7 @@ class BaseO3CPU(BaseCPU):
     #)
 
     branchPred = Param.BranchPredictor(
-        TAGE_EMILIO(numThreads=Parent.numThreads, indirectBranchPred=ITTAGE(), BTB=AssociativeBTB()),  "Branch Predictor"
+        TAGE_EMILIO(numThreads=Parent.numThreads, indirectBranchPred=ITTAGE(), btb=AssociativeBTB()), "Branch Predictor"
     )
+
     needsTSO = Param.Bool(False, "Enable TSO Memory model")

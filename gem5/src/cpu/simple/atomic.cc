@@ -355,11 +355,20 @@ AtomicSimpleCPU::genMemFragmentRequest(const RequestPtr &req, Addr frag_addr,
     return predicate;
 }
 
+#include "store_distance.hh"
+#include "alias_profile.hh"
+
 Fault
 AtomicSimpleCPU::readMem(Addr addr, uint8_t *data, unsigned size,
                          Request::Flags flags,
                          const std::vector<bool> &byte_enable)
 {
+
+    // record_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
+    
+    // if (check_in(threadInfo[curThread]->thread->pcState().instAddr())) record_profile_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
+
+
     SimpleExecContext &t_info = *threadInfo[curThread];
     SimpleThread *thread = t_info.thread;
 
@@ -379,6 +388,8 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t *data, unsigned size,
     bool predicate;
     Fault fault = NoFault;
 
+    // bool Done = false;
+
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
                                           byte_enable, frag_size, size_left);
@@ -394,6 +405,12 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t *data, unsigned size,
             !req->getFlags().isSet(Request::NO_ACCESS)) {
             Packet pkt(req, Packet::makeReadCmd(req));
             pkt.dataStatic(data);
+
+            // if (!Done){
+            //     record_load(req->getPC(), req->getPaddr(), size);
+            //     if(req->getPC()==6040908) std::cout <<"OKayy" <<std::endl;
+            //     Done = true;
+            // }
 
             if (req->isLocalAccess()) {
                 dcache_latency += req->localAccessor(thread->getTC(), &pkt);
@@ -438,6 +455,10 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
                           Request::Flags flags, uint64_t *res,
                           const std::vector<bool>& byte_enable)
 {
+    // record_store(addr, size);
+
+    // record_profile_store(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
+
     SimpleExecContext &t_info = *threadInfo[curThread];
     SimpleThread *thread = t_info.thread;
     static uint8_t zero_array[64] = {};
@@ -466,6 +487,8 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
     bool predicate;
     Fault fault = NoFault;
 
+    // bool Done = false;
+
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
                                           byte_enable, frag_size, size_left);
@@ -478,6 +501,11 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
         // Now do the access.
         if (predicate && fault == NoFault) {
             bool do_access = true;  // flag to suppress cache access
+
+            // if (!Done){
+            //     record_store(req->getPaddr(), size);
+            //     Done = true;
+            // }
 
             if (req->isLLSC()) {
                 assert(curr_frag_id == 0);
@@ -546,6 +574,14 @@ Fault
 AtomicSimpleCPU::amoMem(Addr addr, uint8_t* data, unsigned size,
                         Request::Flags flags, AtomicOpFunctorPtr amo_op)
 {
+    // record_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
+    // record_store(addr, size);
+
+    // if (check_in(threadInfo[curThread]->thread->pcState().instAddr())){
+    //     record_profile_load(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
+    // }
+    // record_profile_store(threadInfo[curThread]->thread->pcState().instAddr(), addr, size);
+
     SimpleExecContext &t_info = *threadInfo[curThread];
     SimpleThread *thread = t_info.thread;
 
@@ -581,6 +617,9 @@ AtomicSimpleCPU::amoMem(Addr addr, uint8_t* data, unsigned size,
 
     // Now do the access.
     if (fault == NoFault && !req->getFlags().isSet(Request::NO_ACCESS)) {
+        // record_load(req->getPC(), req->getPaddr(), size);
+        // record_store(req->getPaddr(), size);
+
         // We treat AMO accesses as Write accesses with SwapReq command
         // data will hold the return data of the AMO access
         Packet pkt(req, Packet::makeWriteCmd(req));

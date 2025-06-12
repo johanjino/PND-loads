@@ -31,6 +31,8 @@ Import('*')
 if env['CONF']['BUILD_ISA']:
     SimObject('BaseAtomicSimpleCPU.py', sim_objects=['BaseAtomicSimpleCPU'])
     Source('atomic.cc')
+    Source('store_distance.cc')
+    Source('alias_profile.cc')
 
     # The NonCachingSimpleCPU is really an atomic CPU in
     # disguise. It's therefore always enabled when the atomic CPU is

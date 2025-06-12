@@ -57,8 +57,19 @@
 #include "base/stats/info.hh"
 #include "base/str.hh"
 
+#include "cpu/pnd_map.cc"
+std::unordered_map<uint64_t, uint64_t> pnd_violation_count = {};
+std::unordered_map<uint64_t, std::set<uint64_t>> pnd_violating_stores = {};
+std::unordered_map<uint64_t, uint64_t> pnd_exec_count = {};
+
 namespace gem5
 {
+    #include "cpu/simple/store_distance.hh"
+    std::map<uint64_t, std::map<uint64_t, uint64_t>> loads_map;
+    std::unordered_map<uint64_t, uint64_t> load_exec_count;
+
+    #include "cpu/simple/alias_profile.hh"
+    std::map<uint64_t, load_obj> load_map;
 
 namespace
 {
@@ -126,16 +137,78 @@ Text::valid() const
     return stream != NULL && stream->good();
 }
 
+inline void dumpStoreDistance(std::ostream *os) {
+    ccprintf(*os, "\nStore Distance:\n\n");
+    // ccprintf(*os, "Address\t\tViolation Count\tTotal Exec Count\n");
+
+    for (const auto &entry : loads_map) {
+        uint64_t addr = entry.first;
+        uint64_t exec_count = load_exec_count[addr];
+        ccprintf(*os, "%llu-%llu\t", (unsigned long long)addr, (unsigned long long)exec_count);
+        for (const auto &distances : entry.second){
+            uint64_t distance = distances.first;
+            uint64_t count = distances.second;
+            ccprintf(*os, "%llu:%llu\t", (unsigned long long)distance, (unsigned long long)count);
+        }
+        ccprintf(*os, "\n");
+    }
+}
+
+inline void dumpProfileInfo(std::ostream *os) {
+    ccprintf(*os, "\nProfile Info:\n\n");
+
+    std::ostringstream line;
+    for (const auto& [load_addr, obj] : load_map) {
+        line << load_addr << " " << obj.exec_count;
+
+        for (const auto& [store_addr, alias_count] : obj.alias_store_map) {
+            line << " " << store_addr << ":" << alias_count;
+        }
+
+        line << "\n";
+    }
+
+    ccprintf(*os, "%s", line.str());
+}
+
 void
 Text::begin()
 {
     ccprintf(*stream, "\n---------- Begin Simulation Statistics ----------\n");
+    // dumpStoreDistance(stream);
 }
 
+inline void dumpPNDViolationAddrs(std::ostream *os) {
+    ccprintf(*os, "\nPer-Address PND Load Violations:\n\n");
+    ccprintf(*os, "Address\t\tViolation Count\tTotal Exec Count\n");
+
+    for (const auto &entry : pnd_exec_count) {
+        uint64_t addr = entry.first;
+        uint64_t violated = pnd_violation_count[addr];
+        uint64_t total = entry.second;
+
+        ccprintf(*os, "%llu\t%llu\t\t%llu\n",
+                 (unsigned long long)addr,
+                 (unsigned long long)violated,
+                 (unsigned long long)total);
+    }
+
+
+    ccprintf(*os, "Load-Store violation pairs\n");
+    for (const auto& pair : pnd_violating_stores) {
+        ccprintf(*os, "%llu => ", pair.first);
+        for (const auto& val : pair.second) {
+            ccprintf(*os, "%llu ", val);
+        }
+        ccprintf(*os, "\n");
+    }
+}
 void
 Text::end()
 {
     ccprintf(*stream, "\n---------- End Simulation Statistics   ----------\n");
+    dumpPNDViolationAddrs(stream);
+    // dumpProfileInfo(stream);
     stream->flush();
 }
 
