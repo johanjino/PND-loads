@@ -2,7 +2,7 @@
 
 This repository contains the necessary tools and instructions to reproduce the research findings from the paper "Compiler Analysis and Profiling Assisted Memory Dependency Prediction". The research introduces a compiler and profiling-assisted approach to enhance memory dependency prediction by labeling specific load instructions as "Predict-No-Dependency" (PND), allowing them to bypass the hardware predictor and execute more speculatively.
 
-The core idea is to use the distance between a load and its dependent store as the primary metric to determine if a load is safe for speculative execution. By identifying and labeling these PND loads, we can achieve significant IPC improvements, particularly on smaller, more resource-constrained CPU models.
+The core idea is to use the distance between a load and its dependent store as the primary metric to determine if a load is safe for speculative execution. By identifying and labeling these PND loads, we can achieve significant IPC improvements, particularly on smaller, more resource-constrained CPU models without any architectural modifications.
 
 ## Key Contributions
 - Integration of advanced static analysis (SVF) and profile-guided methods to improve the accuracy of PND labeling.
